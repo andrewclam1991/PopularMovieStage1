@@ -116,10 +116,14 @@ public class MainActivity extends AppCompatActivity implements MovieEntryAdapter
 
         switch (id) {
             case R.id.action_sort_by_popularity:
-                loadMovieData(TMDB_PATH_POPULAR);
+                // Set the instance var sort by value to POPULAR
+                mSortByValue = TMDB_PATH_POPULAR;
+                loadMovieData(mSortByValue);
                 return true;
             case R.id.action_sort_by_rating:
-                loadMovieData(TMDB_PATH_TOP_RATED);
+                // Set the sort by value to TOP_RATED
+                mSortByValue = TMDB_PATH_TOP_RATED;
+                loadMovieData(mSortByValue);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
