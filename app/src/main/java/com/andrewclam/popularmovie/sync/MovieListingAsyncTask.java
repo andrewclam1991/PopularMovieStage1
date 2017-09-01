@@ -13,7 +13,7 @@ package com.andrewclam.popularmovie.sync;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.andrewclam.popularmovie.MovieEntry;
+import com.andrewclam.popularmovie.models.MovieListing;
 import com.andrewclam.popularmovie.utilities.NetworkUtils;
 import com.andrewclam.popularmovie.utilities.TMDBJsonUtils;
 
@@ -31,20 +31,20 @@ import java.util.ArrayList;
  * (!) Lint suggests to make this class static to avoid memory leak
  */
 
-public class MovieEntryAsyncTask extends AsyncTask<String, Void, ArrayList<MovieEntry>> {
+public class MovieListingAsyncTask extends AsyncTask<String, Void, ArrayList<MovieListing>> {
     /*Debug Tag*/
-    private static final String TAG = MovieEntryAsyncTask.class.getSimpleName();
+    private static final String TAG = MovieListingAsyncTask.class.getSimpleName();
 
-    private MovieEntryAsyncTask.onMovieEntryTaskInteractionListener mListener;
+    private MovieListingAsyncTask.onMovieEntryTaskInteractionListener mListener;
 
     private String mApiKey;
 
-    public MovieEntryAsyncTask setListener(MovieEntryAsyncTask.onMovieEntryTaskInteractionListener mListener) {
+    public MovieListingAsyncTask setListener(MovieListingAsyncTask.onMovieEntryTaskInteractionListener mListener) {
         this.mListener = mListener;
         return this;
     }
 
-    public MovieEntryAsyncTask setApiKey(String mApiKey) {
+    public MovieListingAsyncTask setApiKey(String mApiKey) {
         this.mApiKey = mApiKey;
         return this;
     }
@@ -56,12 +56,12 @@ public class MovieEntryAsyncTask extends AsyncTask<String, Void, ArrayList<Movie
     }
 
     @Override
-    protected ArrayList<MovieEntry> doInBackground(String... strings) {
+    protected ArrayList<MovieListing> doInBackground(String... strings) {
         // Get the sortByValue from the strings input
         String sortByValue = strings[0];
 
         // Init a arrayList to store the parsed movie entries
-        ArrayList<MovieEntry> entries;
+        ArrayList<MovieListing> entries;
 
         try {
             // Check for null error, sortByValue should not be null
@@ -82,6 +82,8 @@ public class MovieEntryAsyncTask extends AsyncTask<String, Void, ArrayList<Movie
             // Parse the jsonResponse using the JsonUtils
             entries = TMDBJsonUtils.getMovieDataFromJson(jsonResponse);
 
+            //
+
         } catch (IOException e) {
             Log.e(TAG, "MovieEntryAsyncTask - doInBackground - IO Error occurred while getting the jsonResponse from the url");
             e.printStackTrace();
@@ -98,7 +100,7 @@ public class MovieEntryAsyncTask extends AsyncTask<String, Void, ArrayList<Movie
     }
 
     @Override
-    protected void onPostExecute(ArrayList<MovieEntry> entries) {
+    protected void onPostExecute(ArrayList<MovieListing> entries) {
         super.onPostExecute(entries);
         mListener.onPostExecute(entries);
     }
@@ -110,6 +112,6 @@ public class MovieEntryAsyncTask extends AsyncTask<String, Void, ArrayList<Movie
     public interface onMovieEntryTaskInteractionListener {
         void onPreExecute();
 
-        void onPostExecute(ArrayList<MovieEntry> entries);
+        void onPostExecute(ArrayList<MovieListing> entries);
     }
 }

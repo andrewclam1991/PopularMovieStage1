@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.andrewclam.popularmovie.models.MovieListing;
 import com.andrewclam.popularmovie.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
@@ -31,16 +32,16 @@ import java.util.ArrayList;
  * with the data, also contains an inner class that hold the cache of views.
  */
 
-public class MovieEntryAdapter extends RecyclerView.Adapter<MovieEntryAdapter.MovieEntryAdapterViewHolder> {
+public class MovieListingsAdapter extends RecyclerView.Adapter<MovieListingsAdapter.MovieEntryAdapterViewHolder> {
 
     /*Log Tag*/
-    private final static String TAG = MovieEntryAdapter.class.getSimpleName();
+    private final static String TAG = MovieListingsAdapter.class.getSimpleName();
     private final OnMovieEntryClickListener mOnItemClickedListener; // Activity pass this
     /*Instance Vars*/
-    private ArrayList<MovieEntry> mEntries;
+    private ArrayList<MovieListing> mEntries;
 
     /*Default Constructor*/
-    public MovieEntryAdapter(OnMovieEntryClickListener mOnItemClickedListener) {
+    public MovieListingsAdapter(OnMovieEntryClickListener mOnItemClickedListener) {
         mEntries = new ArrayList<>();
         this.mOnItemClickedListener = mOnItemClickedListener;
     }
@@ -113,7 +114,7 @@ public class MovieEntryAdapter extends RecyclerView.Adapter<MovieEntryAdapter.Mo
      *
      * @param mEntries the new dataset that we want to update the adapter with
      */
-    public void setMovieEntryData(ArrayList<MovieEntry> mEntries) {
+    public void setMovieEntryData(ArrayList<MovieListing> mEntries) {
         this.mEntries = mEntries;
         Log.i(TAG, "New entries set");
         notifyDataSetChanged();
@@ -124,7 +125,7 @@ public class MovieEntryAdapter extends RecyclerView.Adapter<MovieEntryAdapter.Mo
      * Handle on itemClick event in each itemView inside the RecyclerView
      */
     public interface OnMovieEntryClickListener {
-        void onItemClicked(MovieEntry entry);
+        void onItemClicked(MovieListing entry);
     }
 
     /**
@@ -151,7 +152,7 @@ public class MovieEntryAdapter extends RecyclerView.Adapter<MovieEntryAdapter.Mo
                     int adapterPosition = getAdapterPosition();
 
                     // 2) Find the corresponding clicked entry in the entries
-                    MovieEntry entry = mEntries.get(adapterPosition);
+                    MovieListing entry = mEntries.get(adapterPosition);
 
                     // 3) Use onClickHandler to notify the activity of a onClick event
                     // pass in the retrieved object

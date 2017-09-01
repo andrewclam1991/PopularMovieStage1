@@ -23,7 +23,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
-import com.andrewclam.popularmovie.sync.MovieEntryAsyncTask;
+import com.andrewclam.popularmovie.models.MovieListing;
+import com.andrewclam.popularmovie.sync.MovieListingAsyncTask;
 import com.andrewclam.popularmovie.utilities.LayoutManagerUtils;
 
 import org.parceler.Parcels;
@@ -41,7 +42,7 @@ import static com.andrewclam.popularmovie.utilities.NetworkUtils.TMDB_PATH_TOP_R
  * different list of movie as a response.
  */
 
-public class MainActivity extends AppCompatActivity implements MovieEntryAdapter.OnMovieEntryClickListener {
+public class MainActivity extends AppCompatActivity implements MovieListingsAdapter.OnMovieEntryClickListener {
 
     /*Constants */
     public static final String EXTRA_MOVIE_ENTRY_OBJECT = "extra_movie_entry_obj";
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements MovieEntryAdapter
     private ProgressBar mProgressBar;
     private LinearLayout mErrorMsgLayout;
     private RecyclerView mRecyclerView;
-    private MovieEntryAdapter mAdapter;
+    private MovieListingsAdapter mAdapter;
     private String mSortByValue;
 
     @Override
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements MovieEntryAdapter
         mRecyclerView = findViewById(R.id.rv_movie_entries);
 
         // Init adapter
-        mAdapter = new MovieEntryAdapter(this);
+        mAdapter = new MovieListingsAdapter(this);
 
         // Init layout manager
         int spanSize = LayoutManagerUtils.getSpanSize(this);
@@ -148,9 +149,9 @@ public class MainActivity extends AppCompatActivity implements MovieEntryAdapter
 
         // Create a new MovieEntryAsyncTask to fetch movie entry data from the server
         // on a background thread
-        new MovieEntryAsyncTask()
+        new MovieListingAsyncTask()
                 .setApiKey(mApiKey)
-                .setListener(new MovieEntryAsyncTask.onMovieEntryTaskInteractionListener() {
+                .setListener(new MovieListingAsyncTask.onMovieEntryTaskInteractionListener() {
                     @Override
                     public void onPreExecute() {
                         // Show the loading indicator
@@ -158,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements MovieEntryAdapter
                     }
 
                     @Override
-                    public void onPostExecute(@Nullable ArrayList<MovieEntry> entries) {
+                    public void onPostExecute(@Nullable ArrayList<MovieListing> entries) {
                         // Task complete, hide the loading indicator
                         mProgressBar.setVisibility(View.GONE);
 
@@ -198,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements MovieEntryAdapter
      * @param entry the particular entry that is clicked by the user
      */
     @Override
-    public void onItemClicked(MovieEntry entry) {
+    public void onItemClicked(MovieListing entry) {
         // Starts the DetailActivity with the entry item to populate the movie entry info
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
         intent.putExtra(EXTRA_MOVIE_ENTRY_OBJECT, Parcels.wrap(entry));

@@ -12,7 +12,7 @@ package com.andrewclam.popularmovie.utilities;
 
 import android.util.Log;
 
-import com.andrewclam.popularmovie.MovieEntry;
+import com.andrewclam.popularmovie.models.MovieListing;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,14 +33,14 @@ public final class TMDBJsonUtils {
     private static final String TAG = TMDBJsonUtils.class.getSimpleName();
 
     /**
-     * This method parses JSON from a web response and returns an array of Movie objects
+     * This method parses JSON from a web response and returns an ArrayList of Movie Entry objects
      *
      * @param jsonResponse JSON response from server
      * @return an ArrayList of Movie objects, each containing the movie's data
      * @throws JSONException If JSON data cannot be properly parsed
      */
 
-    public static ArrayList<MovieEntry> getMovieDataFromJson(String jsonResponse) throws JSONException {
+    public static ArrayList<MovieListing> getMovieDataFromJson(String jsonResponse) throws JSONException {
         // Test if the response is null, return null if it is
         if (jsonResponse == null) {
             Log.w(TAG, "Nothing to parse because jsonResponse is undefined");
@@ -74,7 +74,7 @@ public final class TMDBJsonUtils {
         final String TMDB_OVERVIEW = "overview";
 
         // Initialize an arrayList to store movie objects. This data will back the recycler view adapter.
-        ArrayList<MovieEntry> movieEntries = new ArrayList<>();
+        ArrayList<MovieListing> movieEntries = new ArrayList<>();
 
         // Create a new JSON object out of the jsonResponse
         JSONObject resultJSON = new JSONObject(jsonResponse);
@@ -89,7 +89,7 @@ public final class TMDBJsonUtils {
 
             if (result != null) {
                 /* Create an instance of the model class to store the retrieved elements */
-                MovieEntry entry = new MovieEntry();
+                MovieListing entry = new MovieListing();
 
                 /* Retrieve each element from the result JSONObject */
                 long id = result.getLong(TMDB_ID);

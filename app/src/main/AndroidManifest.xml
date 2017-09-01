@@ -42,6 +42,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.andrewclam.popularmovie.MainActivity" />
         </activity>
+
+        <!-- Register the MovieListing ContentProvider, since this provider will only be used inside
+         of our application, "android:exported" is set to false-->
+        <provider
+            android:name=".data.MovieListingProvider"
+            android:authorities="com.andrewclam.popularmovie"
+            android:exported="false" />
+
     </application>
 
 </manifest>

@@ -24,7 +24,7 @@ import java.util.Scanner;
 /**
  * Created by Andrew Chi Heng Lam on 8/19/2017.
  * <p>
- * NetworkUtil class contains method for communicating with server on a background thread.
+ * NetworkUtil class contains method for communicating with server.
  */
 
 public class NetworkUtils {

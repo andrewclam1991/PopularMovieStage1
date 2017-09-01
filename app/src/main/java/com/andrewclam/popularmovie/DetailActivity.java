@@ -18,6 +18,7 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.andrewclam.popularmovie.models.MovieListing;
 import com.andrewclam.popularmovie.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
@@ -63,7 +64,7 @@ public class DetailActivity extends AppCompatActivity {
 
         if (getIntent() != null && getIntent().hasExtra(EXTRA_MOVIE_ENTRY_OBJECT)) {
             // Unwrap the parcel to retrieve the entry object
-            MovieEntry entry = Parcels.unwrap(getIntent().getParcelableExtra(EXTRA_MOVIE_ENTRY_OBJECT));
+            MovieListing entry = Parcels.unwrap(getIntent().getParcelableExtra(EXTRA_MOVIE_ENTRY_OBJECT));
             if (entry != null) populateEntryFields(entry);
         } else {
             Log.e(TAG, "Intent doesn't have the required movie entry");
@@ -76,7 +77,7 @@ public class DetailActivity extends AppCompatActivity {
      *
      * @param entry the single parsed movie entry
      */
-    private void populateEntryFields(@NonNull MovieEntry entry) {
+    private void populateEntryFields(@NonNull MovieListing entry) {
         /* TITLE */
         // Set movie title as the activity title
         if (getSupportActionBar() != null) getSupportActionBar().setTitle(entry.getTitle());
