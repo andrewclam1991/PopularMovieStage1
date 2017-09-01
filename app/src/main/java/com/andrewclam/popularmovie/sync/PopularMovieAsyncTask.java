@@ -31,20 +31,21 @@ import java.util.ArrayList;
  * (!) Lint suggests to make this class static to avoid memory leak
  */
 
-public class MovieListingAsyncTask extends AsyncTask<String, Void, ArrayList<MovieListing>> {
+public class PopularMovieAsyncTask extends AsyncTask<String, Void, ArrayList<MovieListing>> {
     /*Debug Tag*/
-    private static final String TAG = MovieListingAsyncTask.class.getSimpleName();
+    private static final String TAG = PopularMovieAsyncTask.class.getSimpleName();
 
-    private MovieListingAsyncTask.onMovieEntryTaskInteractionListener mListener;
+    /*Listener for callback*/
+    private PopularMovieAsyncTask.onMovieEntryTaskInteractionListener mListener;
 
     private String mApiKey;
 
-    public MovieListingAsyncTask setListener(MovieListingAsyncTask.onMovieEntryTaskInteractionListener mListener) {
+    public PopularMovieAsyncTask setListener(PopularMovieAsyncTask.onMovieEntryTaskInteractionListener mListener) {
         this.mListener = mListener;
         return this;
     }
 
-    public MovieListingAsyncTask setApiKey(String mApiKey) {
+    public PopularMovieAsyncTask setApiKey(String mApiKey) {
         this.mApiKey = mApiKey;
         return this;
     }
@@ -79,7 +80,7 @@ public class MovieListingAsyncTask extends AsyncTask<String, Void, ArrayList<Mov
             // Check for null response
             if (jsonResponse == null) return null;
 
-            // Parse the jsonResponse using the JsonUtils
+            // Got a JsonResponse from the web, parse the jsonResponse using the JsonUtils
             entries = TMDBJsonUtils.getMovieDataFromJson(jsonResponse);
 
         } catch (IOException e) {
@@ -92,8 +93,7 @@ public class MovieListingAsyncTask extends AsyncTask<String, Void, ArrayList<Mov
             return null;
         }
 
-        // return the entries, may be empty or null
-        // handles in the callback onPostExecute
+        // return the entries
         return entries;
     }
 

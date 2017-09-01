@@ -12,7 +12,6 @@ package com.andrewclam.popularmovie;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -116,7 +115,6 @@ public class MovieListingsAdapter extends RecyclerView.Adapter<MovieListingsAdap
      */
     public void setMovieEntryData(ArrayList<MovieListing> mEntries) {
         this.mEntries = mEntries;
-        Log.i(TAG, "New entries set");
         notifyDataSetChanged();
     }
 

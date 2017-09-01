@@ -10,6 +10,9 @@
 
 package com.andrewclam.popularmovie.utilities;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -171,6 +174,25 @@ public class NetworkUtils {
             }
         } finally {
             urlConnection.disconnect();
+        }
+    }
+
+    /**
+     * detectInternetConnection() uses the system service to see if the device is connected
+     * to any network with internet access
+     *
+     * @return boolean flag to indiciate whether the device has internet connection
+     */
+    public static boolean getNetworkState(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (cm != null) {
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        } else {
+            // runtime exception
+            throw new RuntimeException("Can't get a reference to the ConnectivityManager");
         }
     }
 }

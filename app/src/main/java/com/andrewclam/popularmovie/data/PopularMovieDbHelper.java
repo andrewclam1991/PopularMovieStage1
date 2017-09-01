@@ -14,14 +14,14 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.andrewclam.popularmovie.data.MovieListingContract.MovieListingEntry;
+import com.andrewclam.popularmovie.data.PopularMovieDbContract.MovieListingEntry;
 
 /**
  * Created by Andrew Chi Heng Lam on 8/31/2017.
  * Manages a local database for user's movie data.
  */
 
-public class MovieListingDbHelper extends SQLiteOpenHelper {
+public class PopularMovieDbHelper extends SQLiteOpenHelper {
 
     /*
      * This is the name of our database. Database names should be descriptive and end with the
@@ -35,7 +35,7 @@ public class MovieListingDbHelper extends SQLiteOpenHelper {
      */
     private static final int DATABASE_VERSION = 2;
 
-    public MovieListingDbHelper(Context context) {
+    public PopularMovieDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 

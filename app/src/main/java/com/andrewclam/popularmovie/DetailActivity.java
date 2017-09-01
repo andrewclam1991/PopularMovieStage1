@@ -25,7 +25,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.andrewclam.popularmovie.data.MovieListingContract;
+import com.andrewclam.popularmovie.data.PopularMovieDbContract;
 import com.andrewclam.popularmovie.models.MovieListing;
 import com.andrewclam.popularmovie.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
@@ -35,8 +35,8 @@ import org.parceler.Parcels;
 import java.net.URL;
 
 import static com.andrewclam.popularmovie.MainActivity.EXTRA_MOVIE_ENTRY_OBJECT;
-import static com.andrewclam.popularmovie.data.MovieListingContract.MovieListingEntry.COLUMN_FAVORITE;
-import static com.andrewclam.popularmovie.data.MovieListingContract.MovieListingEntry.CONTENT_URI;
+import static com.andrewclam.popularmovie.data.PopularMovieDbContract.MovieListingEntry.COLUMN_FAVORITE;
+import static com.andrewclam.popularmovie.data.PopularMovieDbContract.buildMovieUriWithId;
 
 /**
  * Created by Andrew Chi Heng Lam on 8/19/2017.
@@ -85,8 +85,7 @@ public class DetailActivity extends AppCompatActivity {
 
             if (entry != null) {
                 // Build the Uri that points to the movie base on the id
-                String movieIdStr = String.valueOf(entry.getId());
-                final Uri uri = CONTENT_URI.buildUpon().appendPath(movieIdStr).build();
+                final Uri uri = buildMovieUriWithId(entry.getId());
 
                 // Populate the ui entries
                 populateEntryFields(entry);
@@ -100,12 +99,12 @@ public class DetailActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         // On Click, toggle between the mMarkedFavorite and store that value
                         final ContentValues contentValues = new ContentValues();
-                        contentValues.put(MovieListingContract.MovieListingEntry.COLUMN_FAVORITE, !mFavStatus);
+                        contentValues.put(PopularMovieDbContract.MovieListingEntry.COLUMN_FAVORITE, !mFavStatus);
 
                         new AsyncTask() {
                             @Override
                             protected Object doInBackground(Object[] objects) {
-                                int rowUpdated = getContentResolver().update(uri, contentValues, null, null);
+                                getContentResolver().update(uri, contentValues, null, null);
                                 return null;
                             }
 
@@ -138,15 +137,12 @@ public class DetailActivity extends AppCompatActivity {
                 null,
                 null,
                 null,
-                null,
-                null
-        );
+                null);
 
         if (cursor != null && cursor.moveToNext()) {
             int favoriteColIndex = cursor.getColumnIndex(COLUMN_FAVORITE);
             int markedFavorite = cursor.getInt(favoriteColIndex);
 
-            Log.d("test", "cursor.getInt() got " + markedFavorite);
             cursor.close();
 
             switch (markedFavorite) {

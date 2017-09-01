@@ -10,7 +10,7 @@
 
 package com.andrewclam.popularmovie;
 
-import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -24,10 +24,11 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
-import com.andrewclam.popularmovie.data.MovieListingContract;
 import com.andrewclam.popularmovie.models.MovieListing;
-import com.andrewclam.popularmovie.sync.MovieListingAsyncTask;
+import com.andrewclam.popularmovie.sync.PopularMovieAsyncTask;
+import com.andrewclam.popularmovie.sync.PopularMovieDbSync;
 import com.andrewclam.popularmovie.utilities.LayoutManagerUtils;
+import com.andrewclam.popularmovie.utilities.NetworkUtils;
 
 import org.parceler.Parcels;
 
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements MovieListingsAdap
     private RecyclerView mRecyclerView;
     private MovieListingsAdapter mAdapter;
     private String mSortByValue;
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +68,9 @@ public class MainActivity extends AppCompatActivity implements MovieListingsAdap
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // Init Context
+        mContext = MainActivity.this;
 
         // UI Reference
         mProgressBar = findViewById(R.id.pb_loading_indicator);
@@ -151,9 +156,9 @@ public class MainActivity extends AppCompatActivity implements MovieListingsAdap
 
         // Create a new MovieEntryAsyncTask to fetch movie entry data from the server
         // on a background thread
-        new MovieListingAsyncTask()
+        new PopularMovieAsyncTask()
                 .setApiKey(mApiKey)
-                .setListener(new MovieListingAsyncTask.onMovieEntryTaskInteractionListener() {
+                .setListener(new PopularMovieAsyncTask.onMovieEntryTaskInteractionListener() {
                     @Override
                     public void onPreExecute() {
                         // Show the loading indicator
@@ -165,80 +170,42 @@ public class MainActivity extends AppCompatActivity implements MovieListingsAdap
                         // Task complete, hide the loading indicator
                         mProgressBar.setVisibility(View.GONE);
 
-                        // AsyncTask returns a set of movie entries, check the parameter
-                        if (entries == null || entries.size() == 0) {
-                            // entries is empty or null, show error msg
-                            showErrorMsg();
-                        } else {
-                            // has data, cache the data in the user's database
-                            // fixme (!) when to call to write the the database? run sync and update on a schedule
-                            initialBulkInsert(entries);
-
-                            // has data, set or update the adapter with the entry data
-                            mAdapter.setMovieEntryData(entries);
-                            showEntryData();
+                        // Check Internet state
+                        boolean isConnected = NetworkUtils.getNetworkState(mContext);
+                        boolean isFromCache = false;
+                        if (!isConnected) {
+                            // If not connected, possibly due to no network connectivity or down server
+                            // we would expect an empty entries.
+                            // Try to get the cache from the database and populate the entries
+                            entries = PopularMovieDbSync.getEntriesFromDatabase(mContext);
+                            if (entries != null) {
+                                // If the entries from the database is not null, set the flag
+                                // is from Cache to true;
+                                isFromCache = true;
+                            }
                         }
 
+                        // Check the entries
+                        // AsyncTask returns a set of movie entries,
+                        if (entries == null || entries.size() == 0) {
+
+                            // If entries is still empty or null,
+                            // show error msg
+                            showErrorMsg();
+                            return;
+
+                        }
+
+                        // Entries contain data, sync and cache data if the data is not from the cache
+                        if (!isFromCache) {
+                            PopularMovieDbSync.syncDatabase(mContext, entries);
+                        }
+
+                        // Bind the entries to the adapter for display
+                        mAdapter.setMovieEntryData(entries);
+                        showEntryData();
                     }
                 }).execute(sortByValue);
-    }
-
-    private void initialBulkInsert(ArrayList<MovieListing> entries) {
-        // After successfully showing the data, cache the data on a separate thread
-        // call contentResolver->contentProvider
-        // to bulkInsert the entries into client's database.
-        // todo move this into an intent service call and run it on a separate thread
-        // todo mark initialized to prevent the bulkInsert from happening again
-
-        // Initialize the contentValuesArray to have the size of all entries
-        ContentValues[] contentValuesArray = new ContentValues[entries.size()];
-
-        try {
-            // set a count index for the foreach loop, this index value is for referencing the
-            // correct ContentValue in the ContentValue[] to store each MovieListing entry.
-
-            int index = 0;
-            for (MovieListing entry : entries) {
-
-                // Create a new contentValue object to store the entry data
-                ContentValues contentValues = new ContentValues();
-
-                contentValues.put(MovieListingContract.MovieListingEntry.COLUMN_MOVIE_ID, entry.getId());
-
-                contentValues.put(MovieListingContract.MovieListingEntry.COLUMN_TITLE, entry.getTitle());
-
-                contentValues.put(MovieListingContract.MovieListingEntry.COLUMN_RELEASE_DATE, entry.getReleaseDate());
-
-                contentValues.put(MovieListingContract.MovieListingEntry.COLUMN_POSTER_PATH, entry.getPosterPath());
-
-                contentValues.put(MovieListingContract.MovieListingEntry.COLUMN_VOTE_AVERAGE, entry.getVoteAverage());
-
-                contentValues.put(MovieListingContract.MovieListingEntry.COLUMN_VOTE_COUNT, entry.getVoteCount());
-
-                contentValues.put(MovieListingContract.MovieListingEntry.COLUMN_OVERVIEW, entry.getOverview());
-
-                contentValues.put(MovieListingContract.MovieListingEntry.COLUMN_POPULARITY, entry.getPopularity());
-
-//                contentValues.put(MovieListingContract.MovieListingEntry.COLUMN_FAVORITE,SELECTION_ARG_MOVIE_FAVORITE_FALSE);
-
-                // Assign the constructed contentValues to the contentValuesArray[index]
-                contentValuesArray[index] = contentValues;
-
-                // Log for result, test contentValues retrieval
-//                String title = contentValues.getAsString(MovieListingContract.MovieListingEntry.COLUMN_TITLE);
-//                Log.d(TAG,"contentValues added to array's index: " + index + ", with movie title: " + title);
-
-                // increment the index after each completed iteration to access the next array
-                index++;
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-
-        } finally {
-            // use the contentResolver bulkInsert to insert all the cv values
-            int rowsInserted = getContentResolver().bulkInsert(MovieListingContract.MovieListingEntry.CONTENT_URI, contentValuesArray);
-        }
     }
 
     /**
@@ -269,4 +236,6 @@ public class MainActivity extends AppCompatActivity implements MovieListingsAdap
         intent.putExtra(EXTRA_MOVIE_ENTRY_OBJECT, Parcels.wrap(entry));
         startActivity(intent);
     }
+
+    // Register a broadcast receiver to detect network change, and do database sync
 }

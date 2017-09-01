@@ -30,9 +30,8 @@ public class MovieListing {
     private double voteAverage;
     private long voteCount;
     private double popularity;
-    private String overview;
     private boolean markedFavorite;
-
+    private String overview;
     /* Public No-Arg constructor */
     public MovieListing() {
 

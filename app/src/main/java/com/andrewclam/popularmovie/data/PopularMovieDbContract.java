@@ -12,14 +12,15 @@ package com.andrewclam.popularmovie.data;
 
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.support.annotation.NonNull;
 
-import static com.andrewclam.popularmovie.data.MovieListingContract.MovieListingEntry.CONTENT_URI;
+import static com.andrewclam.popularmovie.data.PopularMovieDbContract.MovieListingEntry.CONTENT_URI;
 
 /**
  * Defines table and column names for the movie entry database. this contract class keeps
  * the sqlite code organized and easier to maintain
  */
-public class MovieListingContract {
+public class PopularMovieDbContract {
 
     /*
      * The "Content authority" is a name for the entire content provider, similar to the
@@ -62,6 +63,18 @@ public class MovieListingContract {
      */
     public static Uri buildMovieUriWithId(long id) {
         return CONTENT_URI.buildUpon().appendPath(Long.toString(id)).build();
+    }
+
+    /**
+     * Easy to use helper method to build the uri that points to a specific movie given its unique
+     * movie id
+     *
+     * @param movieId the unique movie id as fetched from TMDB)
+     * @return an Uri that points to that particular movie on the user's database
+     */
+    public static Uri buildMovieUriWithId(@NonNull Long movieId) {
+        String movieIdStr = String.valueOf(movieId);
+        return CONTENT_URI.buildUpon().appendPath(movieIdStr).build();
     }
 
     /* Inner class that defines the table contents of the movie table */

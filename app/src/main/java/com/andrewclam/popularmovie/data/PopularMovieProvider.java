@@ -20,9 +20,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import static com.andrewclam.popularmovie.data.MovieListingContract.CONTENT_AUTHORITY;
-import static com.andrewclam.popularmovie.data.MovieListingContract.MovieListingEntry.SELECTION_ARG_MOVIE_FAVORITE_TRUE;
-import static com.andrewclam.popularmovie.data.MovieListingContract.MovieListingEntry.TABLE_NAME;
+import static com.andrewclam.popularmovie.data.PopularMovieDbContract.CONTENT_AUTHORITY;
+import static com.andrewclam.popularmovie.data.PopularMovieDbContract.MovieListingEntry.COLUMN_MOVIE_ID;
+import static com.andrewclam.popularmovie.data.PopularMovieDbContract.MovieListingEntry.SELECTION_ARG_MOVIE_FAVORITE_TRUE;
+import static com.andrewclam.popularmovie.data.PopularMovieDbContract.MovieListingEntry.TABLE_NAME;
 
 /**
  * Created by Andrew Chi Heng Lam on 8/31/2017.
@@ -31,7 +32,7 @@ import static com.andrewclam.popularmovie.data.MovieListingContract.MovieListing
  * This class allows us to bulk insert, query, update movie listing.
  */
 
-public class MovieListingProvider extends ContentProvider {
+public class PopularMovieProvider extends ContentProvider {
     /*
     * These constant will be used to match URIs with the data they are looking for. We will take
     * advantage of the UriMatcher class to make that matching MUCH easier than doing something
@@ -50,7 +51,7 @@ public class MovieListingProvider extends ContentProvider {
     * Reference a Movie listing dbHelper to get writable/readable databases for each provider
     * method to work with.
      */
-    private MovieListingDbHelper mDbHelper;
+    private PopularMovieDbHelper mDbHelper;
 
     /**
      * Creates the UriMatcher that will match each URI to the CODE_MOVIE and
@@ -74,19 +75,19 @@ public class MovieListingProvider extends ContentProvider {
          example uses: do operations on the whole movie listing, with user supplied parameters
          projection, selection, selectionArgs and sortOrder
         */
-        matcher.addURI(authority, MovieListingContract.PATH_MOVIES, CODE_MOVIE);
+        matcher.addURI(authority, PopularMovieDbContract.PATH_MOVIES, CODE_MOVIE);
 
         /*
          This Uri: content://com.andrewclam.popularmovie/movies/id
          example uses: do operation on a individual movie listing
         */
-        matcher.addURI(authority, MovieListingContract.PATH_MOVIES + "/#", CODE_MOVIE_WITH_ID);
+        matcher.addURI(authority, PopularMovieDbContract.PATH_MOVIES + "/#", CODE_MOVIE_WITH_ID);
 
         /*
          This Uri: content://com.andrewclam.popularmovie/movies/favorite
          example uses: query the user's list of favorite movie
         */
-        matcher.addURI(authority, MovieListingContract.PATH_MOVIES + "/" + MovieListingContract.PATH_FAVORITES, CODE_MOVIE_FAVORITE);
+        matcher.addURI(authority, PopularMovieDbContract.PATH_MOVIES + "/" + PopularMovieDbContract.PATH_FAVORITES, CODE_MOVIE_FAVORITE);
 
         return matcher;
     }
@@ -113,7 +114,7 @@ public class MovieListingProvider extends ContentProvider {
          * lengthy operations will cause lag in your app. Since MovieListingDbHelper's constructor is
          * very lightweight, we are safe to perform that initialization here.
          */
-        mDbHelper = new MovieListingDbHelper(getContext());
+        mDbHelper = new PopularMovieDbHelper(getContext());
         return true;
     }
 
@@ -136,7 +137,7 @@ public class MovieListingProvider extends ContentProvider {
                 final SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
                 // Set selection to select favorite, selectionArg handles the "=?" wildcard
-                selection = MovieListingContract.MovieListingEntry.COLUMN_FAVORITE + "=?";
+                selection = PopularMovieDbContract.MovieListingEntry.COLUMN_FAVORITE + "=?";
 
                 // Set selectionArgs to select movie favorite that is true
                 selectionArgs = new String[]{SELECTION_ARG_MOVIE_FAVORITE_TRUE};
@@ -144,7 +145,7 @@ public class MovieListingProvider extends ContentProvider {
                 // Return a cursor of movie listings in the database that matches the
                 // parameter criteria
                 cursor = db.query(
-                        MovieListingContract.MovieListingEntry.TABLE_NAME,
+                        PopularMovieDbContract.MovieListingEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -162,7 +163,7 @@ public class MovieListingProvider extends ContentProvider {
                 String idStr = uri.getLastPathSegment();
 
                 // Set selection to select movie id, selectionArg handles the "=?" wildcard
-                selection = MovieListingContract.MovieListingEntry.COLUMN_MOVIE_ID + "=?";
+                selection = PopularMovieDbContract.MovieListingEntry.COLUMN_MOVIE_ID + "=?";
 
                 // Set selectionArgs to Use the idStr as the only argument
                 selectionArgs = new String[]{idStr};
@@ -175,7 +176,7 @@ public class MovieListingProvider extends ContentProvider {
                 // Return a cursor of movie listings in the database that matches the
                 // parameter criteria
                 cursor = db.query(
-                        MovieListingContract.MovieListingEntry.TABLE_NAME,
+                        PopularMovieDbContract.MovieListingEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -311,29 +312,39 @@ public class MovieListingProvider extends ContentProvider {
                 String idStr = uri.getLastPathSegment();
 
                 // Set selection to select movie id, selectionArg handles the "=?" wildcard
-                selection = MovieListingContract.MovieListingEntry.COLUMN_MOVIE_ID + "=?";
+                selection = PopularMovieDbContract.MovieListingEntry.COLUMN_MOVIE_ID + "=?";
 
                 // Set selectionArgs to Use the idStr as the only argument
                 selectionArgs = new String[]{idStr};
 
-//                // Update only the favorite status, check if it is null before proceeding
-//                Boolean isMarkFavorite = contentValues.getAsBoolean(COLUMN_FAVORITE);
-//
-//                if (isMarkFavorite != null) {
-//                    // get the writable database using the mDbHelper
-//                    final SQLiteDatabase db = mDbHelper.getWritableDatabase();
-//
-//                    // create the cv, effectively ignored
-//                    ContentValues cv = new ContentValues();
-//                    cv.put(COLUMN_FAVORITE, isMarkFavorite);
-//
-//                    // call update on the particular movie with the cv that contains the favorite
-//                    rowsUpdated = db.update(TABLE_NAME, cv, selection, selectionArgs);
-//
-//                } else {
-//                    throw new IllegalArgumentException("Illegal argument in ContentValues, doesn't " +
-//                            "contain valid a bool value for favorite ");
-//                }
+                /**********************************
+                 *Sanitize Parameter ContentValues*
+                 **********************************/
+                // (!) MOVIE ID SHOULDN'T CHANGE
+                // Check if contentValues contains an update in movie id, it shouldn't contain it
+                // but if it does, check to make sure it matches the Uri idStr. if not throw an
+                // exception.
+
+                // Try to get the contentValue with the string key, user of this content provider
+                // shouldn't set this field, but we will check.
+                Long cvId = contentValues.getAsLong(COLUMN_MOVIE_ID);
+
+                // if the value is not null, the user has "accidentally" set the value
+                if (cvId != null) {
+                    String cvIdStr = String.valueOf(cvId);
+                    if (!cvIdStr.equals(idStr)) {
+                        throw new IllegalArgumentException("ContentValues should not contain value " +
+                                "for changing the unique movie id, modifying the movie id of an " +
+                                "existing record is prohibited");
+                    }
+
+                    // The cvId is equal to the uri's appended id, no change will occur so let it
+                    // slide
+                }
+
+                /**********************
+                 * Sanitation Complete*
+                 **********************/
 
                 // Get the writable database using the mDbHelper, and call the update
                 final SQLiteDatabase db = mDbHelper.getWritableDatabase();
@@ -348,8 +359,10 @@ public class MovieListingProvider extends ContentProvider {
                             .notifyChange(uri, null);
                 }
 
-                // Return the number of rows updated, positive number indicate an update was successful
+                // Return the number of rows updated, positive number indicate an update with
+                // modification is complete
                 return rowsUpdated;
+
             default:
                 throw new UnsupportedOperationException("Unsupported or unknown Uri for update()");
         }

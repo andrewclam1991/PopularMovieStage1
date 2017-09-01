@@ -10,7 +10,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.andrewclam.popularmovie">
 
-    <!-- Permission required for network IO -->
+    <!-- Permission required for network IO and network detection -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -46,10 +47,13 @@
          of our application, "android:exported" is set to false
         -->
         <provider
-            android:name=".data.MovieListingProvider"
+            android:name=".data.PopularMovieProvider"
             android:authorities="com.andrewclam.popularmovie"
             android:exported="false" />
 
+        <service
+            android:name=".sync.PopularMovieIntentService"
+            android:exported="false"></service>
     </application>
 
 </manifest>
