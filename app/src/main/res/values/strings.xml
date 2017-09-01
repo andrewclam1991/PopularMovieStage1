@@ -19,4 +19,6 @@
     <string name="dummy_text" translatable="false">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate</string>
     <string name="error_msg_unable_to_fetch">Unable to fetch movies at this time.\nPlease try again later.</string>
     <string name="content_description_error_msg_icon">Unable to load movies icon</string>
+    <string name="add_to_favorite_list">Add To Favorite</string>
+    <string name="added_to_favorite_list">Added to Favorite List</string>
 </resources>

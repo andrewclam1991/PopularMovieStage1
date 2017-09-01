@@ -29,7 +29,9 @@ public class MovieListing {
     private String posterPath;
     private double voteAverage;
     private long voteCount;
+    private double popularity;
     private String overview;
+    private boolean markedFavorite;
 
     /* Public No-Arg constructor */
     public MovieListing() {
@@ -91,6 +93,22 @@ public class MovieListing {
 
     public void setReleaseDate(String releaseDate) {
         this.releaseDate = releaseDate;
+    }
+
+    public double getPopularity() {
+        return popularity;
+    }
+
+    public void setPopularity(double popularity) {
+        this.popularity = popularity;
+    }
+
+    public boolean isMarkedFavorite() {
+        return markedFavorite;
+    }
+
+    public void setMarkedFavorite(boolean markedFavorite) {
+        this.markedFavorite = markedFavorite;
     }
 }
 

@@ -21,7 +21,6 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import static com.andrewclam.popularmovie.data.MovieListingContract.CONTENT_AUTHORITY;
-import static com.andrewclam.popularmovie.data.MovieListingContract.MovieListingEntry.COLUMN_FAVORITE;
 import static com.andrewclam.popularmovie.data.MovieListingContract.MovieListingEntry.SELECTION_ARG_MOVIE_FAVORITE_TRUE;
 import static com.andrewclam.popularmovie.data.MovieListingContract.MovieListingEntry.TABLE_NAME;
 
@@ -183,6 +182,7 @@ public class MovieListingProvider extends ContentProvider {
                         null,
                         null, sortOrder
                 );
+
                 break;
 
             default:
@@ -240,16 +240,23 @@ public class MovieListingProvider extends ContentProvider {
                     }
                     db.setTransactionSuccessful();
 
+                } catch (Exception e) {
+                    e.printStackTrace();
                 } finally {
 
                     // Try block op ended, end this db transaction.
                     db.endTransaction();
+
+                    // Close database connection for good measure after insert
+                    db.close();
                 }
 
                 // Notify the content resolver of modified dataset if there are rowsInserted
                 if (rowsInserted > 0) {
                     if (getContext() != null) getContext().getContentResolver()
                             .notifyChange(uri, null);
+
+                    Log.d("test", "Successfully bulk inserted, insertedRows " + rowsInserted);
                 }
 
                 return rowsInserted;
@@ -263,6 +270,14 @@ public class MovieListingProvider extends ContentProvider {
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
         // Normally, insert function returns the uri to the data that is just inserted
+        if (contentValues == null || contentValues.size() == 0) {
+            // No content values, nothing to insert, return a null Uri
+            return null;
+        }
+
+
+
+
         throw new UnsupportedOperationException("#SadFace, MovieListing Provider doesn't support " +
                 "single insert(), use bulkInsert() instead");
     }
@@ -279,29 +294,19 @@ public class MovieListingProvider extends ContentProvider {
     public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String selection,
                       @Nullable String[] selectionArgs) {
 
-        if (contentValues == null) {
+        if (contentValues == null || contentValues.size() == 0) {
             // No content value, nothing to update, return 0
             return 0;
         }
 
-        /*
-        * Use uri matcher to make sure the call is pointing to a particular movie listing
-        */
+        // Use uri matcher to make sure the call is pointing to a particular movie listing
         int match = sUriMatcher.match(uri);
-
         int rowsUpdated = 0;
-
         switch (match) {
             case CODE_MOVIE_WITH_ID:
                 /*
-                * In this implementation we are only allowing user to update the favorite status
-                * on a particular movie, each call to update's contentValues must contain a valid
-                * favorite bool value. Other contentValues in the parameter are simply ignored at
-                * the moment.
-                */
-
-                /* Get the movie id from the Uri, if the uri matches this pattern,
-                * the id should be appended at the end of the uri
+                *  Get the movie id from the Uri, if the uri matches this pattern,
+                *  the id should be appended at the end of the uri
                 */
                 String idStr = uri.getLastPathSegment();
 
@@ -311,25 +316,31 @@ public class MovieListingProvider extends ContentProvider {
                 // Set selectionArgs to Use the idStr as the only argument
                 selectionArgs = new String[]{idStr};
 
-                // Update only the favorite status, check if it is null before proceeding
+//                // Update only the favorite status, check if it is null before proceeding
+//                Boolean isMarkFavorite = contentValues.getAsBoolean(COLUMN_FAVORITE);
+//
+//                if (isMarkFavorite != null) {
+//                    // get the writable database using the mDbHelper
+//                    final SQLiteDatabase db = mDbHelper.getWritableDatabase();
+//
+//                    // create the cv, effectively ignored
+//                    ContentValues cv = new ContentValues();
+//                    cv.put(COLUMN_FAVORITE, isMarkFavorite);
+//
+//                    // call update on the particular movie with the cv that contains the favorite
+//                    rowsUpdated = db.update(TABLE_NAME, cv, selection, selectionArgs);
+//
+//                } else {
+//                    throw new IllegalArgumentException("Illegal argument in ContentValues, doesn't " +
+//                            "contain valid a bool value for favorite ");
+//                }
 
-                Boolean isMarkFavorite = contentValues.getAsBoolean(COLUMN_FAVORITE);
+                // Get the writable database using the mDbHelper, and call the update
+                final SQLiteDatabase db = mDbHelper.getWritableDatabase();
+                rowsUpdated = db.update(TABLE_NAME, contentValues, selection, selectionArgs);
 
-                if (isMarkFavorite != null) {
-                    // create the cv, effectively ignored
-                    ContentValues cv = new ContentValues();
-                    cv.put(COLUMN_FAVORITE, isMarkFavorite);
-
-                    // (!) Test what is actually put in the cv
-                    Log.d("test", "" + cv.get(COLUMN_FAVORITE));
-
-                    // call update on the particular movie with the cv that contains the favorite
-                    rowsUpdated = update(uri, cv, selection, selectionArgs);
-
-                } else {
-                    throw new IllegalArgumentException("Illegal argument in ContentValues, doesn't " +
-                            "contain valid a bool value for favorite ");
-                }
+                // Close database connection for good measure after update
+                db.close();
 
                 // Notify the content resolver of modified dataset if there are rowsUpdated
                 if (rowsUpdated > 0) {
@@ -337,6 +348,7 @@ public class MovieListingProvider extends ContentProvider {
                             .notifyChange(uri, null);
                 }
 
+                // Return the number of rows updated, positive number indicate an update was successful
                 return rowsUpdated;
             default:
                 throw new UnsupportedOperationException("Unsupported or unknown Uri for update()");

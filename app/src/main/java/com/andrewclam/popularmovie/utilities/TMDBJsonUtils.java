@@ -70,6 +70,9 @@ public final class TMDBJsonUtils {
         // Vote Count - The number of voters
         final String TMDB_VOTE_COUNT = "vote_count";
 
+        // Popularity - the popularity index given the the TMDB
+        final String TMDB_POPULARITY = "popularity";
+
         // Overview - A short description of the movie
         final String TMDB_OVERVIEW = "overview";
 
@@ -98,6 +101,7 @@ public final class TMDBJsonUtils {
                 String posterPath = result.getString(TMDB_POSTER_PATH).replace("/", "");
                 double voteAverage = result.getDouble(TMDB_VOTE_AVERAGE);
                 long voteCount = result.getInt(TMDB_VOTE_COUNT);
+                double popularity = result.getDouble(TMDB_POPULARITY);
                 String overView = result.getString(TMDB_OVERVIEW);
 
                 /* Store each element into the data model class */
@@ -107,6 +111,7 @@ public final class TMDBJsonUtils {
                 entry.setPosterPath(posterPath);
                 entry.setVoteAverage(voteAverage);
                 entry.setVoteCount(voteCount);
+                entry.setPopularity(popularity);
                 entry.setOverview(overView);
 
                 /* Add the entry object to the list */

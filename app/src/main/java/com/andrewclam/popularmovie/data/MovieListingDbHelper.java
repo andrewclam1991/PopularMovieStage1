@@ -33,7 +33,7 @@ public class MovieListingDbHelper extends SQLiteOpenHelper {
      * If you change the database schema, you must increment the database version or the onUpgrade
      * method will not be called.
      */
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public MovieListingDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -72,33 +72,33 @@ public class MovieListingDbHelper extends SQLiteOpenHelper {
 
                         MovieListingEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL, " +
 
-                        MovieListingEntry.COLUMN_TITLE + " TEXT NOT NULL," +
+                        MovieListingEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
 
-                        MovieListingEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL," +
+                        MovieListingEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, " +
 
-                        MovieListingEntry.COLUMN_POSTER_PATH + "TEXT NOT NULL," +
+                        MovieListingEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL, " +
 
-                        MovieListingEntry.COLUMN_VOTE_AVERAGE + "REAL NOT NULL," +
+                        MovieListingEntry.COLUMN_VOTE_AVERAGE + " REAL NOT NULL, " +
 
-                        MovieListingEntry.COLUMN_VOTE_COUNT + "INTEGER NOT NULL," +
+                        MovieListingEntry.COLUMN_VOTE_COUNT + " INTEGER NOT NULL, " +
 
-                        MovieListingEntry.COLUMN_OVERVIEW + "TEXT NOT NULL," +
+                        MovieListingEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
 
-                        MovieListingEntry.COLUMN_POPULARITY + "REAL NOT NULL," +
+                        MovieListingEntry.COLUMN_POPULARITY + " REAL NOT NULL, " +
 
-                        // Favorite should contain boolean, but SQLite doesn't have this datatype
+                        // Favorite should contain boolean, but SQLite doesn't have this data type
                         // instead, use INTEGER 1 to represent true, and 0 as false, default to false (0)
-                        MovieListingEntry.COLUMN_FAVORITE + "INTEGER NOT NULL DEFAULT 0," +
+                        MovieListingEntry.COLUMN_FAVORITE + " INTEGER DEFAULT 0, " +
 
                         /*
-                         * To ensure this table can only contain one movie entry per date, we declare
-                         * the date column to be unique. We also specify "ON CONFLICT REPLACE". This tells
-                         * SQLite that if we have a movie entry for a certain date and we attempt to
-                         * insert another movie entry with that movie id, we replace the old movie listing
+                         * To ensure this table can only contain one movie entry per id, we declare
+                         * the movie id column to be unique. We also specify "ON CONFLICT IGNORE". This tells
+                         * SQLite that if we have a movie entry for a id and we attempt to
+                         * insert another movie entry with that movie id, we just ignore the old movie listing
                          * entry.
                          */
 
-                        " UNIQUE (" + MovieListingEntry.COLUMN_MOVIE_ID + ") ON CONFLICT REPLACE);";
+                        " UNIQUE (" + MovieListingEntry.COLUMN_MOVIE_ID + ") ON CONFLICT IGNORE);";
 
         /*
          * After we've spelled out our SQLite table creation statement above, we actually execute

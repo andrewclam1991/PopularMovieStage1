@@ -89,6 +89,12 @@
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
             tools:text="@string/dummy_text" />
 
+        <Button
+            android:id="@+id/button_mark_favorite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add_to_favorite_list" />
+
     </LinearLayout>
 
 </android.support.v4.widget.NestedScrollView>

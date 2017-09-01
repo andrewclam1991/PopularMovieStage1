@@ -82,8 +82,6 @@ public class MovieListingAsyncTask extends AsyncTask<String, Void, ArrayList<Mov
             // Parse the jsonResponse using the JsonUtils
             entries = TMDBJsonUtils.getMovieDataFromJson(jsonResponse);
 
-            //
-
         } catch (IOException e) {
             Log.e(TAG, "MovieEntryAsyncTask - doInBackground - IO Error occurred while getting the jsonResponse from the url");
             e.printStackTrace();

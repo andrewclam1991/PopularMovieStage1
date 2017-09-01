@@ -7,7 +7,6 @@
   ~
   ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   -->
-
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.andrewclam.popularmovie">
 
@@ -32,7 +31,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".DetailActivity"
             android:label="@string/title_activity_detail"
@@ -43,8 +41,10 @@
                 android:value="com.andrewclam.popularmovie.MainActivity" />
         </activity>
 
-        <!-- Register the MovieListing ContentProvider, since this provider will only be used inside
-         of our application, "android:exported" is set to false-->
+        <!--
+         Register the MovieListing ContentProvider, since this provider will only be used inside
+         of our application, "android:exported" is set to false
+        -->
         <provider
             android:name=".data.MovieListingProvider"
             android:authorities="com.andrewclam.popularmovie"
