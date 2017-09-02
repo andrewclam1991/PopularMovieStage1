@@ -25,21 +25,42 @@ import android.util.Log;
  */
 
 public class MarkMovieFavoriteAsyncTask extends AsyncTask<Void, Void, Boolean> {
-    /*Debug Tag*/
+    /* Debug Tag */
     private static final String TAG = MarkMovieFavoriteAsyncTask.class.getSimpleName();
 
-    /*Listener for callback*/
+    /* Listener for callback */
     private MarkMovieFavoriteAsyncTask.OnMarkMovieFavoriteInteractionListener mListener;
 
-    /*Update Uri for the content resolver update method*/
+    /* Update Uri for the content resolver update method */
     private Uri mUpdateUri;
 
-    /*Content values*/
+    /* Content values */
     private ContentValues mContentValues;
 
-    /*ContentResolver*/
+    /* ContentResolver */
     private ContentResolver mContentResolver;
 
+    /**
+     * Public no arg constructor
+     */
+    public MarkMovieFavoriteAsyncTask() {
+
+    }
+
+    /**
+     * Full arg constructor, taking all the required parameters
+     *
+     * @param contentResolver the application context's contentResolver
+     * @param updateUri       the uri to the data to be updated
+     * @param contentValues   the contentValues that contain the column value for the update
+     */
+    public MarkMovieFavoriteAsyncTask(ContentResolver contentResolver, Uri updateUri, ContentValues contentValues) {
+        this.mContentResolver = contentResolver;
+        this.mUpdateUri = updateUri;
+        this.mContentValues = contentValues;
+    }
+
+    /* Public Setter methods */
     public MarkMovieFavoriteAsyncTask setListener(MarkMovieFavoriteAsyncTask.OnMarkMovieFavoriteInteractionListener mListener) {
         this.mListener = mListener;
         return this;
@@ -107,7 +128,7 @@ public class MarkMovieFavoriteAsyncTask extends AsyncTask<Void, Void, Boolean> {
 
     /**
      * Interface for callback to the listener at stages where UI change is required
-     * in preExecute and postExecute.
+     * postExecute to notify caller whether the contentResolver.update() was successful.
      */
     public interface OnMarkMovieFavoriteInteractionListener {
         void onPostExecute(Boolean updateSuccess);

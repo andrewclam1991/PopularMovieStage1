@@ -36,6 +36,7 @@ import org.parceler.Parcels;
 import java.net.URL;
 
 import static com.andrewclam.popularmovie.MainActivity.EXTRA_MOVIE_ENTRY_OBJECT;
+import static com.andrewclam.popularmovie.MainActivity.FAVORITE_CHANGED_RESULT;
 import static com.andrewclam.popularmovie.data.PopularMovieDbContract.PopularMovieEntry.COLUMN_FAVORITE;
 import static com.andrewclam.popularmovie.data.PopularMovieDbContract.buildMovieUriWithId;
 
@@ -117,6 +118,10 @@ public class DetailActivity extends AppCompatActivity {
                                         // call getCurrentFavoriteStatus to update the current mFavStatus when
                                         // the database update operation is complete
                                         mFavStatus = getCurrentFavoriteStatus(uri);
+
+                                        // Set Result (when user exits this activity, to notify the calling activity
+                                        // of user has changed favorite result)
+                                        setResult(FAVORITE_CHANGED_RESULT);
                                     }
                                 }).execute();
                     }
@@ -168,6 +173,7 @@ public class DetailActivity extends AppCompatActivity {
             throw new RuntimeException("Error occurred");
         }
     }
+
     /**
      * This is a method to populate the entry UI fields with data
      *
@@ -205,4 +211,9 @@ public class DetailActivity extends AppCompatActivity {
         // Set the movie overview at the field
         overViewTv.setText(entry.getOverview());
     }
+
+    // TODO start this activity for result, return a result if the user changed the favorite
+    // status
+
+
 }

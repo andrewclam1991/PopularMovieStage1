@@ -115,9 +115,10 @@ public class PopularMovieDbSync {
          * Local Database Sync
          *********************/
         // For each downloaded entry, see if an entry with the same movie id exists already
-        // on the database.
+        // on the database. a test to use Thread instead of AsyncTask since a result callback is not
+        // necessary.
 
-        Thread syncDbThread = new Thread(new Runnable() {
+        Thread syncDbRunnable = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -154,7 +155,7 @@ public class PopularMovieDbSync {
         });
 
         // Start the syncDbThread on a separate thread
-        syncDbThread.start();
+        syncDbRunnable.start();
 
     }
 
@@ -164,7 +165,7 @@ public class PopularMovieDbSync {
         * call contentResolver->contentProvider
         * to bulkInsert the entries into client's database.
         */
-        Thread initDbThread = new Thread(new Runnable() {
+        Thread initDbRunnable = new Thread(new Runnable() {
 
             @Override
             public void run() {
@@ -199,7 +200,7 @@ public class PopularMovieDbSync {
         });
 
         // Start the initDbThread on a separate thread
-        initDbThread.start();
+        initDbRunnable.start();
     }
 
     /**

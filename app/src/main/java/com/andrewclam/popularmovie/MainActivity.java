@@ -56,26 +56,28 @@ public class MainActivity extends AppCompatActivity implements
 
     /*Constants */
     public static final String EXTRA_MOVIE_ENTRY_OBJECT = "extra_movie_entry_obj";
+    /**
+     * Start Activity For Result codes
+     * Use this for the MainActivity to restartLoader and refresh the dataset
+     */
+    public static final int FAVORITE_CHANGE_REQUEST = 200;
+    public static final int FAVORITE_CHANGED_RESULT = 201;
     /*Log Tag*/
     private static final String TAG = MainActivity.class.getSimpleName();
-    /*Constant*/
-    private static final String LIST_TYPE_SELECTOR = "instance_sort_val";
-    private static final String USER_SHOW_FAVORITES = "user_show_favorite_movies";
-
+    /*Constant - Keys*/
+    private static final String LIST_TYPE_SELECTOR_KEY = "instance_sort_val";
+    private static final String USER_SHOW_FAVORITES_KEY = "user_show_favorite_movies";
     /*
     * This ID will be used to identify the Loader responsible for loading our offline database. In
     * some cases, one Activity can deal with many Loaders. However, in our case, there is only one.
     * We will still use this ID to initialize the loader and create the loader for best practice.
     */
     private static final int ID_MOVIE_LISTING_LOADER = 52;
-
     /*Instance Var*/
     private ProgressBar mProgressBar;
     private LinearLayout mErrorMsgLayout;
     private RecyclerView mRecyclerView;
-    private int mPosition = RecyclerView.NO_POSITION;
     private MovieListingsAdapter mAdapter;
-
     private String mListType;
     private Context mContext;
 
@@ -109,9 +111,9 @@ public class MainActivity extends AppCompatActivity implements
 
         // See if savedInstanceState exists and where we retained user's query selection
         if (savedInstanceState != null) {
-            mListType = savedInstanceState.getString(LIST_TYPE_SELECTOR);
+            mListType = savedInstanceState.getString(LIST_TYPE_SELECTOR_KEY);
         } else {
-            // Default to popular
+            // Default to popular and zero at position
             mListType = TMDB_PATH_POPULAR;
         }
 
@@ -149,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements
                 return true;
             case R.id.action_show_favorites:
                 // Set the sort by value to user's favorites
-                mListType = USER_SHOW_FAVORITES;
+                mListType = USER_SHOW_FAVORITES_KEY;
                 loadMovieData(mListType);
             default:
                 return super.onOptionsItemSelected(item);
@@ -160,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save the user's current sort value
-        savedInstanceState.putString(LIST_TYPE_SELECTOR, mListType);
+        savedInstanceState.putString(LIST_TYPE_SELECTOR_KEY, mListType);
 
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
@@ -180,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements
          ******************************/
         boolean isConnected = NetworkUtils.getNetworkState(mContext);
 
-        if (listType.equals(USER_SHOW_FAVORITES) || !isConnected) {
+        if (listType.equals(USER_SHOW_FAVORITES_KEY) || !isConnected) {
             // NETWORK DISCONNECTED //
 
             // If not connected, possibly due to no network connectivity or down server
@@ -277,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements
                     case TMDB_PATH_TOP_RATED:
                         mSortOrderStr = PopularMovieDbContract.PopularMovieEntry.COLUMN_VOTE_AVERAGE + " DESC";
                         break;
-                    case USER_SHOW_FAVORITES:
+                    case USER_SHOW_FAVORITES_KEY:
                         selection = PopularMovieDbContract.PopularMovieEntry.COLUMN_FAVORITE + "=?";
                         selectionArgs = new String[]{"1"};
                         mSortOrderStr = null;
@@ -314,10 +316,6 @@ public class MainActivity extends AppCompatActivity implements
         // Bind the entries to the adapter for display
         mAdapter.setMovieEntryData(entries);
 
-        // Smooth scroll to the default position
-        if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
-        mRecyclerView.smoothScrollToPosition(mPosition);
-
         // only show the entryData if there are entries to show.
         if (entries.size() > 0) {
             showEntryData();
@@ -325,6 +323,7 @@ public class MainActivity extends AppCompatActivity implements
             showErrorMsg();
         }
     }
+    // Register a broadcast receiver to detect network change, and do database sync
 
     /**
      * Called when a previously created loader is being reset, and thus making its data unavailable.
@@ -351,7 +350,26 @@ public class MainActivity extends AppCompatActivity implements
         // Starts the DetailActivity with the entry item to populate the movie entry info
         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
         intent.putExtra(EXTRA_MOVIE_ENTRY_OBJECT, Parcels.wrap(entry));
-        startActivity(intent);
+        startActivityForResult(intent, FAVORITE_CHANGE_REQUEST);
     }
-    // Register a broadcast receiver to detect network change, and do database sync
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case FAVORITE_CHANGE_REQUEST:
+                switch (resultCode) {
+                    case FAVORITE_CHANGED_RESULT:
+                        if (mListType.equals(USER_SHOW_FAVORITES_KEY)) {
+                            // Restart the loader to load new database entries to update the main view if the user
+                            // is in "MY FAVORITES"
+                            getSupportLoaderManager().restartLoader(ID_MOVIE_LISTING_LOADER, null, this);
+                        }
+                        break;
+                }
+                break;
+            default:
+                // call super's implementation in default
+                super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
 }
