@@ -373,9 +373,9 @@ public class PopularMovieProvider extends ContentProvider {
                 // Set selectionArgs to Use the idStr as the only argument
                 selectionArgs = new String[]{idStr};
 
-                /**********************************
-                 *Sanitize Parameter ContentValues*
-                 **********************************/
+                /************************************
+                 * Sanitize Parameter ContentValues *
+                 ************************************/
                 // (!) MOVIE ID SHOULDN'T CHANGE
                 // Check if contentValues contains an update in movie id, it shouldn't contain it
                 // but if it does, check to make sure it matches the Uri idStr. if not throw an
@@ -398,10 +398,9 @@ public class PopularMovieProvider extends ContentProvider {
                     // slide
                 }
 
-                /**********************
-                 * Sanitation Complete*
-                 **********************/
-
+                /***********************
+                 * Sanitation Complete *
+                 ***********************/
                 // Get the writable database using the mDbHelper, and call the update
                 final SQLiteDatabase db = mDbHelper.getWritableDatabase();
                 rowsUpdated = db.update(TABLE_NAME, contentValues, selection, selectionArgs);

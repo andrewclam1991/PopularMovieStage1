@@ -31,21 +31,21 @@ import java.util.ArrayList;
  * (!) Lint suggests to make this class static to avoid memory leak
  */
 
-public class PopularMovieAsyncTask extends AsyncTask<String, Void, ArrayList<MovieListing>> {
+public class FetchPopularMovieAsyncTask extends AsyncTask<String, Void, ArrayList<MovieListing>> {
     /*Debug Tag*/
-    private static final String TAG = PopularMovieAsyncTask.class.getSimpleName();
+    private static final String TAG = FetchPopularMovieAsyncTask.class.getSimpleName();
 
     /*Listener for callback*/
-    private PopularMovieAsyncTask.onMovieEntryTaskInteractionListener mListener;
+    private FetchPopularMovieAsyncTask.onMovieEntryTaskInteractionListener mListener;
 
     private String mApiKey;
 
-    public PopularMovieAsyncTask setListener(PopularMovieAsyncTask.onMovieEntryTaskInteractionListener mListener) {
+    public FetchPopularMovieAsyncTask setListener(FetchPopularMovieAsyncTask.onMovieEntryTaskInteractionListener mListener) {
         this.mListener = mListener;
         return this;
     }
 
-    public PopularMovieAsyncTask setApiKey(String mApiKey) {
+    public FetchPopularMovieAsyncTask setApiKey(String mApiKey) {
         this.mApiKey = mApiKey;
         return this;
     }

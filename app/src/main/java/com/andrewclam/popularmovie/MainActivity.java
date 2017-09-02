@@ -30,7 +30,7 @@ import android.widget.ProgressBar;
 
 import com.andrewclam.popularmovie.data.PopularMovieDbContract;
 import com.andrewclam.popularmovie.models.MovieListing;
-import com.andrewclam.popularmovie.sync.PopularMovieAsyncTask;
+import com.andrewclam.popularmovie.sync.FetchPopularMovieAsyncTask;
 import com.andrewclam.popularmovie.sync.PopularMovieDbSync;
 import com.andrewclam.popularmovie.utilities.LayoutManagerUtils;
 import com.andrewclam.popularmovie.utilities.NetworkUtils;
@@ -68,8 +68,6 @@ public class MainActivity extends AppCompatActivity implements
     * We will still use this ID to initialize the loader and create the loader for best practice.
     */
     private static final int ID_MOVIE_LISTING_LOADER = 52;
-
-
 
     /*Instance Var*/
     private ProgressBar mProgressBar;
@@ -182,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements
          ******************************/
         boolean isConnected = NetworkUtils.getNetworkState(mContext);
 
-        if (!isConnected) {
+        if (listType.equals(USER_SHOW_FAVORITES) || !isConnected) {
             // NETWORK DISCONNECTED //
 
             // If not connected, possibly due to no network connectivity or down server
@@ -207,9 +205,9 @@ public class MainActivity extends AppCompatActivity implements
 
         // Create a new MovieEntryAsyncTask to fetch movie entry data from the server
         // on a background thread
-        new PopularMovieAsyncTask()
+        new FetchPopularMovieAsyncTask()
                 .setApiKey(mApiKey)
-                .setListener(new PopularMovieAsyncTask.onMovieEntryTaskInteractionListener() {
+                .setListener(new FetchPopularMovieAsyncTask.onMovieEntryTaskInteractionListener() {
                     @Override
                     public void onPreExecute() {
                         // Show the loading indicator

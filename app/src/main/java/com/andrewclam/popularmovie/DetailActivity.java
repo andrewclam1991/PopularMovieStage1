@@ -10,11 +10,11 @@
 
 package com.andrewclam.popularmovie;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import com.andrewclam.popularmovie.data.PopularMovieDbContract;
 import com.andrewclam.popularmovie.models.MovieListing;
+import com.andrewclam.popularmovie.sync.MarkMovieFavoriteAsyncTask;
 import com.andrewclam.popularmovie.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
@@ -93,31 +94,36 @@ public class DetailActivity extends AppCompatActivity {
                 // Get the current favorite status
                 mFavStatus = getCurrentFavoriteStatus(uri);
 
-                // Set fav button onClick to favorite this movie
-                favBtn.setOnClickListener(new View.OnClickListener() {
+                // Create a onClickListener for the favorite button
+                View.OnClickListener onFavClickListener = new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        // On Click, toggle between the mMarkedFavorite and store that value
+                        // On Click, toggle the mMarkedFavorite and update with that value
                         final ContentValues contentValues = new ContentValues();
                         contentValues.put(PopularMovieDbContract.PopularMovieEntry.COLUMN_FAVORITE, !mFavStatus);
 
-                        new AsyncTask() {
-                            @Override
-                            protected Object doInBackground(Object[] objects) {
-                                getContentResolver().update(uri, contentValues, null, null);
-                                return null;
-                            }
+                        // Get the reference to the contentResolver
+                        final ContentResolver contentResolver = mContext.getContentResolver();
 
-                            @Override
-                            protected void onPostExecute(Object o) {
-                                // call getCurrentFavoriteStatus to update the current mFavStatus when
-                                // the database update operation is complete
-                                mFavStatus = getCurrentFavoriteStatus(uri);
-                                super.onPostExecute(o);
-                            }
-                        }.execute();
+                        // Use the MarkMovieFavoriteAsyncTask to update the movie's favorite status
+                        // asynchronously
+                        new MarkMovieFavoriteAsyncTask()
+                                .setContentResolver(contentResolver)
+                                .setUpdateUri(uri)
+                                .setContentValues(contentValues)
+                                .setListener(new MarkMovieFavoriteAsyncTask.OnMarkMovieFavoriteInteractionListener() {
+                                    @Override
+                                    public void onPostExecute(Boolean updateSuccess) {
+                                        // call getCurrentFavoriteStatus to update the current mFavStatus when
+                                        // the database update operation is complete
+                                        mFavStatus = getCurrentFavoriteStatus(uri);
+                                    }
+                                }).execute();
                     }
-                });
+                };
+
+                // Set fav button onClick to favorite this movie
+                favBtn.setOnClickListener(onFavClickListener);
             }
 
         } else {
@@ -142,14 +148,22 @@ public class DetailActivity extends AppCompatActivity {
         if (cursor != null && cursor.moveToNext()) {
             int favoriteColIndex = cursor.getColumnIndex(COLUMN_FAVORITE);
             int markedFavorite = cursor.getInt(favoriteColIndex);
+
             // Close cursor to prevent mem leak;
             cursor.close();
 
-            // Set btn base on the marked
-            favBtn.setText(markedFavorite == 1 ? getString(R.string.add_to_favorite_list) : getString(R.string.added_to_favorite_list));
-
-            // Return the truth whether markedFavorite is equal to 1 (true)
-            return (markedFavorite == 1);
+            switch (markedFavorite) {
+                case 0:
+                    // Current is false, text should set to (add to favorite)
+                    favBtn.setText(getString(R.string.add_to_favorite_list));
+                    return false;
+                case 1:
+                    // Current is true, text should set to (remove from to favorite)
+                    favBtn.setText(getString(R.string.remove_from_favorite_list));
+                    return true;
+                default:
+                    throw new RuntimeException("Error occurred, value out of range");
+            }
         } else {
             throw new RuntimeException("Error occurred");
         }
