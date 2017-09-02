@@ -21,9 +21,10 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import static com.andrewclam.popularmovie.data.PopularMovieDbContract.CONTENT_AUTHORITY;
-import static com.andrewclam.popularmovie.data.PopularMovieDbContract.MovieListingEntry.COLUMN_MOVIE_ID;
-import static com.andrewclam.popularmovie.data.PopularMovieDbContract.MovieListingEntry.SELECTION_ARG_MOVIE_FAVORITE_TRUE;
-import static com.andrewclam.popularmovie.data.PopularMovieDbContract.MovieListingEntry.TABLE_NAME;
+import static com.andrewclam.popularmovie.data.PopularMovieDbContract.PopularMovieEntry.COLUMN_MOVIE_ID;
+import static com.andrewclam.popularmovie.data.PopularMovieDbContract.PopularMovieEntry.CONTENT_URI;
+import static com.andrewclam.popularmovie.data.PopularMovieDbContract.PopularMovieEntry.SELECTION_ARG_MOVIE_FAVORITE_TRUE;
+import static com.andrewclam.popularmovie.data.PopularMovieDbContract.PopularMovieEntry.TABLE_NAME;
 
 /**
  * Created by Andrew Chi Heng Lam on 8/31/2017.
@@ -33,6 +34,7 @@ import static com.andrewclam.popularmovie.data.PopularMovieDbContract.MovieListi
  */
 
 public class PopularMovieProvider extends ContentProvider {
+
     /*
     * These constant will be used to match URIs with the data they are looking for. We will take
     * advantage of the UriMatcher class to make that matching MUCH easier than doing something
@@ -41,6 +43,8 @@ public class PopularMovieProvider extends ContentProvider {
     public static final int CODE_MOVIE = 100;
     public static final int CODE_MOVIE_WITH_ID = 101;
     public static final int CODE_MOVIE_FAVORITE = 102;
+    /*Log Tag*/
+    private static final String TAG = PopularMovieProvider.class.getSimpleName();
     /*
     * The URI Matcher used by this content provider. The leading "s" in this variable name
     * signifies that this UriMatcher is a static member variable of WeatherProvider and is a
@@ -119,6 +123,21 @@ public class PopularMovieProvider extends ContentProvider {
     }
 
 
+    /**
+     * Handles query requests from clients. We will use this method in PopularMovie to query for all
+     * of our movie data as well as to query for the movie listing with a particular id.
+     *
+     * @param uri           The URI to query
+     * @param projection    The list of columns to put into the cursor. If null, all columns are
+     *                      included.
+     * @param selection     A selection criteria to apply when filtering rows. If null, then all
+     *                      rows are included.
+     * @param selectionArgs You may include ?s in selection, which will be replaced by
+     *                      the values from selectionArgs, in order that they appear in the
+     *                      selection.
+     * @param sortOrder     How the rows in the cursor should be sorted.
+     * @return A Cursor containing the results of the query. In our implementation,
+     */
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
@@ -137,7 +156,7 @@ public class PopularMovieProvider extends ContentProvider {
                 final SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
                 // Set selection to select favorite, selectionArg handles the "=?" wildcard
-                selection = PopularMovieDbContract.MovieListingEntry.COLUMN_FAVORITE + "=?";
+                selection = PopularMovieDbContract.PopularMovieEntry.COLUMN_FAVORITE + "=?";
 
                 // Set selectionArgs to select movie favorite that is true
                 selectionArgs = new String[]{SELECTION_ARG_MOVIE_FAVORITE_TRUE};
@@ -145,7 +164,7 @@ public class PopularMovieProvider extends ContentProvider {
                 // Return a cursor of movie listings in the database that matches the
                 // parameter criteria
                 cursor = db.query(
-                        PopularMovieDbContract.MovieListingEntry.TABLE_NAME,
+                        PopularMovieDbContract.PopularMovieEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -163,7 +182,7 @@ public class PopularMovieProvider extends ContentProvider {
                 String idStr = uri.getLastPathSegment();
 
                 // Set selection to select movie id, selectionArg handles the "=?" wildcard
-                selection = PopularMovieDbContract.MovieListingEntry.COLUMN_MOVIE_ID + "=?";
+                selection = PopularMovieDbContract.PopularMovieEntry.COLUMN_MOVIE_ID + "=?";
 
                 // Set selectionArgs to Use the idStr as the only argument
                 selectionArgs = new String[]{idStr};
@@ -176,7 +195,7 @@ public class PopularMovieProvider extends ContentProvider {
                 // Return a cursor of movie listings in the database that matches the
                 // parameter criteria
                 cursor = db.query(
-                        PopularMovieDbContract.MovieListingEntry.TABLE_NAME,
+                        PopularMovieDbContract.PopularMovieEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -257,7 +276,7 @@ public class PopularMovieProvider extends ContentProvider {
                     if (getContext() != null) getContext().getContentResolver()
                             .notifyChange(uri, null);
 
-                    Log.d("test", "Successfully bulk inserted, insertedRows " + rowsInserted);
+                    Log.d(TAG, "Successfully bulk inserted, insertedRows " + rowsInserted);
                 }
 
                 return rowsInserted;
@@ -267,6 +286,13 @@ public class PopularMovieProvider extends ContentProvider {
         }
     }
 
+    /**
+     * Insert() implementation to handle single-row data insert into the client database
+     *
+     * @param uri           the Uri, should be matching the CODE_MOVIE
+     * @param contentValues contentValues to be inserted into the data
+     * @return the new data row's Uri
+     */
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
@@ -276,11 +302,31 @@ public class PopularMovieProvider extends ContentProvider {
             return null;
         }
 
+        // Use uri matcher to make sure the call is pointing to the movie
+        int match = sUriMatcher.match(uri);
+        switch (match) {
+            case CODE_MOVIE:
+                // Get a writable database with the dbHelper
+                final SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
+                // do database insertion
+                Long rowId = db.insert(TABLE_NAME, null, contentValues);
 
+                // If the rowId insert is not -1, insert is successful, notify the contentResolver
+                if (rowId != -1) {
+                    if (getContext() != null) getContext().getContentResolver()
+                            .notifyChange(uri, null);
 
-        throw new UnsupportedOperationException("#SadFace, MovieListing Provider doesn't support " +
-                "single insert(), use bulkInsert() instead");
+                    Log.d(TAG, "Successfully single insertion, inserted row's id " + rowId);
+                }
+
+                // Form the uri using the rowId and return the Uri
+                String rowIdStr = String.valueOf(rowId);
+                return CONTENT_URI.buildUpon().appendPath(rowIdStr).build();
+            default:
+                throw new UnsupportedOperationException("Unknown or Unsupported Uri for Insert()");
+        }
+
     }
 
     @Override
@@ -291,6 +337,16 @@ public class PopularMovieProvider extends ContentProvider {
                 "delete()");
     }
 
+    /**
+     * Update() implementation to allow database to sync and update each movie, and allow user to
+     * favorite and un-favorite a movie
+     *
+     * @param uri           the uri that points to some row of data base (will be determined by the uri matcher)
+     * @param contentValues the content values that contains columns of data to be updated
+     * @param selection     selection for the column to be updated
+     * @param selectionArgs the argument of column
+     * @return the number of rows updated
+     */
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String selection,
                       @Nullable String[] selectionArgs) {
@@ -312,7 +368,7 @@ public class PopularMovieProvider extends ContentProvider {
                 String idStr = uri.getLastPathSegment();
 
                 // Set selection to select movie id, selectionArg handles the "=?" wildcard
-                selection = PopularMovieDbContract.MovieListingEntry.COLUMN_MOVIE_ID + "=?";
+                selection = PopularMovieDbContract.PopularMovieEntry.COLUMN_MOVIE_ID + "=?";
 
                 // Set selectionArgs to Use the idStr as the only argument
                 selectionArgs = new String[]{idStr};

@@ -184,8 +184,7 @@ public class NetworkUtils {
      * @return boolean flag to indiciate whether the device has internet connection
      */
     public static boolean getNetworkState(Context context) {
-        ConnectivityManager cm =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         if (cm != null) {
             NetworkInfo activeNetwork = cm.getActiveNetworkInfo();

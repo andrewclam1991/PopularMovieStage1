@@ -51,9 +51,6 @@
             android:authorities="com.andrewclam.popularmovie"
             android:exported="false" />
 
-        <service
-            android:name=".sync.PopularMovieIntentService"
-            android:exported="false"></service>
     </application>
 
 </manifest>

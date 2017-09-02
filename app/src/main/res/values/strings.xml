@@ -21,4 +21,5 @@
     <string name="content_description_error_msg_icon">Unable to load movies icon</string>
     <string name="add_to_favorite_list">Add To Favorite</string>
     <string name="added_to_favorite_list">Added to Favorite List</string>
+    <string name="action_show_favorites">See Favorites</string>
 </resources>

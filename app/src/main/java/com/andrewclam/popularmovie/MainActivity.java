@@ -12,8 +12,12 @@ package com.andrewclam.popularmovie;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,6 +28,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
+import com.andrewclam.popularmovie.data.PopularMovieDbContract;
 import com.andrewclam.popularmovie.models.MovieListing;
 import com.andrewclam.popularmovie.sync.PopularMovieAsyncTask;
 import com.andrewclam.popularmovie.sync.PopularMovieDbSync;
@@ -34,6 +39,7 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
+import static com.andrewclam.popularmovie.sync.PopularMovieDbSync.parseEntriesFromCursor;
 import static com.andrewclam.popularmovie.utilities.NetworkUtils.TMDB_PATH_POPULAR;
 import static com.andrewclam.popularmovie.utilities.NetworkUtils.TMDB_PATH_TOP_RATED;
 
@@ -45,21 +51,34 @@ import static com.andrewclam.popularmovie.utilities.NetworkUtils.TMDB_PATH_TOP_R
  * different list of movie as a response.
  */
 
-public class MainActivity extends AppCompatActivity implements MovieListingsAdapter.OnMovieEntryClickListener {
+public class MainActivity extends AppCompatActivity implements
+        LoaderManager.LoaderCallbacks<Cursor>, MovieListingsAdapter.OnMovieEntryClickListener {
 
     /*Constants */
     public static final String EXTRA_MOVIE_ENTRY_OBJECT = "extra_movie_entry_obj";
     /*Log Tag*/
     private static final String TAG = MainActivity.class.getSimpleName();
     /*Constant*/
-    private static final String SORT_VAL = "instance_sort_val";
+    private static final String LIST_TYPE_SELECTOR = "instance_sort_val";
+    private static final String USER_SHOW_FAVORITES = "user_show_favorite_movies";
+
+    /*
+    * This ID will be used to identify the Loader responsible for loading our offline database. In
+    * some cases, one Activity can deal with many Loaders. However, in our case, there is only one.
+    * We will still use this ID to initialize the loader and create the loader for best practice.
+    */
+    private static final int ID_MOVIE_LISTING_LOADER = 52;
+
+
 
     /*Instance Var*/
     private ProgressBar mProgressBar;
     private LinearLayout mErrorMsgLayout;
     private RecyclerView mRecyclerView;
+    private int mPosition = RecyclerView.NO_POSITION;
     private MovieListingsAdapter mAdapter;
-    private String mSortByValue;
+
+    private String mListType;
     private Context mContext;
 
     @Override
@@ -92,14 +111,17 @@ public class MainActivity extends AppCompatActivity implements MovieListingsAdap
 
         // See if savedInstanceState exists and where we retained user's query selection
         if (savedInstanceState != null) {
-            mSortByValue = savedInstanceState.getString(SORT_VAL);
+            mListType = savedInstanceState.getString(LIST_TYPE_SELECTOR);
         } else {
             // Default to popular
-            mSortByValue = TMDB_PATH_POPULAR;
+            mListType = TMDB_PATH_POPULAR;
         }
 
-        // Call loadMovieData to populate the adapter with data from the TMDB server
-        loadMovieData(mSortByValue);
+        // Show the loading indicator
+        mProgressBar.setVisibility(View.VISIBLE);
+
+        // Call loadMovieData to load the latest data from the TMDB server
+        loadMovieData(mListType);
     }
 
     @Override
@@ -119,14 +141,18 @@ public class MainActivity extends AppCompatActivity implements MovieListingsAdap
         switch (id) {
             case R.id.action_sort_by_popularity:
                 // Set the instance var sort by value to POPULAR
-                mSortByValue = TMDB_PATH_POPULAR;
-                loadMovieData(mSortByValue);
+                mListType = TMDB_PATH_POPULAR;
+                loadMovieData(mListType);
                 return true;
             case R.id.action_sort_by_rating:
                 // Set the sort by value to TOP_RATED
-                mSortByValue = TMDB_PATH_TOP_RATED;
-                loadMovieData(mSortByValue);
+                mListType = TMDB_PATH_TOP_RATED;
+                loadMovieData(mListType);
                 return true;
+            case R.id.action_show_favorites:
+                // Set the sort by value to user's favorites
+                mListType = USER_SHOW_FAVORITES;
+                loadMovieData(mListType);
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -136,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements MovieListingsAdap
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save the user's current sort value
-        savedInstanceState.putString(SORT_VAL, mSortByValue);
+        savedInstanceState.putString(LIST_TYPE_SELECTOR, mListType);
 
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
@@ -146,11 +172,36 @@ public class MainActivity extends AppCompatActivity implements MovieListingsAdap
      * This method loads the movie entry data from a separate thread,
      * uses the MovieEntryAsyncTask
      *
-     * @param sortByValue the user selected value for sorting the result entry
-     *                    according to their preference.
+     * @param listType the user selected value for sorting the result entry
+     *                    according to their preference of the type of list.
      */
 
-    private void loadMovieData(String sortByValue) {
+    private void loadMovieData(String listType) {
+        /******************************
+         * Check Device Network State *
+         ******************************/
+        boolean isConnected = NetworkUtils.getNetworkState(mContext);
+
+        if (!isConnected) {
+            // NETWORK DISCONNECTED //
+
+            // If not connected, possibly due to no network connectivity or down server
+            // Try to use Loader to get the Cursor, to accessing the cached data from the database
+            // and populate the entries.
+
+            /*
+             * Ensures a loader is initialized and active. If the loader doesn't already exist, one is
+             * created and (if the activity/fragment is currently started) starts the loader. Otherwise
+             * the last created loader is re-used.
+             */
+            getSupportLoaderManager().restartLoader(ID_MOVIE_LISTING_LOADER, null, this);
+
+            // Return early in this method
+            return;
+        }
+
+        // NETWORK CONNECTED //
+
         // Set API Key from the Resource file
         String mApiKey = getString(R.string.tmdb_api_key);
 
@@ -170,42 +221,21 @@ public class MainActivity extends AppCompatActivity implements MovieListingsAdap
                         // Task complete, hide the loading indicator
                         mProgressBar.setVisibility(View.GONE);
 
-                        // Check Internet state
-                        boolean isConnected = NetworkUtils.getNetworkState(mContext);
-                        boolean isFromCache = false;
-                        if (!isConnected) {
-                            // If not connected, possibly due to no network connectivity or down server
-                            // we would expect an empty entries.
-                            // Try to get the cache from the database and populate the entries
-                            entries = PopularMovieDbSync.getEntriesFromDatabase(mContext);
-                            if (entries != null) {
-                                // If the entries from the database is not null, set the flag
-                                // is from Cache to true;
-                                isFromCache = true;
-                            }
-                        }
-
                         // Check the entries
-                        // AsyncTask returns a set of movie entries,
                         if (entries == null || entries.size() == 0) {
-
-                            // If entries is still empty or null,
                             // show error msg
                             showErrorMsg();
                             return;
-
                         }
 
-                        // Entries contain data, sync and cache data if the data is not from the cache
-                        if (!isFromCache) {
-                            PopularMovieDbSync.syncDatabase(mContext, entries);
-                        }
+                        // Entries contain data, sync and cache data with the fresh data
+                        PopularMovieDbSync.syncDatabase(mContext, entries);
 
                         // Bind the entries to the adapter for display
                         mAdapter.setMovieEntryData(entries);
                         showEntryData();
                     }
-                }).execute(sortByValue);
+                }).execute(listType);
     }
 
     /**
@@ -225,6 +255,95 @@ public class MainActivity extends AppCompatActivity implements MovieListingsAdap
     }
 
     /**
+     * Called by the {@link android.support.v4.app.LoaderManagerImpl} when a new Loader needs to be
+     * created. This Activity only uses one loader, so we don't necessarily NEED to check the
+     * loaderId, but this is certainly best practice.
+     *
+     * @param loaderId The loader ID for which we need to create a loader
+     * @param args     Any arguments supplied by the caller
+     * @return A new Loader instance that is ready to start loading.
+     */
+    @Override
+    public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
+        switch (loaderId) {
+            case ID_MOVIE_LISTING_LOADER:
+                // (!) Convert mListType for TMDB to the client database
+                String selection = null;
+                String selectionArgs[] = null;
+                String mSortOrderStr = null;
+
+                switch (mListType) {
+                    case TMDB_PATH_POPULAR:
+                        mSortOrderStr = PopularMovieDbContract.PopularMovieEntry.COLUMN_POPULARITY + " DESC";
+                        break;
+                    case TMDB_PATH_TOP_RATED:
+                        mSortOrderStr = PopularMovieDbContract.PopularMovieEntry.COLUMN_VOTE_AVERAGE + " DESC";
+                        break;
+                    case USER_SHOW_FAVORITES:
+                        selection = PopularMovieDbContract.PopularMovieEntry.COLUMN_FAVORITE + "=?";
+                        selectionArgs = new String[]{"1"};
+                        mSortOrderStr = null;
+                        break;
+                    default:
+                        // no conversion needed
+                }
+
+                return new CursorLoader(this,
+                        PopularMovieDbContract.PopularMovieEntry.CONTENT_URI,
+                        null,
+                        selection,
+                        selectionArgs,
+                        mSortOrderStr);
+            default:
+                throw new RuntimeException("Loader Not Implemented: " + loaderId);
+        }
+    }
+
+    /**
+     * Called when a Loader has finished loading its data.
+     *
+     * @param loader The Loader that has finished.
+     * @param data   The data generated by the Loader.
+     */
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        // Task complete, hide the loading indicator
+        mProgressBar.setVisibility(View.GONE);
+
+        // Parse the cursor data into an ArrayList of movie listing
+        ArrayList<MovieListing> entries = parseEntriesFromCursor(data);
+
+        // Bind the entries to the adapter for display
+        mAdapter.setMovieEntryData(entries);
+
+        // Smooth scroll to the default position
+        if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+        mRecyclerView.smoothScrollToPosition(mPosition);
+
+        // only show the entryData if there are entries to show.
+        if (entries.size() > 0) {
+            showEntryData();
+        } else {
+            showErrorMsg();
+        }
+    }
+
+    /**
+     * Called when a previously created loader is being reset, and thus making its data unavailable.
+     * The application should at this point remove any references it has to the Loader's data.
+     *
+     * @param loader The Loader that is being reset.
+     */
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        /*
+         * Since this Loader's data is now invalid, we need to clear the Adapter that is
+         * displaying the data.
+         */
+        mAdapter.setMovieEntryData(null);
+    }
+
+    /**
      * Callback when the entry item is clicked, callback from the MovieEntryAdapter
      *
      * @param entry the particular entry that is clicked by the user
@@ -236,6 +355,5 @@ public class MainActivity extends AppCompatActivity implements MovieListingsAdap
         intent.putExtra(EXTRA_MOVIE_ENTRY_OBJECT, Parcels.wrap(entry));
         startActivity(intent);
     }
-
     // Register a broadcast receiver to detect network change, and do database sync
 }

@@ -35,7 +35,7 @@ import org.parceler.Parcels;
 import java.net.URL;
 
 import static com.andrewclam.popularmovie.MainActivity.EXTRA_MOVIE_ENTRY_OBJECT;
-import static com.andrewclam.popularmovie.data.PopularMovieDbContract.MovieListingEntry.COLUMN_FAVORITE;
+import static com.andrewclam.popularmovie.data.PopularMovieDbContract.PopularMovieEntry.COLUMN_FAVORITE;
 import static com.andrewclam.popularmovie.data.PopularMovieDbContract.buildMovieUriWithId;
 
 /**
@@ -99,7 +99,7 @@ public class DetailActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         // On Click, toggle between the mMarkedFavorite and store that value
                         final ContentValues contentValues = new ContentValues();
-                        contentValues.put(PopularMovieDbContract.MovieListingEntry.COLUMN_FAVORITE, !mFavStatus);
+                        contentValues.put(PopularMovieDbContract.PopularMovieEntry.COLUMN_FAVORITE, !mFavStatus);
 
                         new AsyncTask() {
                             @Override
@@ -142,19 +142,14 @@ public class DetailActivity extends AppCompatActivity {
         if (cursor != null && cursor.moveToNext()) {
             int favoriteColIndex = cursor.getColumnIndex(COLUMN_FAVORITE);
             int markedFavorite = cursor.getInt(favoriteColIndex);
-
+            // Close cursor to prevent mem leak;
             cursor.close();
 
-            switch (markedFavorite) {
-                case 0:
-                    favBtn.setText(getString(R.string.add_to_favorite_list));
-                    return false;
-                case 1:
-                    favBtn.setText(getString(R.string.added_to_favorite_list));
-                    return true;
-                default:
-                    throw new IllegalArgumentException("Favorite column value out of range");
-            }
+            // Set btn base on the marked
+            favBtn.setText(markedFavorite == 1 ? getString(R.string.add_to_favorite_list) : getString(R.string.added_to_favorite_list));
+
+            // Return the truth whether markedFavorite is equal to 1 (true)
+            return (markedFavorite == 1);
         } else {
             throw new RuntimeException("Error occurred");
         }
