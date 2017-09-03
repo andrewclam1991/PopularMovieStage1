@@ -14,22 +14,25 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 /**
  * Created by Andrew Chi Heng Lam on 8/31/2017.
  * <p>
- * MovieEntryAsyncTask
- * An implementation of the AsyncTask class to do network IO on a separate thread,
- * (!) Lint suggests to make this class static to avoid memory leak
+ * DbUpdateAsyncTask
+ * An implementation of the AsyncTask class to do database IO on a separate thread,
  */
 
-public class MarkMovieFavoriteAsyncTask extends AsyncTask<Void, Void, Boolean> {
+public class DbUpdateAsyncTask extends AsyncTask<Void, Void, Integer> {
     /* Debug Tag */
-    private static final String TAG = MarkMovieFavoriteAsyncTask.class.getSimpleName();
+    private static final String TAG = DbUpdateAsyncTask.class.getSimpleName();
 
     /* Listener for callback */
-    private MarkMovieFavoriteAsyncTask.OnMarkMovieFavoriteInteractionListener mListener;
+    private OnMovieUpdateActionListener mListener;
+
+    /* ContentResolver */
+    private ContentResolver mContentResolver;
 
     /* Update Uri for the content resolver update method */
     private Uri mUpdateUri;
@@ -37,70 +40,87 @@ public class MarkMovieFavoriteAsyncTask extends AsyncTask<Void, Void, Boolean> {
     /* Content values */
     private ContentValues mContentValues;
 
-    /* ContentResolver */
-    private ContentResolver mContentResolver;
+    /* Where Args for update, optional*/
+    private String[] mWhereArgs = null;
+
+    /* Where clause for update, optional*/
+    private String mWhereClause = null;
 
     /**
-     * Public no arg constructor
+     * No-args constructor
      */
-    public MarkMovieFavoriteAsyncTask() {
+    public DbUpdateAsyncTask() {
 
     }
 
     /**
-     * Full arg constructor, taking all the required parameters
+     * Full-require-args constructor, taking all the required parameters
      *
      * @param contentResolver the application context's contentResolver
-     * @param updateUri       the uri to the data to be updated
+     * @param updateUri       the uri to the data to be updated on client's database
      * @param contentValues   the contentValues that contain the column value for the update
      */
-    public MarkMovieFavoriteAsyncTask(ContentResolver contentResolver, Uri updateUri, ContentValues contentValues) {
+    public DbUpdateAsyncTask(@NonNull ContentResolver contentResolver, @NonNull Uri updateUri, @NonNull ContentValues contentValues) {
         this.mContentResolver = contentResolver;
         this.mUpdateUri = updateUri;
         this.mContentValues = contentValues;
     }
 
     /* Public Setter methods */
-    public MarkMovieFavoriteAsyncTask setListener(MarkMovieFavoriteAsyncTask.OnMarkMovieFavoriteInteractionListener mListener) {
-        this.mListener = mListener;
+    public DbUpdateAsyncTask setContentResolver(ContentResolver contentResolver) {
+        this.mContentResolver = contentResolver;
         return this;
     }
 
-    public MarkMovieFavoriteAsyncTask setUpdateUri(Uri updateUri) {
+    public DbUpdateAsyncTask setUpdateUri(Uri updateUri) {
         this.mUpdateUri = updateUri;
         return this;
     }
 
-    public MarkMovieFavoriteAsyncTask setContentValues(ContentValues contentValues) {
+    public DbUpdateAsyncTask setContentValues(ContentValues contentValues) {
         this.mContentValues = contentValues;
         return this;
     }
 
-    public MarkMovieFavoriteAsyncTask setContentResolver(ContentResolver contentResolver) {
-        this.mContentResolver = contentResolver;
+    public DbUpdateAsyncTask setWhereClause(String mWhereClause) {
+        this.mWhereClause = mWhereClause;
         return this;
     }
+
+    public DbUpdateAsyncTask setWhereArgs(String[] mWhereArgs) {
+        this.mWhereArgs = mWhereArgs;
+        return this;
+    }
+
+    public DbUpdateAsyncTask setListener(OnMovieUpdateActionListener mListener) {
+        this.mListener = mListener;
+        return this;
+    }
+
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
         // Check for required parameter before doInBackground
-        String msg;
+        String msg = "";
+        boolean hasError = false;
 
         if (mContentResolver == null) {
-            msg = "must set the mContentResolver for this task.";
-            Log.e(TAG, msg);
-            throw new IllegalArgumentException(msg);
+            hasError = true;
+            msg = msg.concat("Must set the mContentResolver for this task." + "\n");
         }
 
         if (mUpdateUri == null) {
-            msg = "must set the mUpdateUri for this task.";
-            Log.e(TAG, msg);
-            throw new IllegalArgumentException(msg);
+            hasError = true;
+            msg = msg.concat("Must set the mUpdateUri for this task." + "\n");
         }
 
         if (mContentValues == null) {
-            msg = "must set the mContentValues for this task.";
+            hasError = true;
+            msg = msg.concat("Must set the mContentValues for this task." + "\n");
+        }
+
+        if (hasError) {
             Log.e(TAG, msg);
             throw new IllegalArgumentException(msg);
         }
@@ -108,29 +128,26 @@ public class MarkMovieFavoriteAsyncTask extends AsyncTask<Void, Void, Boolean> {
 
 
     @Override
-    protected Boolean doInBackground(Void... voids) {
+    protected Integer doInBackground(Void... voids) {
         // Use the contentResolver to update the target uri with the parameter contentValues
-        int rowsUpdated = mContentResolver.update(mUpdateUri, mContentValues, null, null);
-
-        // Return a boolean indicating whether the update was successful.
-        return rowsUpdated > 0;
+        // Positive return indicates the update was successful.
+        return mContentResolver.update(mUpdateUri,
+                mContentValues,
+                mWhereClause,
+                mWhereArgs);
     }
 
     @Override
-    protected void onPostExecute(Boolean updateSuccess) {
-        super.onPostExecute(updateSuccess);
-        mListener.onPostExecute(updateSuccess);
-
-        /*Null the parameter for cleanup*/
-        mUpdateUri = null;
-        mContentValues = null;
+    protected void onPostExecute(Integer rowsUpdated) {
+        super.onPostExecute(rowsUpdated);
+        if (mListener != null) mListener.onUpdateComplete(rowsUpdated);
     }
 
     /**
      * Interface for callback to the listener at stages where UI change is required
      * postExecute to notify caller whether the contentResolver.update() was successful.
      */
-    public interface OnMarkMovieFavoriteInteractionListener {
-        void onPostExecute(Boolean updateSuccess);
+    public interface OnMovieUpdateActionListener {
+        void onUpdateComplete(Integer rowsUpdated);
     }
 }

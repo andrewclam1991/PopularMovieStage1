@@ -8,7 +8,7 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.andrewclam.popularmovie;
+package com.andrewclam.popularmovie.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -17,7 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.andrewclam.popularmovie.models.MovieListing;
+import com.andrewclam.popularmovie.R;
+import com.andrewclam.popularmovie.models.RelatedVideo;
 import com.andrewclam.popularmovie.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
@@ -31,16 +32,18 @@ import java.util.ArrayList;
  * with the data, also contains an inner class that hold the cache of views.
  */
 
-public class MovieListingsAdapter extends RecyclerView.Adapter<MovieListingsAdapter.MovieEntryAdapterViewHolder> {
+public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.MovieEntryAdapterViewHolder> {
 
     /*Log Tag*/
-    private final static String TAG = MovieListingsAdapter.class.getSimpleName();
+    private final static String TAG = ReviewsAdapter.class.getSimpleName();
+
     private final OnMovieEntryClickListener mOnItemClickedListener; // Activity pass this
+
     /*Instance Vars*/
-    private ArrayList<MovieListing> mEntries;
+    private ArrayList<RelatedVideo> mEntries;
 
     /*Default Constructor*/
-    public MovieListingsAdapter(OnMovieEntryClickListener mOnItemClickedListener) {
+    public ReviewsAdapter(OnMovieEntryClickListener mOnItemClickedListener) {
         mEntries = new ArrayList<>();
         this.mOnItemClickedListener = mOnItemClickedListener;
     }
@@ -52,13 +55,13 @@ public class MovieListingsAdapter extends RecyclerView.Adapter<MovieListingsAdap
      * @param parent   The ViewGroup that these ViewHolders are contained within.
      * @param viewType If your RecyclerView has more than one type of item (which ours doesn't) you
      *                 can use this viewType integer to provide a different layout. See
-     *                 {@link android.support.v7.widget.RecyclerView.Adapter#getItemViewType(int)}
+     *                 {@link RecyclerView.Adapter#getItemViewType(int)}
      *                 for more details.
      * @return A new ForecastAdapterViewHolder that holds the View for each list item
      */
     @Override
     public MovieEntryAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        // P: To create a viewHolder, MovieEntryAdapterViewHolder needs an inflated itemView to work with
+        // P: To create a viewHolder, RelatedVideoAdapterViewHolder needs an inflated itemView to work with
         // R: Needs a layout inflater to inflate the list item view
         // S: Layout inflater can be obtains from context, use LayoutInflater.from(context)
         // R: Needs a res id for the inflater to know which view to inflate
@@ -92,8 +95,8 @@ public class MovieListingsAdapter extends RecyclerView.Adapter<MovieListingsAdap
         // This is where we bind data to the ViewHolder
 
         // Get the posterPath info from the entry item at the adapter position
-        String posterPath = mEntries.get(position).getPosterPath();
-        holder.loadPoster(posterPath);
+//        String posterPath = mEntries.get(position).getPosterPath();
+//        holder.loadPoster(posterPath);
     }
 
     /**
@@ -109,11 +112,11 @@ public class MovieListingsAdapter extends RecyclerView.Adapter<MovieListingsAdap
     }
 
     /**
-     * setMovieEntryData() updates the adapter's current data set
+     * setRelatedVideoData() updates the adapter's current data set
      *
      * @param mEntries the new dataset that we want to update the adapter with
      */
-    public void setMovieEntryData(ArrayList<MovieListing> mEntries) {
+    public void setRelatedVideoData(ArrayList<RelatedVideo> mEntries) {
         this.mEntries = mEntries;
         notifyDataSetChanged();
     }
@@ -123,11 +126,11 @@ public class MovieListingsAdapter extends RecyclerView.Adapter<MovieListingsAdap
      * Handle on itemClick event in each itemView inside the RecyclerView
      */
     public interface OnMovieEntryClickListener {
-        void onItemClicked(MovieListing entry);
+        void onItemClicked(RelatedVideo entry);
     }
 
     /**
-     * MovieEntryAdapterViewHolder
+     * RelatedVideoAdapterViewHolder
      * an implementation of the RecyclerView.ViewHolder class that act as a cache fo the children
      * views for a single movie entry item.
      * <p>
@@ -150,7 +153,7 @@ public class MovieListingsAdapter extends RecyclerView.Adapter<MovieListingsAdap
                     int adapterPosition = getAdapterPosition();
 
                     // 2) Find the corresponding clicked entry in the entries
-                    MovieListing entry = mEntries.get(adapterPosition);
+                    RelatedVideo entry = mEntries.get(adapterPosition);
 
                     // 3) Use onClickHandler to notify the activity of a onClick event
                     // pass in the retrieved object

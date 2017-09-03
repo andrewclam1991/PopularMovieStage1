@@ -95,6 +95,13 @@
             android:layout_height="wrap_content"
             android:text="@string/add_to_favorite_list" />
 
+
+        <!-- Related Video Recycler View -->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/related_video_rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
     </LinearLayout>
 
 </android.support.v4.widget.NestedScrollView>

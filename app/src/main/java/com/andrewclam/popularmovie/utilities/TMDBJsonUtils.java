@@ -13,11 +13,13 @@ package com.andrewclam.popularmovie.utilities;
 import android.util.Log;
 
 import com.andrewclam.popularmovie.models.MovieListing;
+import com.andrewclam.popularmovie.models.RelatedVideo;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -33,10 +35,10 @@ public final class TMDBJsonUtils {
     private static final String TAG = TMDBJsonUtils.class.getSimpleName();
 
     /**
-     * This method parses JSON from a web response and returns an ArrayList of Movie Entry objects
+     * This method parses JSON from a web response and returns an ArrayList of Movie listing objects
      *
      * @param jsonResponse JSON response from server
-     * @return an ArrayList of Movie objects, each containing the movie's data
+     * @return an ArrayList of Movie listing objects, each containing the movie's data
      * @throws JSONException If JSON data cannot be properly parsed
      */
 
@@ -123,5 +125,107 @@ public final class TMDBJsonUtils {
         }
 
         return movieEntries;
+    }
+
+    /**
+     * This method parses JSON from a web response and returns an ArrayList of Movie VideoInfo objects
+     *
+     * @param jsonResponse JSON response from server
+     * @return an ArrayList of Movie's video resources objects, each containing a movie's recorded
+     * associated video assets;
+     * @throws JSONException If JSON data cannot be properly parsed
+     */
+    public static ArrayList<RelatedVideo> getVideoInfoFromJson(String jsonResponse) throws JSONException {
+        // Test if the response is null, return null if it is
+        if (jsonResponse == null) {
+            Log.w(TAG, "Nothing to parse because jsonResponse is undefined");
+            return null;
+        }
+
+        /* Movie Information. Each movie's info is an element of the "result" array */
+        final String TMDB_RESULT = "results";
+
+        /* Start parsing the JSON into objects by defining the fields that we want to fetch from*/
+
+        // Id - Unique id that identifies the video resource on TMDB
+        final String TMDB_VIDEO_ID = "id";
+
+        // Video Key, identifies the video at the video provider
+        final String TMDB_VIDEO_KEY = "key";
+
+        // Video name
+        final String TMDB_VIDEO_NAME = "name";
+
+        // Provider Site - The site where to look for the video with the key
+        final String TMDB_VIDEO_PROVIDER_SITE = "site";
+
+        // Size - the size of the video asset
+        final String TMDB_VIDEO_SIZE = "size";
+
+        // Type - the video resource type as classified by TMDB
+        final String TMDB_VIDEO_TYPE = "type";
+
+        // Initialize an arrayList to store associated video info objects.
+        // This data will back the recycler view adapter.
+        ArrayList<RelatedVideo> videoInfoEntries = new ArrayList<>();
+
+        // Create a new JSON object out of the jsonResponse
+        JSONObject resultJSON = new JSONObject(jsonResponse);
+
+        // get the JSON array from the root json object
+        JSONArray resultArray = resultJSON.getJSONArray(TMDB_RESULT);
+
+        // Loop through each element result in the resultArray
+        for (int i = 0; i < resultArray.length(); i++) {
+            /* Get each element of the resultArray as a result element*/
+            JSONObject result = resultArray.getJSONObject(i);
+
+            if (result != null) {
+                /* Create an instance of the model class to store the retrieved elements */
+                RelatedVideo entry = new RelatedVideo();
+
+                /* Retrieve each element from the result JSONObject */
+                String movieId = result.getString(TMDB_VIDEO_ID);
+                String key = result.getString(TMDB_VIDEO_KEY);
+                String name = result.getString(TMDB_VIDEO_NAME);
+                String providerSite = result.getString(TMDB_VIDEO_PROVIDER_SITE);
+                int size = result.getInt(TMDB_VIDEO_SIZE);
+                String type = result.getString(TMDB_VIDEO_TYPE);
+
+                /* Store each element into the data model class */
+                entry.setVideoId(movieId);
+                entry.setKey(key);
+                entry.setName(name);
+                entry.setProviderSite(providerSite);
+                entry.setSize(size);
+                entry.setVideoType(type);
+
+                /************************
+                 * VIDEO URL GENERATION *
+                 ************************/
+                // Use networkUtility to build the provider video url and set the url in the
+                // entry object
+                URL videoURL = NetworkUtils.buildProviderVideoUrl(key);
+                entry.setVideoUrl(videoURL);
+
+                /**********************************
+                 * VIDEO THUMBNAIL URL GENERATION *
+                 **********************************/
+                // Use networkUtility to build the provider video's thumbnail url and set the url in the
+                // entry object
+                URL thumbnailUrl = NetworkUtils.buildProviderVideoThumbnailUrl(key);
+                entry.setThumbnailUrl(thumbnailUrl);
+
+                /* Add the entry object to the list */
+                videoInfoEntries.add(entry);
+
+
+            } else {
+                Log.w(TAG, "Error retrieving the json object at index " + i +
+                        ", skipping creating movie video info entry");
+            }
+        }
+
+        return videoInfoEntries;
     }
 }

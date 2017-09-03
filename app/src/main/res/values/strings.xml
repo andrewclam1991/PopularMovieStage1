@@ -20,6 +20,6 @@
     <string name="error_msg_unable_to_fetch">Unable to fetch movies at this time.\nPlease try again later.</string>
     <string name="content_description_error_msg_icon">Unable to load movies icon</string>
     <string name="add_to_favorite_list">Add to Favorites</string>
-    <string name="remove_from_favorite_list">Remove from Favorites</string>
+    <string name="added_to_favorite_list">Remove from Favorites</string>
     <string name="action_show_favorites">My Favorites</string>
 </resources>

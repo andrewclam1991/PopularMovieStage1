@@ -28,6 +28,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
+import com.andrewclam.popularmovie.adapters.MovieListingsAdapter;
 import com.andrewclam.popularmovie.data.PopularMovieDbContract;
 import com.andrewclam.popularmovie.models.MovieListing;
 import com.andrewclam.popularmovie.sync.FetchPopularMovieAsyncTask;
@@ -172,42 +173,48 @@ public class MainActivity extends AppCompatActivity implements
      * This method loads the movie entry data from a separate thread,
      * uses the MovieEntryAsyncTask
      *
-     * @param listType the user selected value for sorting the result entry
-     *                    according to their preference of the type of list.
+     * @param mListType the user selected value for sorting the result entry
+     *                  according to their preference of the type of list.
      */
 
-    private void loadMovieData(String listType) {
+    private void loadMovieData(String mListType) {
         /******************************
          * Check Device Network State *
          ******************************/
         boolean isConnected = NetworkUtils.getNetworkState(mContext);
 
-        if (listType.equals(USER_SHOW_FAVORITES_KEY) || !isConnected) {
+        if (mListType.equals(USER_SHOW_FAVORITES_KEY) || !isConnected) {
             // NETWORK DISCONNECTED //
 
-            // If not connected, possibly due to no network connectivity or down server
-            // Try to use Loader to get the Cursor, to accessing the cached data from the database
-            // and populate the entries.
-
             /*
-             * Ensures a loader is initialized and active. If the loader doesn't already exist, one is
-             * created and (if the activity/fragment is currently started) starts the loader. Otherwise
-             * the last created loader is re-used.
+             * If not connected, possibly due to no network connectivity or down server
+             * Try to use Loader to get the Cursor, to accessing the cached data from the database
+             * and populate the entries.
+             *
+             * <p>
+             * Ensures a loader is initialized and active. If the loader doesn't already exist, one
+             * is created and (if the activity/fragment is currently started) starts the loader.
+             * Otherwise the last created loader is re-used.
+             *
+             * <p>
+             * OnLoadFinished handles the populating the UI with data
              */
-            getSupportLoaderManager().restartLoader(ID_MOVIE_LISTING_LOADER, null, this);
 
-            // Return early in this method
+            getSupportLoaderManager().restartLoader(ID_MOVIE_LISTING_LOADER, null, this);
             return;
         }
 
         // NETWORK CONNECTED //
 
-        // Set API Key from the Resource file
-        String mApiKey = getString(R.string.tmdb_api_key);
+        /******************************************
+         * (!) Set API Key from the Resource file *
+         ******************************************/
+        final String mApiKey = getString(R.string.tmdb_api_key);
 
         // Create a new MovieEntryAsyncTask to fetch movie entry data from the server
         // on a background thread
         new FetchPopularMovieAsyncTask()
+                .setSortByValue(mListType)
                 .setApiKey(mApiKey)
                 .setListener(new FetchPopularMovieAsyncTask.onMovieEntryTaskInteractionListener() {
                     @Override
@@ -235,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements
                         mAdapter.setMovieEntryData(entries);
                         showEntryData();
                     }
-                }).execute(listType);
+                }).execute();
     }
 
     /**
@@ -267,17 +274,19 @@ public class MainActivity extends AppCompatActivity implements
     public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
         switch (loaderId) {
             case ID_MOVIE_LISTING_LOADER:
-                // (!) Convert mListType for TMDB to the client database
+                // (!) Convert mListType for TMDB to the client database commands
                 String selection = null;
                 String selectionArgs[] = null;
                 String mSortOrderStr = null;
 
                 switch (mListType) {
                     case TMDB_PATH_POPULAR:
-                        mSortOrderStr = PopularMovieDbContract.PopularMovieEntry.COLUMN_POPULARITY + " DESC";
+                        mSortOrderStr = PopularMovieDbContract.PopularMovieEntry.COLUMN_POPULARITY
+                                + " DESC";
                         break;
                     case TMDB_PATH_TOP_RATED:
-                        mSortOrderStr = PopularMovieDbContract.PopularMovieEntry.COLUMN_VOTE_AVERAGE + " DESC";
+                        mSortOrderStr = PopularMovieDbContract.PopularMovieEntry.COLUMN_VOTE_AVERAGE
+                                + " DESC";
                         break;
                     case USER_SHOW_FAVORITES_KEY:
                         selection = PopularMovieDbContract.PopularMovieEntry.COLUMN_FAVORITE + "=?";
