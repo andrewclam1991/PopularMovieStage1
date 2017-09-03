@@ -28,22 +28,22 @@ import java.util.ArrayList;
 /**
  * Created by Andrew Chi Heng Lam on 8/19/2017.
  * <p>
- * MovieEntryAdapter is an implementation of the RecyclerViewAdapter, used to back the recyclerView
+ * ReviewsAdapter is an implementation of the RecyclerViewAdapter, used to back the recyclerView
  * with the data, also contains an inner class that hold the cache of views.
  */
 
-public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.MovieEntryAdapterViewHolder> {
+public class UserReviewsAdapter extends RecyclerView.Adapter<UserReviewsAdapter.MovieEntryAdapterViewHolder> {
 
     /*Log Tag*/
-    private final static String TAG = ReviewsAdapter.class.getSimpleName();
+    private final static String TAG = UserReviewsAdapter.class.getSimpleName();
 
-    private final OnMovieEntryClickListener mOnItemClickedListener; // Activity pass this
+    private final OnUserReviewClickedListener mOnItemClickedListener; // Activity pass this
 
     /*Instance Vars*/
     private ArrayList<RelatedVideo> mEntries;
 
     /*Default Constructor*/
-    public ReviewsAdapter(OnMovieEntryClickListener mOnItemClickedListener) {
+    public UserReviewsAdapter(OnUserReviewClickedListener mOnItemClickedListener) {
         mEntries = new ArrayList<>();
         this.mOnItemClickedListener = mOnItemClickedListener;
     }
@@ -71,7 +71,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.MovieEnt
         Context context = parent.getContext(); // Context required by the layoutInflater
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        int layoutResId = R.layout.entry_list_item;
+        int layoutResId = R.layout.review_list_item;
         boolean shouldAttachToParentImmediately = false; // optional parameter to indicate exactly what it says
 
         // Uses the layoutId, viewGroup, boolean signature of the inflater.inflate()
@@ -125,7 +125,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.MovieEnt
      * Callback Interface
      * Handle on itemClick event in each itemView inside the RecyclerView
      */
-    public interface OnMovieEntryClickListener {
+    public interface OnUserReviewClickedListener {
         void onItemClicked(RelatedVideo entry);
     }
 

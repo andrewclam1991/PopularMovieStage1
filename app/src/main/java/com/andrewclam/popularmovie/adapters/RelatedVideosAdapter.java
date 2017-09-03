@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.andrewclam.popularmovie.R;
 import com.andrewclam.popularmovie.models.RelatedVideo;
@@ -70,7 +71,7 @@ public class RelatedVideosAdapter extends RecyclerView.Adapter<RelatedVideosAdap
         Context context = parent.getContext(); // Context required by the layoutInflater
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        int layoutResId = R.layout.entry_list_item;
+        int layoutResId = R.layout.related_video_list_item;
         boolean shouldAttachToParentImmediately = false; // optional parameter to indicate exactly what it says
 
         // Uses the layoutId, viewGroup, boolean signature of the inflater.inflate()
@@ -93,9 +94,15 @@ public class RelatedVideosAdapter extends RecyclerView.Adapter<RelatedVideosAdap
     public void onBindViewHolder(RelatedVideoAdapterViewHolder holder, int position) {
         // This is where we bind data to the ViewHolder
 
+        RelatedVideo relatedVideo = mEntries.get(position);
+
         // Get the thumbnail info from the entry item at the adapter position
-        URL thumbnailUrl = mEntries.get(position).getThumbnailUrl();
+        URL thumbnailUrl = relatedVideo.getThumbnailUrl();
         holder.loadVideoThumbnail(thumbnailUrl);
+
+        // Set the video name title
+        String nameTitle = relatedVideo.getName();
+        holder.mTitle.setText(nameTitle);
 
     }
 
@@ -140,13 +147,14 @@ public class RelatedVideosAdapter extends RecyclerView.Adapter<RelatedVideosAdap
     public class RelatedVideoAdapterViewHolder extends RecyclerView.ViewHolder {
 
         private final ImageView mThumbnailIv;
-//        private final TextView mTitle;
+        private final TextView mTitle;
 //        private final TextView mSize;
 
         public RelatedVideoAdapterViewHolder(View itemView) {
             super(itemView);
             // Reference the thumbnail Iv ui element
-            mThumbnailIv = itemView.findViewById(R.id.iv_poster);
+            mThumbnailIv = itemView.findViewById(R.id.iv_video_thumbnail);
+            mTitle = itemView.findViewById(R.id.tv_video_title);
 
             // Set an onClickListener onto the itemView
             itemView.setOnClickListener(new View.OnClickListener() {

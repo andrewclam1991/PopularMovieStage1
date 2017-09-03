@@ -29,10 +29,10 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.andrewclam.popularmovie.adapters.MovieListingsAdapter;
+import com.andrewclam.popularmovie.async.FetchMovieAsyncTask;
+import com.andrewclam.popularmovie.async.PopularMovieDbSync;
 import com.andrewclam.popularmovie.data.PopularMovieDbContract;
 import com.andrewclam.popularmovie.models.MovieListing;
-import com.andrewclam.popularmovie.sync.FetchPopularMovieAsyncTask;
-import com.andrewclam.popularmovie.sync.PopularMovieDbSync;
 import com.andrewclam.popularmovie.utilities.LayoutManagerUtils;
 import com.andrewclam.popularmovie.utilities.NetworkUtils;
 
@@ -40,7 +40,7 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
-import static com.andrewclam.popularmovie.sync.PopularMovieDbSync.parseEntriesFromCursor;
+import static com.andrewclam.popularmovie.async.PopularMovieDbSync.parseEntriesFromCursor;
 import static com.andrewclam.popularmovie.utilities.NetworkUtils.TMDB_PATH_POPULAR;
 import static com.andrewclam.popularmovie.utilities.NetworkUtils.TMDB_PATH_TOP_RATED;
 
@@ -213,10 +213,10 @@ public class MainActivity extends AppCompatActivity implements
 
         // Create a new MovieEntryAsyncTask to fetch movie entry data from the server
         // on a background thread
-        new FetchPopularMovieAsyncTask()
+        new FetchMovieAsyncTask()
                 .setSortByValue(mListType)
                 .setApiKey(mApiKey)
-                .setListener(new FetchPopularMovieAsyncTask.onMovieEntryTaskInteractionListener() {
+                .setListener(new FetchMovieAsyncTask.onMovieEntryTaskInteractionListener() {
                     @Override
                     public void onPreExecute() {
                         // Show the loading indicator

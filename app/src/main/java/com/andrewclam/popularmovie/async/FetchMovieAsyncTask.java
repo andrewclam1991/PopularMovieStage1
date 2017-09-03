@@ -8,12 +8,12 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.andrewclam.popularmovie.sync;
+package com.andrewclam.popularmovie.async;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.andrewclam.popularmovie.models.RelatedVideo;
+import com.andrewclam.popularmovie.models.MovieListing;
 import com.andrewclam.popularmovie.utilities.NetworkUtils;
 import com.andrewclam.popularmovie.utilities.TMDBJsonUtils;
 
@@ -24,58 +24,61 @@ import java.net.URL;
 import java.util.ArrayList;
 
 /**
- * Created by Andrew Chi Heng Lam on 8/31/2017.
+ * Created by Andrew Chi Heng Lam on 9/2/2017.
  * <p>
- * FetchVideoInfoAsyncTask
- * An implementation of the AsyncTask class to do network IO on a separate thread.
+ * FetchMovieAsyncTask
+ * An implementation of the AsyncTask class to do network IO on a separate thread,
  */
 
-public class FetchVideoInfoAsyncTask extends AsyncTask<Void, Void, ArrayList<RelatedVideo>> {
+public class FetchMovieAsyncTask extends AsyncTask<Void, Void, ArrayList<MovieListing>> {
     /*Debug Tag*/
-    private static final String TAG = FetchVideoInfoAsyncTask.class.getSimpleName();
+    private static final String TAG = FetchMovieAsyncTask.class.getSimpleName();
 
-    /*Listener for callback, optional*/
-    private OnFetchVideoInfoCompleteListener mListener;
+    /* Listener for callback, optional */
+    private FetchMovieAsyncTask.onMovieEntryTaskInteractionListener mListener;
 
-    /*Instance vars*/
+    /* Instance Vars */
     private String mApiKey;
-    private Long mMovieId;
+    private String mSortByValue;
 
     /**
-     * no-args constructor
+     * no-args default constructor
      */
-    public FetchVideoInfoAsyncTask() {
+    public FetchMovieAsyncTask() {
     }
 
     /**
-     * full-args constructor
+     * full-args default constructor
      *
-     * @param mApiKey  the TMDB APi key
-     * @param mMovieId the particular movie's unique id on TMDB
+     * @param mApiKey      the TMDB APi key
+     * @param mSortByValue the user-supplied sortByValue (ListType) for querying TMDB API
      */
-    public FetchVideoInfoAsyncTask(String mApiKey, Long mMovieId) {
+    public FetchMovieAsyncTask(String mApiKey, String mSortByValue) {
         this.mApiKey = mApiKey;
-        this.mMovieId = mMovieId;
+        this.mSortByValue = mSortByValue;
     }
 
-    public FetchVideoInfoAsyncTask setListener(OnFetchVideoInfoCompleteListener mListener) {
+    /* Public Setters */
+    public FetchMovieAsyncTask setListener(FetchMovieAsyncTask.onMovieEntryTaskInteractionListener mListener) {
         this.mListener = mListener;
         return this;
     }
 
-    public FetchVideoInfoAsyncTask setApiKey(String mApiKey) {
+    public FetchMovieAsyncTask setApiKey(String mApiKey) {
         this.mApiKey = mApiKey;
         return this;
     }
 
-    public FetchVideoInfoAsyncTask setMovieId(Long mMovieId) {
-        this.mMovieId = mMovieId;
+    public FetchMovieAsyncTask setSortByValue(String mSortByValue) {
+        this.mSortByValue = mSortByValue;
         return this;
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+        mListener.onPreExecute();
+
         // Check for required parameter before doInBackground
         String msg = "";
         boolean hasError = false;
@@ -85,9 +88,9 @@ public class FetchVideoInfoAsyncTask extends AsyncTask<Void, Void, ArrayList<Rel
             msg = msg.concat("Must set the mApiKey for this task." + "\n");
         }
 
-        if (this.mMovieId == null) {
+        if (this.mSortByValue == null) {
             hasError = true;
-            msg = msg.concat("Must set the mMovieId for this task." + "\n");
+            msg = msg.concat("Must set the mSortByValue for this task." + "\n");
         }
 
         if (hasError) {
@@ -97,13 +100,13 @@ public class FetchVideoInfoAsyncTask extends AsyncTask<Void, Void, ArrayList<Rel
     }
 
     @Override
-    protected ArrayList<RelatedVideo> doInBackground(Void... voids) {
-        // Init a arrayList to store the parsed movie video info entries
-        ArrayList<RelatedVideo> entries;
+    protected ArrayList<MovieListing> doInBackground(Void... voids) {
+        // Init a arrayList to store the parsed movie entries
+        ArrayList<MovieListing> entries;
 
         try {
             // Get the url required by the network util
-            URL url = NetworkUtils.buildVideoKeyUrl(mMovieId, mApiKey);
+            URL url = NetworkUtils.buildMovieListingUrl(mSortByValue, mApiKey);
 
             // Check for null url
             if (url == null) return null;
@@ -115,14 +118,14 @@ public class FetchVideoInfoAsyncTask extends AsyncTask<Void, Void, ArrayList<Rel
             if (jsonResponse == null) return null;
 
             // Got a JsonResponse from the web, parse the jsonResponse using the JsonUtils
-            entries = TMDBJsonUtils.getVideoInfoFromJson(jsonResponse);
+            entries = TMDBJsonUtils.getMovieListingFromJson(jsonResponse);
 
         } catch (IOException e) {
-            Log.e(TAG, "FetchVideoInfoAsyncTask - doInBackground - IO Error occurred while getting the jsonResponse from the url");
+            Log.e(TAG, "FetchMovieAsyncTask - doInBackground - IO Error occurred while getting the jsonResponse from the url");
             e.printStackTrace();
             return null;
         } catch (JSONException e) {
-            Log.e(TAG, "FetchVideoInfoAsyncTask - doInBackground - JSONException occurred while parsing the jsonResponse into model class");
+            Log.e(TAG, "FetchMovieAsyncTask - doInBackground - JSONException occurred while parsing the jsonResponse into model class");
             e.printStackTrace();
             return null;
         }
@@ -132,16 +135,18 @@ public class FetchVideoInfoAsyncTask extends AsyncTask<Void, Void, ArrayList<Rel
     }
 
     @Override
-    protected void onPostExecute(ArrayList<RelatedVideo> entries) {
+    protected void onPostExecute(ArrayList<MovieListing> entries) {
         super.onPostExecute(entries);
-        if (mListener != null) mListener.onComplete(entries);
+        if (mListener != null) mListener.onPostExecute(entries);
     }
 
     /**
      * Interface for callback to the listener at stages where UI change is required
      * in preExecute and postExecute.
      */
-    public interface OnFetchVideoInfoCompleteListener {
-        void onComplete(ArrayList<RelatedVideo> entries);
+    public interface onMovieEntryTaskInteractionListener {
+        void onPreExecute();
+
+        void onPostExecute(ArrayList<MovieListing> entries);
     }
 }

@@ -20,16 +20,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
 
         <!-- Movie Banner -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingTop="16dp">
+            android:orientation="horizontal">
 
             <!-- Movie Poster -->
             <ImageView
@@ -85,22 +83,50 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:lineSpacingMultiplier="1.15"
-            android:padding="16dp"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+            android:paddingTop="16dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textSize="14sp"
+            android:typeface="normal"
             tools:text="@string/dummy_text" />
 
         <Button
             android:id="@+id/button_mark_favorite"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:text="@string/add_to_favorite_list" />
 
+        <!-- Related Video Label -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingMultiplier="1.15"
+            android:paddingTop="16dp"
+            android:text="@string/related_video_label"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
         <!-- Related Video Recycler View -->
         <android.support.v7.widget.RecyclerView
             android:id="@+id/related_video_rv"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp" />
+
+        <!-- User Reviews -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingMultiplier="1.15"
+            android:paddingTop="16dp"
+            android:text="@string/user_reviews_label"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+        <!-- User Reviews Recycler View -->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/user_reviews_rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp" />
 
     </LinearLayout>
 

@@ -22,4 +22,6 @@
     <string name="add_to_favorite_list">Add to Favorites</string>
     <string name="added_to_favorite_list">Remove from Favorites</string>
     <string name="action_show_favorites">My Favorites</string>
+    <string name="related_video_label">Related Videos</string>
+    <string name="user_reviews_label">User Reviews</string>
 </resources>

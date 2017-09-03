@@ -22,6 +22,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -31,12 +32,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.andrewclam.popularmovie.adapters.RelatedVideosAdapter;
-import com.andrewclam.popularmovie.adapters.ReviewsAdapter;
+import com.andrewclam.popularmovie.adapters.UserReviewsAdapter;
+import com.andrewclam.popularmovie.async.DbUpdateAsyncTask;
+import com.andrewclam.popularmovie.async.FetchRelatedVideoAsyncTask;
 import com.andrewclam.popularmovie.data.PopularMovieDbContract;
 import com.andrewclam.popularmovie.models.MovieListing;
 import com.andrewclam.popularmovie.models.RelatedVideo;
-import com.andrewclam.popularmovie.sync.DbUpdateAsyncTask;
-import com.andrewclam.popularmovie.sync.FetchVideoInfoAsyncTask;
 import com.andrewclam.popularmovie.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
@@ -78,7 +79,7 @@ public class DetailActivity extends AppCompatActivity {
 
     // RecyclerView for Reviews
     private RecyclerView mReviewsRv;
-    private ReviewsAdapter mReivewsAdapter;
+    private UserReviewsAdapter mReivewsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,30 +106,11 @@ public class DetailActivity extends AppCompatActivity {
                 overViewTv = findViewById(R.id.tv_overview);
                 favBtn = findViewById(R.id.button_mark_favorite);
 
-                mRelatedVideosRv = findViewById(R.id.related_video_rv);
-                mRelatedVideosAdapter = new RelatedVideosAdapter(new RelatedVideosAdapter.OnMovieEntryClickListener() {
-                    @Override
-                    public void onItemClicked(RelatedVideo entry) {
-                        // Get the video url from the entry object
-                        URL videoUrl = entry.getVideoUrl();
-                        // launch an implicit intent to handle the video url
+                // Initialize RelatedVideos RecyclerView and its Adapter
+                initRelatedVideoRv();
 
-                        // Build the intent
-                        Uri videoUri = Uri.parse(videoUrl.toString());
-                        Intent videoIntent = new Intent(Intent.ACTION_VIEW, videoUri);
-
-                        // Verify it resolves
-                        PackageManager packageManager = getPackageManager();
-                        List<ResolveInfo> activities = packageManager.queryIntentActivities(videoIntent, 0);
-                        boolean isIntentSafe = activities.size() > 0;
-
-                        // Start an activity if it's safe
-                        if (isIntentSafe) {
-                            startActivity(videoIntent);
-                        }
-
-                    }
-                });
+                // Initialize Reviews RecyclerView and its Adapter
+                initReviewsRv();
 
                 // Populate the referenced UI with the entry object
                 populateEntryFields(entry);
@@ -138,6 +120,69 @@ public class DetailActivity extends AppCompatActivity {
             Log.e(TAG, "Intent doesn't have the required movie entry");
             finish();
         }
+    }
+
+    /**
+     * a method to initialize the recycler view, adapter and the layout manager
+     * for the related videos
+     */
+    private void initRelatedVideoRv() {
+        mRelatedVideosRv = findViewById(R.id.related_video_rv);
+        mRelatedVideosAdapter = new RelatedVideosAdapter(new RelatedVideosAdapter.OnMovieEntryClickListener() {
+            @Override
+            public void onItemClicked(RelatedVideo entry) {
+                // Get the video url from the entry object
+                URL videoUrl = entry.getVideoUrl();
+                // launch an implicit intent to handle the video url
+
+                // Build the intent
+                Uri videoUri = Uri.parse(videoUrl.toString());
+                Intent videoIntent = new Intent(Intent.ACTION_VIEW, videoUri);
+
+                // Verify it resolves
+                PackageManager packageManager = getPackageManager();
+                List<ResolveInfo> activities = packageManager.queryIntentActivities(videoIntent, 0);
+                boolean isIntentSafe = activities.size() > 0;
+
+                // Start an activity if it's safe
+                if (isIntentSafe) {
+                    startActivity(videoIntent);
+                }
+
+            }
+        });
+
+        // Init layout manager for horizontal scroll
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+
+        // Attach the layout manager to the recyclerView
+        mRelatedVideosRv.setLayoutManager(layoutManager);
+
+        // Back the recyclerView with the adapter
+        mRelatedVideosRv.setAdapter(mRelatedVideosAdapter);
+    }
+
+    /**
+     * a method to initialize the recycler view, adapter and the layout manager
+     * for the related videos. This method is called in
+     */
+    private void initReviewsRv() {
+        mReviewsRv = findViewById(R.id.user_reviews_rv);
+        mReivewsAdapter = new UserReviewsAdapter(new UserReviewsAdapter.OnUserReviewClickedListener() {
+            @Override
+            public void onItemClicked(RelatedVideo entry) {
+                // Do something when user clicks the review (??)
+            }
+        });
+
+        // Init layout manager for horizontal scroll
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+
+        // Attach the layout manager to the recyclerView
+        mReviewsRv.setLayoutManager(layoutManager);
+
+        // Back the recyclerView with the adapter
+        mReviewsRv.setAdapter(mReivewsAdapter);
     }
 
     /**
@@ -189,51 +234,24 @@ public class DetailActivity extends AppCompatActivity {
          * Favorite Button *
          *******************/
         // FAV button allows user to favorite / un-favorite the movie
-        setupFavButton(movieId);
+        loadFavButton(movieId);
 
         /******************************************
          * Movie's Video Assets (Trailer or More) *
          ******************************************/
         // Show user all the movie's related videos on record in TMDB
-        setupRelatedVideos(movieId);
+        loadRelatedVideos(movieId);
 
         /*******************
          * Movie's Reviews *
          *******************/
         // Show user all the movie's related videos on record in TMDB
-        // todo implement the review api query, parse, store and display
+        loadUserReviews(movieId);
     }
 
 
-    // todo, set the options to show share icon, and get the first trailer from madapter
+    // todo, SHARE TRAILER: set the options to show share icon, and get the first trailer from related video madapter
 
-    /**
-     * setupRelatedVideos
-     *
-     * @param movieId
-     */
-    private void setupRelatedVideos(final Long movieId) {
-        /******************************************
-         * (!) Set API Key from the Resource file *
-         ******************************************/
-        final String mApiKey = getString(R.string.tmdb_api_key);
-
-        new FetchVideoInfoAsyncTask()
-                .setApiKey(mApiKey)
-                .setMovieId(movieId)
-                .setListener(new FetchVideoInfoAsyncTask.OnFetchVideoInfoCompleteListener() {
-                    @Override
-                    public void onComplete(ArrayList<RelatedVideo> entries) {
-                        // got related video entries?
-                        if (entries != null) {
-                            mRelatedVideosAdapter.setRelatedVideoData(entries);
-                        } else {
-                            // No related videos, show NoVideo in the view
-                        }
-                    }
-                }).execute();
-
-    }
 
     /**
      * setUpFavButton is a sub method that handles setting up the fav button. This button
@@ -243,7 +261,7 @@ public class DetailActivity extends AppCompatActivity {
      * @param movieId the unique id of a particular movie from TMDB, and also act as the unique
      *                identifier in the client's database.
      */
-    private void setupFavButton(Long movieId) {
+    private void loadFavButton(Long movieId) {
         // Build the Uri that points to the movie base on the id, this Uri is required
         // for getting the fav the fav status
         final Uri updateUri = buildMovieUriWithId(movieId);
@@ -287,6 +305,58 @@ public class DetailActivity extends AppCompatActivity {
 
         // Set fav button onClick to favorite this movie
         favBtn.setOnClickListener(onFavClickListener);
+    }
+
+    /**
+     * loadRelatedVideos uses the particular movie id to query the TMDB for its list of
+     * related videos, and upon completion returns an arrayList of RelatedVideo objects
+     * to populate the related video recycler view.
+     *
+     * @param movieId the particular movie's unique id on TMDB
+     */
+    private void loadRelatedVideos(final Long movieId) {
+        /******************************************
+         * (!) Set API Key from the Resource file *
+         ******************************************/
+        final String mApiKey = getString(R.string.tmdb_api_key);
+
+        new FetchRelatedVideoAsyncTask()
+                .setApiKey(mApiKey)
+                .setMovieId(movieId)
+                .setListener(new FetchRelatedVideoAsyncTask.OnFetchVideoInfoCompleteListener() {
+                    @Override
+                    public void onComplete(ArrayList<RelatedVideo> entries) {
+                        // got related video entries?
+                        if (entries != null) {
+                            mRelatedVideosAdapter.setRelatedVideoData(entries);
+                        } else {
+                            // No related videos, show NoVideo in the view
+                        }
+                    }
+                }).execute();
+
+    }
+
+    private void loadUserReviews(Long movieId) {
+        /******************************************
+         * (!) Set API Key from the Resource file *
+         ******************************************/
+        final String mApiKey = getString(R.string.tmdb_api_key);
+
+        new FetchRelatedVideoAsyncTask()
+                .setApiKey(mApiKey)
+                .setMovieId(movieId)
+                .setListener(new FetchRelatedVideoAsyncTask.OnFetchVideoInfoCompleteListener() {
+                    @Override
+                    public void onComplete(ArrayList<RelatedVideo> entries) {
+                        // got related video entries?
+                        if (entries != null) {
+                            mRelatedVideosAdapter.setRelatedVideoData(entries);
+                        } else {
+                            // todo No related videos, show NoVideo in the view
+                        }
+                    }
+                }).execute();
     }
 
     /**

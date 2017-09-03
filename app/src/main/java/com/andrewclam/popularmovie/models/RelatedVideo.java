@@ -47,7 +47,7 @@ public class RelatedVideo {
         return key;
     }
 
-    public void setKey(String key) {
+    public void setProviderKey(String key) {
         this.key = key;
     }
 
