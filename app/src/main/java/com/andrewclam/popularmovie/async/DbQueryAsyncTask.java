@@ -52,7 +52,7 @@ public class DbQueryAsyncTask extends AsyncTask<Void, Void, Cursor> {
     /**
      * No-args constructor
      */
-    public DbQueryAsyncTask() {
+    private DbQueryAsyncTask() {
 
     }
 
@@ -62,7 +62,7 @@ public class DbQueryAsyncTask extends AsyncTask<Void, Void, Cursor> {
      * @param contentResolver the application context's contentResolver
      * @param updateUri       the uri to the data to be updated on client's database
      */
-    public DbQueryAsyncTask(ContentResolver contentResolver, Uri updateUri) {
+    private DbQueryAsyncTask(ContentResolver contentResolver, Uri updateUri) {
         this.mContentResolver = contentResolver;
         this.mQueryUri = updateUri;
     }

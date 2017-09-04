@@ -10,7 +10,7 @@
 
 <resources>
     <string name="app_name">PopularMovie</string>
-    <string name="vote_average">%1$.1f / 10</string>
+    <string name="vote_average">%1$.1f out of 10</string>
     <string name="vote_count">%1$d Votes</string>
     <string name="action_sort_by_rating">Sort by Rating</string>
     <string name="action_sort_by_popularity">Sort by Popularity</string>
@@ -26,4 +26,6 @@
     <string name="user_reviews_label">User Reviews</string>
     <string name="no_user_reviews">No User Reviews</string>
     <string name="no_related_videos">No Related Videos</string>
+    <string name="action_share_movie">Share</string>
+    <string name="read_more">Read More</string>
 </resources>

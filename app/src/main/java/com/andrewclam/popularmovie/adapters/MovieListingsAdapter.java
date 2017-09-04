@@ -73,7 +73,7 @@ public class MovieListingsAdapter extends RecyclerView.Adapter<MovieListingsAdap
         boolean shouldAttachToParentImmediately = false; // optional parameter to indicate exactly what it says
 
         // Uses the layoutId, viewGroup, boolean signature of the inflater.inflate()
-        View view = inflater.inflate(layoutResId, parent, shouldAttachToParentImmediately);
+        @SuppressWarnings("ConstantConditions") View view = inflater.inflate(layoutResId, parent, shouldAttachToParentImmediately);
 
         return new MovieEntryAdapterViewHolder(view);
     }
@@ -144,22 +144,19 @@ public class MovieListingsAdapter extends RecyclerView.Adapter<MovieListingsAdap
             // Reference the thumbnail Iv ui element
             mPosterIv = itemView.findViewById(R.id.iv_poster);
             // Set an onClickListener onto the itemView
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // 1) Get the current adapter position
-                    int adapterPosition = getAdapterPosition();
+            itemView.setOnClickListener(view -> {
+                // 1) Get the current adapter position
+                int adapterPosition = getAdapterPosition();
 
-                    // 2) Find the corresponding clicked entry in the entries
-                    MovieListing entry = mEntries.get(adapterPosition);
+                // 2) Find the corresponding clicked entry in the entries
+                MovieListing entry = mEntries.get(adapterPosition);
 
-                    // 3) Use onClickHandler to notify the activity of a onClick event
-                    // pass in the retrieved object
-                    mOnItemClickedListener.onItemClicked(entry);
+                // 3) Use onClickHandler to notify the activity of a onClick event
+                // pass in the retrieved object
+                mOnItemClickedListener.onItemClicked(entry);
 
-                    // Let the listening activity to handle starting the detailActivity
-                    // with the movie entry parameter.
-                }
+                // Let the listening activity to handle starting the detailActivity
+                // with the movie entry parameter.
             });
         }
 

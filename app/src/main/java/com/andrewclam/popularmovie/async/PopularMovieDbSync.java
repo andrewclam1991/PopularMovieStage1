@@ -118,39 +118,36 @@ public class PopularMovieDbSync {
         // on the database. a test to use Thread instead of AsyncTask since a result callback is not
         // necessary.
 
-        Thread syncDbRunnable = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    for (MovieListing entry : entries) {
-                        // Parse the entry
-                        ContentValues contentValues = parseEntry(entry);
+        Thread syncDbRunnable = new Thread(() -> {
+            try {
+                for (MovieListing entry : entries) {
+                    // Parse the entry
+                    ContentValues contentValues = parseEntry(entry);
 
-                        // load the cursor from using a particular movie id
-                        Cursor cursor = context.getContentResolver().query(
-                                buildMovieUriWithId(entry.getId()),
-                                null,
-                                null,
-                                null,
-                                null);
+                    // load the cursor from using a particular movie id
+                    Cursor cursor = context.getContentResolver().query(
+                            buildMovieUriWithId(entry.getId()),
+                            null,
+                            null,
+                            null,
+                            null);
 
-                        if (cursor == null || cursor.getCount() == 0) {
-                            // The cursor doesn't exist, insert an entry in the db
-                            context.getContentResolver().insert(PopularMovieDbContract.PopularMovieEntry.CONTENT_URI, contentValues);
+                    if (cursor == null || cursor.getCount() == 0) {
+                        // The cursor doesn't exist, insert an entry in the db
+                        context.getContentResolver().insert(PopularMovieDbContract.PopularMovieEntry.CONTENT_URI, contentValues);
 
-                        } else if (cursor.moveToNext()) {
-                            // The cursor is valid, update the current entry in the db
-                            Uri uriToUpdate = buildMovieUriWithId(entry.getId());
-                            context.getContentResolver().update(uriToUpdate, contentValues, null, null);
+                    } else if (cursor.moveToNext()) {
+                        // The cursor is valid, update the current entry in the db
+                        Uri uriToUpdate = buildMovieUriWithId(entry.getId());
+                        context.getContentResolver().update(uriToUpdate, contentValues, null, null);
 
-                            // Close up the cursor after update
-                            cursor.close();
-                        }
+                        // Close up the cursor after update
+                        cursor.close();
                     }
-                } catch (Exception ex) {
-                    Log.e(TAG, "Exception occurred");
-                    ex.printStackTrace();
                 }
+            } catch (Exception ex) {
+                Log.e(TAG, "Exception occurred");
+                ex.printStackTrace();
             }
         });
 
@@ -165,38 +162,33 @@ public class PopularMovieDbSync {
         * call contentResolver->contentProvider
         * to bulkInsert the entries into client's database.
         */
-        Thread initDbRunnable = new Thread(new Runnable() {
+        Thread initDbRunnable = new Thread(() -> {
+            // Initialize the contentValuesArray to have the size of all entries
+            ContentValues[] contentValuesArray = new ContentValues[entries.size()];
+            try {
+                // set a count index for the foreach loop, this index value is for referencing the
+                // correct ContentValue in the ContentValue[] to store each MovieListing entry.
 
-            @Override
-            public void run() {
-                // Initialize the contentValuesArray to have the size of all entries
-                ContentValues[] contentValuesArray = new ContentValues[entries.size()];
-                try {
-                    // set a count index for the foreach loop, this index value is for referencing the
-                    // correct ContentValue in the ContentValue[] to store each MovieListing entry.
+                int index = 0;
+                for (MovieListing entry : entries) {
 
-                    int index = 0;
-                    for (MovieListing entry : entries) {
+                    // Create a new contentValue object to store the entry data
+                    ContentValues contentValues = parseEntry(entry);
 
-                        // Create a new contentValue object to store the entry data
-                        ContentValues contentValues = parseEntry(entry);
+                    // Assign the constructed contentValues to the contentValuesArray[index]
+                    contentValuesArray[index] = contentValues;
 
-                        // Assign the constructed contentValues to the contentValuesArray[index]
-                        contentValuesArray[index] = contentValues;
-
-                        // increment the index after each completed iteration to access the next array
-                        index++;
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-
-                } finally {
-                    // use the contentResolver bulkInsert to insert all the cv values
-                    context.getContentResolver().bulkInsert(PopularMovieDbContract.PopularMovieEntry.CONTENT_URI, contentValuesArray);
+                    // increment the index after each completed iteration to access the next array
+                    index++;
                 }
-            }
 
+            } catch (Exception e) {
+                e.printStackTrace();
+
+            } finally {
+                // use the contentResolver bulkInsert to insert all the cv values
+                context.getContentResolver().bulkInsert(PopularMovieDbContract.PopularMovieEntry.CONTENT_URI, contentValuesArray);
+            }
         });
 
         // Start the initDbThread on a separate thread

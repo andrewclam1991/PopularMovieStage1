@@ -12,7 +12,6 @@
 Using ConstraintLayout to maintain the imageView in aspectRatio 2:3
 -->
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="300dp"
     android:layout_height="wrap_content"
@@ -29,9 +28,9 @@ Using ConstraintLayout to maintain the imageView in aspectRatio 2:3
             android:id="@+id/tv_review_author"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginRight="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:fontFamily="sans-serif-light"
@@ -42,14 +41,12 @@ Using ConstraintLayout to maintain the imageView in aspectRatio 2:3
             android:id="@+id/tv_review_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:lineSpacingMultiplier="1.15"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_review_author"
             tools:text="Awesome movie hey this is a great example review for a awesome movie" />
 
         <Button
@@ -61,8 +58,8 @@ Using ConstraintLayout to maintain the imageView in aspectRatio 2:3
             android:layout_marginBottom="0dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="Read more"
+            android:layout_marginTop="0dp"
+            android:text="@string/read_more"
             android:textAppearance="@style/TextAppearance.AppCompat.Button"
             android:visibility="gone"
             tools:visibility="visible" />

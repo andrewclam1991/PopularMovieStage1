@@ -40,9 +40,9 @@ public class PopularMovieProvider extends ContentProvider {
     * advantage of the UriMatcher class to make that matching MUCH easier than doing something
     * ourselves, such as using regular expressions.
     */
-    public static final int CODE_MOVIE = 100;
-    public static final int CODE_MOVIE_WITH_ID = 101;
-    public static final int CODE_MOVIE_FAVORITE = 102;
+    private static final int CODE_MOVIE = 100;
+    private static final int CODE_MOVIE_WITH_ID = 101;
+    private static final int CODE_MOVIE_FAVORITE = 102;
     /*Log Tag*/
     private static final String TAG = PopularMovieProvider.class.getSimpleName();
     /*
@@ -147,7 +147,7 @@ public class PopularMovieProvider extends ContentProvider {
         int match = sUriMatcher.match(uri);
 
         // Init a cursor for return
-        Cursor cursor = null;
+        Cursor cursor;
 
         switch (match) {
             case CODE_MOVIE_FAVORITE: {
@@ -358,7 +358,7 @@ public class PopularMovieProvider extends ContentProvider {
 
         // Use uri matcher to make sure the call is pointing to a particular movie listing
         int match = sUriMatcher.match(uri);
-        int rowsUpdated = 0;
+        int rowsUpdated;
         switch (match) {
             case CODE_MOVIE_WITH_ID:
                 /*

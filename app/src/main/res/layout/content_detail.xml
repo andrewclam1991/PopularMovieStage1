@@ -56,7 +56,7 @@
                     android:layout_height="wrap_content"
                     android:padding="4dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    tools:text="6.5 / 10" />
+                    tools:text="6.5/10" />
 
                 <!-- Vote Count -->
                 <TextView

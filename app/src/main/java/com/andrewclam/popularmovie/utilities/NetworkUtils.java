@@ -333,7 +333,7 @@ public class NetworkUtils {
      * detectInternetConnection() uses the system service to see if the device is connected
      * to any network with internet access
      *
-     * @return boolean flag to indiciate whether the device has internet connection
+     * @return boolean flag to indicate whether the device has internet connection
      */
     public static boolean getNetworkState(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

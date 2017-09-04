@@ -26,11 +26,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.andrewclam.popularmovie.adapters.RelatedVideosAdapter;
 import com.andrewclam.popularmovie.adapters.UserReviewsAdapter;
@@ -40,7 +43,6 @@ import com.andrewclam.popularmovie.async.FetchUserReviewAsyncTask;
 import com.andrewclam.popularmovie.data.PopularMovieDbContract;
 import com.andrewclam.popularmovie.models.MovieListing;
 import com.andrewclam.popularmovie.models.RelatedVideo;
-import com.andrewclam.popularmovie.models.UserReview;
 import com.andrewclam.popularmovie.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
@@ -49,6 +51,7 @@ import org.parceler.Parcels;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static com.andrewclam.popularmovie.MainActivity.EXTRA_MOVIE_ENTRY_OBJECT;
 import static com.andrewclam.popularmovie.MainActivity.FAVORITE_CHANGED_RESULT;
@@ -67,6 +70,7 @@ public class DetailActivity extends AppCompatActivity {
     private static final String TAG = DetailActivity.class.getSimpleName();
 
     // UI views
+    private ImageView posterBannerIv;
     private ImageView posterIv;
     private TextView releaseDateTv;
     private TextView voteAverageTv;
@@ -82,12 +86,14 @@ public class DetailActivity extends AppCompatActivity {
     private TextView mEmptyViewRelatedVideosTv;
     private ProgressBar mRelatedVideoLoadingPb;
 
-
     // RecyclerView for Reviews
     private RecyclerView mUserReviewsRv;
-    private UserReviewsAdapter mUserReivewsAdapter;
+    private UserReviewsAdapter mUserReviewsAdapter;
     private TextView mEmptyViewUserReviewsTv;
     private ProgressBar mUserReviewLoadingPb;
+
+    // Share Function
+    private URL mShareTrailerUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +113,7 @@ public class DetailActivity extends AppCompatActivity {
                 mContext = DetailActivity.this;
 
                 // Reference the UI views
+                posterBannerIv = findViewById(R.id.iv_poster_banner);
                 posterIv = findViewById(R.id.iv_poster);
                 releaseDateTv = findViewById(R.id.tv_release_date);
                 voteAverageTv = findViewById(R.id.tv_vote_average);
@@ -136,28 +143,25 @@ public class DetailActivity extends AppCompatActivity {
      */
     private void initRelatedVideoRv() {
         mRelatedVideosRv = findViewById(R.id.related_video_rv);
-        mRelatedVideosAdapter = new RelatedVideosAdapter(new RelatedVideosAdapter.OnMovieEntryClickListener() {
-            @Override
-            public void onItemClicked(RelatedVideo entry) {
-                // Get the video url from the entry object
-                URL videoUrl = entry.getVideoUrl();
-                // launch an implicit intent to handle the video url
+        mRelatedVideosAdapter = new RelatedVideosAdapter(entry -> {
+            // Get the video url from the entry object
+            URL videoUrl = entry.getVideoUrl();
+            // launch an implicit intent to handle the video url
 
-                // Build the intent
-                Uri videoUri = Uri.parse(videoUrl.toString());
-                Intent videoIntent = new Intent(Intent.ACTION_VIEW, videoUri);
+            // Build the intent
+            Uri videoUri = Uri.parse(videoUrl.toString());
+            Intent videoIntent = new Intent(Intent.ACTION_VIEW, videoUri);
 
-                // Verify it resolves
-                PackageManager packageManager = getPackageManager();
-                List<ResolveInfo> activities = packageManager.queryIntentActivities(videoIntent, 0);
-                boolean isIntentSafe = activities.size() > 0;
+            // Verify it resolves
+            PackageManager packageManager = getPackageManager();
+            List<ResolveInfo> activities = packageManager.queryIntentActivities(videoIntent, 0);
+            boolean isIntentSafe = activities.size() > 0;
 
-                // Start an activity if it's safe
-                if (isIntentSafe) {
-                    startActivity(videoIntent);
-                }
-
+            // Start an activity if it's safe
+            if (isIntentSafe) {
+                startActivity(videoIntent);
             }
+
         });
 
         // Reference the empty view and the loading indicator
@@ -180,27 +184,24 @@ public class DetailActivity extends AppCompatActivity {
      */
     private void initReviewsRv() {
         mUserReviewsRv = findViewById(R.id.user_reviews_rv);
-        mUserReivewsAdapter = new UserReviewsAdapter(new UserReviewsAdapter.OnUserReviewClickedListener() {
-            @Override
-            public void onItemClicked(UserReview entry) {
-                // Do something when user clicks the review (??)
-                // Direct user to read more with the url link
-                String reviewUrlStr = entry.getReviewUrl();
-                // launch an implicit intent to handle the video url
+        mUserReviewsAdapter = new UserReviewsAdapter(entry -> {
+            // Do something when user clicks the review (??)
+            // Direct user to read more with the url link
+            String reviewUrlStr = entry.getReviewUrl();
+            // launch an implicit intent to handle the video url
 
-                // Build the intent
-                Uri reviewUri = Uri.parse(reviewUrlStr);
-                Intent reviewUriIntent = new Intent(Intent.ACTION_VIEW, reviewUri);
+            // Build the intent
+            Uri reviewUri = Uri.parse(reviewUrlStr);
+            Intent reviewUriIntent = new Intent(Intent.ACTION_VIEW, reviewUri);
 
-                // Verify it resolves
-                PackageManager packageManager = getPackageManager();
-                List<ResolveInfo> activities = packageManager.queryIntentActivities(reviewUriIntent, 0);
-                boolean isIntentSafe = activities.size() > 0;
+            // Verify it resolves
+            PackageManager packageManager = getPackageManager();
+            List<ResolveInfo> activities = packageManager.queryIntentActivities(reviewUriIntent, 0);
+            boolean isIntentSafe = activities.size() > 0;
 
-                // Start an activity if it's safe
-                if (isIntentSafe) {
-                    startActivity(reviewUriIntent);
-                }
+            // Start an activity if it's safe
+            if (isIntentSafe) {
+                startActivity(reviewUriIntent);
             }
         });
 
@@ -215,7 +216,7 @@ public class DetailActivity extends AppCompatActivity {
         mUserReviewsRv.setLayoutManager(layoutManager);
 
         // Back the recyclerView with the adapter
-        mUserReviewsRv.setAdapter(mUserReivewsAdapter);
+        mUserReviewsRv.setAdapter(mUserReviewsAdapter);
     }
 
     /**
@@ -238,13 +239,19 @@ public class DetailActivity extends AppCompatActivity {
 
         /* RELEASE DATE */
         // Set the release date at the field
-        releaseDateTv.setText(String.valueOf(entry.getReleaseDate()));
+        releaseDateTv.setText(entry.getReleaseDate());
 
-        /* POSTER */
+        /* POSTER (and Banner) */
         // Load the entry's poster image into the imageView using picasso
         // Use NetworkUtils to form the query url, pass in the posterPath
         URL posterUrl = NetworkUtils.buildImageUrl(entry.getPosterPath());
 
+        // Load into the posterBannerIv
+        Picasso.with(this)
+                .load(posterUrl.toString())
+                .into(posterBannerIv);
+
+        // Load into the posterIv
         Picasso.with(this)
                 .load(posterUrl.toString())
                 .into(posterIv);
@@ -282,8 +289,32 @@ public class DetailActivity extends AppCompatActivity {
         loadUserReviews(movieId);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_detail, menu);
+        return true;
+    }
 
-    // todo, SHARE TRAILER: set the options to show share icon, and get the first trailer from related video madapter
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.action_share_movie:
+                // Share the first video of type trailer in the Related Video
+                // list
+                if (mShareTrailerUrl != null) {
+                    Toast.makeText(this, "" + mShareTrailerUrl, Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
 
     /**
@@ -305,35 +336,29 @@ public class DetailActivity extends AppCompatActivity {
 
         // Create a onClickListener for the favorite button, this handles when a user clicks the
         // fav button
-        View.OnClickListener onFavClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // On Click, toggle the mMarkedFavorite and update with that value
-                final ContentValues contentValues = new ContentValues();
-                contentValues.put(PopularMovieDbContract.PopularMovieEntry.COLUMN_FAVORITE, !mFavStatus);
+        View.OnClickListener onFavClickListener = view -> {
+            // On Click, toggle the mMarkedFavorite and update with that value
+            final ContentValues contentValues = new ContentValues();
+            contentValues.put(PopularMovieDbContract.PopularMovieEntry.COLUMN_FAVORITE, !mFavStatus);
 
-                // Get a reference to the contentResolver
-                final ContentResolver contentResolver = mContext.getContentResolver();
+            // Get a reference to the contentResolver
+            final ContentResolver contentResolver = mContext.getContentResolver();
 
-                // Use the MarkMovieFavoriteAsyncTask to update the movie's favorite status
-                // asynchronously.
-                new DbUpdateAsyncTask()
-                        .setContentResolver(contentResolver)
-                        .setUpdateUri(updateUri)
-                        .setContentValues(contentValues)
-                        .setListener(new DbUpdateAsyncTask.OnMovieUpdateActionListener() {
-                            @Override
-                            public void onUpdateComplete(Integer rowsUpdated) {
-                                // call getCurrentFavoriteStatus to update the current mFavStatus when
-                                // the database update operation is complete
-                                mFavStatus = getCurrentFavoriteStatus(updateUri);
+            // Use the MarkMovieFavoriteAsyncTask to update the movie's favorite status
+            // asynchronously.
+            new DbUpdateAsyncTask()
+                    .setContentResolver(contentResolver)
+                    .setUpdateUri(updateUri)
+                    .setContentValues(contentValues)
+                    .setListener(rowsUpdated -> {
+                        // call getCurrentFavoriteStatus to update the current mFavStatus when
+                        // the database update operation is complete
+                        mFavStatus = getCurrentFavoriteStatus(updateUri);
 
-                                // Set Result (when user exits this activity, to notify the starting activity
-                                // of user has changed favorite result) whenever the this activity finishes.
-                                setResult(FAVORITE_CHANGED_RESULT);
-                            }
-                        }).execute();
-            }
+                        // Set Result (when user exits this activity, to notify the starting activity
+                        // of user has changed favorite result) whenever the this activity finishes.
+                        setResult(FAVORITE_CHANGED_RESULT);
+                    }).execute();
         };
 
         // Set fav button onClick to favorite this movie
@@ -359,21 +384,21 @@ public class DetailActivity extends AppCompatActivity {
         new FetchRelatedVideoAsyncTask()
                 .setApiKey(mApiKey)
                 .setMovieId(movieId)
-                .setListener(new FetchRelatedVideoAsyncTask.OnFetchVideoInfoCompleteListener() {
-                    @Override
-                    public void onComplete(ArrayList<RelatedVideo> entries) {
-                        // Hide the loading indicator
-                        mRelatedVideoLoadingPb.setVisibility(View.GONE);
+                .setListener(entries -> {
+                    // Hide the loading indicator
+                    mRelatedVideoLoadingPb.setVisibility(View.GONE);
 
-                        // got related video entries?
-                        if (entries == null || entries.isEmpty()) {
-                            // entries is either null or empty, show empty view
-                            showRelatedVideos(false);
-                        } else {
-                            // has data to show, bind it to the adapter
-                            mRelatedVideosAdapter.setRelatedVideoData(entries);
-                            showRelatedVideos(true);
-                        }
+                    // got related video entries?
+                    if (entries == null || entries.isEmpty()) {
+                        // entries is either null or empty, show empty view
+                        showRelatedVideos(false);
+                    } else {
+                        // has data to show, get the URL of the first video that is of type trailer
+                        mShareTrailerUrl = getFirstMatchingVideoTypeUrl(entries, "Trailer");
+
+                        // has data to show, bind it to the adapter
+                        mRelatedVideosAdapter.setRelatedVideoData(entries);
+                        showRelatedVideos(true);
                     }
                 }).execute();
 
@@ -391,20 +416,17 @@ public class DetailActivity extends AppCompatActivity {
         new FetchUserReviewAsyncTask()
                 .setApiKey(mApiKey)
                 .setMovieId(movieId)
-                .setListener(new FetchUserReviewAsyncTask.OnFetchVideoInfoCompleteListener() {
-                    @Override
-                    public void onComplete(ArrayList<UserReview> entries) {
-                        // Hide the loading indicator
-                        mUserReviewLoadingPb.setVisibility(View.GONE);
+                .setListener(entries -> {
+                    // Hide the loading indicator
+                    mUserReviewLoadingPb.setVisibility(View.GONE);
 
-                        // got related user reviews?
-                        if (entries == null || entries.isEmpty()) {
-                            showUserReviews(false);
-                        } else {
-                            // has data to show, bind it to the adapter
-                            mUserReivewsAdapter.setUserReviewData(entries);
-                            showUserReviews(true);
-                        }
+                    // got related user reviews?
+                    if (entries == null || entries.isEmpty()) {
+                        showUserReviews(false);
+                    } else {
+                        // has data to show, bind it to the adapter
+                        mUserReviewsAdapter.setUserReviewData(entries);
+                        showUserReviews(true);
                     }
                 }).execute();
     }
@@ -456,5 +478,48 @@ public class DetailActivity extends AppCompatActivity {
     private void showUserReviews(boolean hasUserReviews) {
         mUserReviewsRv.setVisibility(hasUserReviews ? View.VISIBLE : View.GONE);
         mEmptyViewUserReviewsTv.setVisibility(hasUserReviews ? View.GONE : View.VISIBLE);
+    }
+
+    /**
+     * getFirstMatchingVideoTypeUrl() takes a whole list of returned related video entries and find the
+     * first entry that matches the video type criteria, returns its URL for share. The parameters
+     * can't be null.
+     *
+     * @param entries   the entire entries of the related videos of a particular movie
+     * @param videoType the parameter videoType that we want to match.
+     * @return the URL of the first video that is a trailer
+     */
+    private URL getFirstMatchingVideoTypeUrl(@NonNull ArrayList<RelatedVideo> entries, @NonNull final String videoType) {
+        // For each entry in the entries of the RelatedVideo, find the first entry that
+        // is of the type trailer, and then return the url of such entry.
+
+        /** (!) JAVA 8 implementation - Android N or later */
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            // Use Predicate to test the entry against the criteria, return its video url
+            // Use lambda express to use the Predicate interface, use predicate for testing
+            Predicate<RelatedVideo> videoTypePredicate = video -> video.getVideoType().equals(videoType);
+
+            // Find the first element that fits the predicate criteria, return it, or else return null
+            RelatedVideo firstVideo = entries.stream().filter(videoTypePredicate).findFirst().orElse(null);
+
+            if (firstVideo != null) {
+                // the filter returned the first occurrence, return its URL.
+                return firstVideo.getVideoUrl();
+            } else {
+                // filter returned no result, return null
+                return null;
+            }
+        }
+
+        /** Default Implementation */
+        // For each entry in the arrayList, do that test, return the first entry's url if it matches
+        for (RelatedVideo entry : entries) {
+            if (entry.getVideoType().equals(videoType)) {
+                return entry.getVideoUrl();
+            }
+        }
+
+        // Exited for loop without any entry that matches the criteria
+        return null;
     }
 }

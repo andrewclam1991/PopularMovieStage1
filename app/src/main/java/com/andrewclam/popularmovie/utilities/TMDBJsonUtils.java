@@ -39,7 +39,7 @@ public final class TMDBJsonUtils {
      * This method parses JSON from a web response and returns an ArrayList of MovieListing objects
      *
      * @param jsonResponse JSON response from server
-     * @return an ArrayList of Movielisting objects, each containing the movie general information data
+     * @return an ArrayList of Movie Listing objects, each containing the movie general information data
      * @throws JSONException If JSON data cannot be properly parsed
      */
 
