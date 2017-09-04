@@ -15,24 +15,22 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.andrewclam.popularmovie.R;
-import com.andrewclam.popularmovie.models.RelatedVideo;
-import com.andrewclam.popularmovie.utilities.NetworkUtils;
-import com.squareup.picasso.Picasso;
+import com.andrewclam.popularmovie.models.UserReview;
 
-import java.net.URL;
 import java.util.ArrayList;
 
 /**
- * Created by Andrew Chi Heng Lam on 8/19/2017.
+ * Created by Andrew Chi Heng Lam on 9/3/2017.
  * <p>
- * ReviewsAdapter is an implementation of the RecyclerViewAdapter, used to back the recyclerView
+ * UserReviewsAdapter is an implementation of the RecyclerViewAdapter, used to back the recyclerView
  * with the data, also contains an inner class that hold the cache of views.
  */
 
-public class UserReviewsAdapter extends RecyclerView.Adapter<UserReviewsAdapter.MovieEntryAdapterViewHolder> {
+public class UserReviewsAdapter extends RecyclerView.Adapter<UserReviewsAdapter.UserReviewAdapterViewHolder> {
 
     /*Log Tag*/
     private final static String TAG = UserReviewsAdapter.class.getSimpleName();
@@ -40,7 +38,7 @@ public class UserReviewsAdapter extends RecyclerView.Adapter<UserReviewsAdapter.
     private final OnUserReviewClickedListener mOnItemClickedListener; // Activity pass this
 
     /*Instance Vars*/
-    private ArrayList<RelatedVideo> mEntries;
+    private ArrayList<UserReview> mEntries;
 
     /*Default Constructor*/
     public UserReviewsAdapter(OnUserReviewClickedListener mOnItemClickedListener) {
@@ -60,7 +58,7 @@ public class UserReviewsAdapter extends RecyclerView.Adapter<UserReviewsAdapter.
      * @return A new ForecastAdapterViewHolder that holds the View for each list item
      */
     @Override
-    public MovieEntryAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public UserReviewAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // P: To create a viewHolder, RelatedVideoAdapterViewHolder needs an inflated itemView to work with
         // R: Needs a layout inflater to inflate the list item view
         // S: Layout inflater can be obtains from context, use LayoutInflater.from(context)
@@ -77,7 +75,7 @@ public class UserReviewsAdapter extends RecyclerView.Adapter<UserReviewsAdapter.
         // Uses the layoutId, viewGroup, boolean signature of the inflater.inflate()
         View view = inflater.inflate(layoutResId, parent, shouldAttachToParentImmediately);
 
-        return new MovieEntryAdapterViewHolder(view);
+        return new UserReviewAdapterViewHolder(view);
     }
 
     /**
@@ -91,12 +89,28 @@ public class UserReviewsAdapter extends RecyclerView.Adapter<UserReviewsAdapter.
      * @param position The position of the item within the adapter's data set.
      */
     @Override
-    public void onBindViewHolder(MovieEntryAdapterViewHolder holder, int position) {
+    public void onBindViewHolder(final UserReviewAdapterViewHolder holder, int position) {
         // This is where we bind data to the ViewHolder
+        UserReview userReview = mEntries.get(position);
 
         // Get the posterPath info from the entry item at the adapter position
-//        String posterPath = mEntries.get(position).getPosterPath();
-//        holder.loadPoster(posterPath);
+        String author = userReview.getAuthor();
+        String content = userReview.getContent();
+        String contentSnippet = userReview.getContentSnippet();
+
+        // Call holder to bind the data
+        holder.mAuthorTv.setText(author);
+
+        // (!) If the contentSnippet has more than some length of character, show just the snippet
+        // and let user to read the full review with a button in fullscreen.
+        if (contentSnippet.length() > holder.CONTENT_MAX_CHARACTER) {
+            // show the button and show a content snippet instead
+            holder.mReadFullReviewBtn.setVisibility(View.VISIBLE);
+            holder.mContentTv.setText(contentSnippet);
+        } else {
+            // Full review is short, just show the full content
+            holder.mContentTv.setText(content);
+        }
     }
 
     /**
@@ -112,11 +126,11 @@ public class UserReviewsAdapter extends RecyclerView.Adapter<UserReviewsAdapter.
     }
 
     /**
-     * setRelatedVideoData() updates the adapter's current data set
+     * setUserReviewData() updates the adapter's current data set
      *
      * @param mEntries the new dataset that we want to update the adapter with
      */
-    public void setRelatedVideoData(ArrayList<RelatedVideo> mEntries) {
+    public void setUserReviewData(ArrayList<UserReview> mEntries) {
         this.mEntries = mEntries;
         notifyDataSetChanged();
     }
@@ -126,34 +140,41 @@ public class UserReviewsAdapter extends RecyclerView.Adapter<UserReviewsAdapter.
      * Handle on itemClick event in each itemView inside the RecyclerView
      */
     public interface OnUserReviewClickedListener {
-        void onItemClicked(RelatedVideo entry);
+        void onItemClicked(UserReview entry);
     }
 
     /**
-     * RelatedVideoAdapterViewHolder
+     * UserReviewAdapterViewHolder
      * an implementation of the RecyclerView.ViewHolder class that act as a cache fo the children
      * views for a single movie entry item.
      * <p>
      * Current implementation only shows the thumbnail of the movie entry and handles a click on
      * this item.
      */
-    public class MovieEntryAdapterViewHolder extends RecyclerView.ViewHolder {
+    class UserReviewAdapterViewHolder extends RecyclerView.ViewHolder {
 
-        private final ImageView mPosterIv;
+        private final TextView mAuthorTv;
+        private final TextView mContentTv;
+        private final Button mReadFullReviewBtn;
+        // a boolean flag to track whether the content textView has been expanded or not
+        private final int CONTENT_MAX_CHARACTER = 100;
 
-        public MovieEntryAdapterViewHolder(View itemView) {
+        UserReviewAdapterViewHolder(View itemView) {
             super(itemView);
-            // Reference the thumbnail Iv ui element
-            mPosterIv = itemView.findViewById(R.id.iv_poster);
-            // Set an onClickListener onto the itemView
-            itemView.setOnClickListener(new View.OnClickListener() {
+            // Reference the UI elements
+            mAuthorTv = itemView.findViewById(R.id.tv_review_author);
+            mContentTv = itemView.findViewById(R.id.tv_review_content);
+            mReadFullReviewBtn = itemView.findViewById(R.id.btn_show_more);
+
+            // Set an onClickListener onto the the read full review btn
+            mReadFullReviewBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     // 1) Get the current adapter position
                     int adapterPosition = getAdapterPosition();
 
                     // 2) Find the corresponding clicked entry in the entries
-                    RelatedVideo entry = mEntries.get(adapterPosition);
+                    UserReview entry = mEntries.get(adapterPosition);
 
                     // 3) Use onClickHandler to notify the activity of a onClick event
                     // pass in the retrieved object
@@ -163,20 +184,6 @@ public class UserReviewsAdapter extends RecyclerView.Adapter<UserReviewsAdapter.
                     // with the movie entry parameter.
                 }
             });
-        }
-
-        /**
-         * loadPoster method loads the entry poster image with the parameter url
-         *
-         * @param posterPath the downloaded entry poster image's path (needs to set base url)
-         */
-        public void loadPoster(String posterPath) {
-            // Use NetworkUtils to form the query url, pass in the posterPath
-            URL posterUrl = NetworkUtils.buildImageUrl(posterPath);
-
-            Picasso.with(mPosterIv.getContext())
-                    .load(posterUrl.toString())
-                    .into(mPosterIv);
         }
     }
 }

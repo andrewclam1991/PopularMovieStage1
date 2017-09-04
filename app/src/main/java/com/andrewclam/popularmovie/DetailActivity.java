@@ -29,15 +29,18 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.andrewclam.popularmovie.adapters.RelatedVideosAdapter;
 import com.andrewclam.popularmovie.adapters.UserReviewsAdapter;
 import com.andrewclam.popularmovie.async.DbUpdateAsyncTask;
 import com.andrewclam.popularmovie.async.FetchRelatedVideoAsyncTask;
+import com.andrewclam.popularmovie.async.FetchUserReviewAsyncTask;
 import com.andrewclam.popularmovie.data.PopularMovieDbContract;
 import com.andrewclam.popularmovie.models.MovieListing;
 import com.andrewclam.popularmovie.models.RelatedVideo;
+import com.andrewclam.popularmovie.models.UserReview;
 import com.andrewclam.popularmovie.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
@@ -76,10 +79,15 @@ public class DetailActivity extends AppCompatActivity {
     // RecyclerView for Related Videos
     private RecyclerView mRelatedVideosRv;
     private RelatedVideosAdapter mRelatedVideosAdapter;
+    private TextView mEmptyViewRelatedVideosTv;
+    private ProgressBar mRelatedVideoLoadingPb;
+
 
     // RecyclerView for Reviews
-    private RecyclerView mReviewsRv;
-    private UserReviewsAdapter mReivewsAdapter;
+    private RecyclerView mUserReviewsRv;
+    private UserReviewsAdapter mUserReivewsAdapter;
+    private TextView mEmptyViewUserReviewsTv;
+    private ProgressBar mUserReviewLoadingPb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,6 +160,10 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
+        // Reference the empty view and the loading indicator
+        mEmptyViewRelatedVideosTv = findViewById(R.id.tv_related_video_empty_view);
+        mRelatedVideoLoadingPb = findViewById(R.id.pb_related_video_loading_indicator);
+
         // Init layout manager for horizontal scroll
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
 
@@ -167,22 +179,43 @@ public class DetailActivity extends AppCompatActivity {
      * for the related videos. This method is called in
      */
     private void initReviewsRv() {
-        mReviewsRv = findViewById(R.id.user_reviews_rv);
-        mReivewsAdapter = new UserReviewsAdapter(new UserReviewsAdapter.OnUserReviewClickedListener() {
+        mUserReviewsRv = findViewById(R.id.user_reviews_rv);
+        mUserReivewsAdapter = new UserReviewsAdapter(new UserReviewsAdapter.OnUserReviewClickedListener() {
             @Override
-            public void onItemClicked(RelatedVideo entry) {
+            public void onItemClicked(UserReview entry) {
                 // Do something when user clicks the review (??)
+                // Direct user to read more with the url link
+                String reviewUrlStr = entry.getReviewUrl();
+                // launch an implicit intent to handle the video url
+
+                // Build the intent
+                Uri reviewUri = Uri.parse(reviewUrlStr);
+                Intent reviewUriIntent = new Intent(Intent.ACTION_VIEW, reviewUri);
+
+                // Verify it resolves
+                PackageManager packageManager = getPackageManager();
+                List<ResolveInfo> activities = packageManager.queryIntentActivities(reviewUriIntent, 0);
+                boolean isIntentSafe = activities.size() > 0;
+
+                // Start an activity if it's safe
+                if (isIntentSafe) {
+                    startActivity(reviewUriIntent);
+                }
             }
         });
 
+        // Reference the empty view
+        mEmptyViewUserReviewsTv = findViewById(R.id.tv_user_reviews_empty_view);
+        mUserReviewLoadingPb = findViewById(R.id.pb_user_review_loading_indicator);
+
         // Init layout manager for horizontal scroll
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
 
         // Attach the layout manager to the recyclerView
-        mReviewsRv.setLayoutManager(layoutManager);
+        mUserReviewsRv.setLayoutManager(layoutManager);
 
         // Back the recyclerView with the adapter
-        mReviewsRv.setAdapter(mReivewsAdapter);
+        mUserReviewsRv.setAdapter(mUserReivewsAdapter);
     }
 
     /**
@@ -320,17 +353,26 @@ public class DetailActivity extends AppCompatActivity {
          ******************************************/
         final String mApiKey = getString(R.string.tmdb_api_key);
 
+        // Show the related video loading indicator
+        mRelatedVideoLoadingPb.setVisibility(View.VISIBLE);
+
         new FetchRelatedVideoAsyncTask()
                 .setApiKey(mApiKey)
                 .setMovieId(movieId)
                 .setListener(new FetchRelatedVideoAsyncTask.OnFetchVideoInfoCompleteListener() {
                     @Override
                     public void onComplete(ArrayList<RelatedVideo> entries) {
+                        // Hide the loading indicator
+                        mRelatedVideoLoadingPb.setVisibility(View.GONE);
+
                         // got related video entries?
-                        if (entries != null) {
-                            mRelatedVideosAdapter.setRelatedVideoData(entries);
+                        if (entries == null || entries.isEmpty()) {
+                            // entries is either null or empty, show empty view
+                            showRelatedVideos(false);
                         } else {
-                            // No related videos, show NoVideo in the view
+                            // has data to show, bind it to the adapter
+                            mRelatedVideosAdapter.setRelatedVideoData(entries);
+                            showRelatedVideos(true);
                         }
                     }
                 }).execute();
@@ -343,17 +385,25 @@ public class DetailActivity extends AppCompatActivity {
          ******************************************/
         final String mApiKey = getString(R.string.tmdb_api_key);
 
-        new FetchRelatedVideoAsyncTask()
+        // Show the loading indicator
+        mUserReviewLoadingPb.setVisibility(View.VISIBLE);
+
+        new FetchUserReviewAsyncTask()
                 .setApiKey(mApiKey)
                 .setMovieId(movieId)
-                .setListener(new FetchRelatedVideoAsyncTask.OnFetchVideoInfoCompleteListener() {
+                .setListener(new FetchUserReviewAsyncTask.OnFetchVideoInfoCompleteListener() {
                     @Override
-                    public void onComplete(ArrayList<RelatedVideo> entries) {
-                        // got related video entries?
-                        if (entries != null) {
-                            mRelatedVideosAdapter.setRelatedVideoData(entries);
+                    public void onComplete(ArrayList<UserReview> entries) {
+                        // Hide the loading indicator
+                        mUserReviewLoadingPb.setVisibility(View.GONE);
+
+                        // got related user reviews?
+                        if (entries == null || entries.isEmpty()) {
+                            showUserReviews(false);
                         } else {
-                            // todo No related videos, show NoVideo in the view
+                            // has data to show, bind it to the adapter
+                            mUserReivewsAdapter.setUserReviewData(entries);
+                            showUserReviews(true);
                         }
                     }
                 }).execute();
@@ -396,5 +446,15 @@ public class DetailActivity extends AppCompatActivity {
             default:
                 throw new SQLiteException("Error occurred, the stored fav value is out of range");
         }
+    }
+
+    private void showRelatedVideos(boolean hasRelatedVideos) {
+        mRelatedVideosRv.setVisibility(hasRelatedVideos ? View.VISIBLE : View.GONE);
+        mEmptyViewRelatedVideosTv.setVisibility(hasRelatedVideos ? View.GONE : View.VISIBLE);
+    }
+
+    private void showUserReviews(boolean hasUserReviews) {
+        mUserReviewsRv.setVisibility(hasUserReviews ? View.VISIBLE : View.GONE);
+        mEmptyViewUserReviewsTv.setVisibility(hasUserReviews ? View.GONE : View.VISIBLE);
     }
 }

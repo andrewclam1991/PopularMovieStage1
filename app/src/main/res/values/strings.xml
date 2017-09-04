@@ -24,4 +24,6 @@
     <string name="action_show_favorites">My Favorites</string>
     <string name="related_video_label">Related Videos</string>
     <string name="user_reviews_label">User Reviews</string>
+    <string name="no_user_reviews">No User Reviews</string>
+    <string name="no_related_videos">No Related Videos</string>
 </resources>

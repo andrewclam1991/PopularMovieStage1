@@ -119,7 +119,7 @@ public class RelatedVideosAdapter extends RecyclerView.Adapter<RelatedVideosAdap
     }
 
     /**
-     * setRelatedVideoData() updates the adapter's current data set
+     * setUserReviewData() updates the adapter's current data set
      *
      * @param mEntries the new dataset that we want to update the adapter with
      */

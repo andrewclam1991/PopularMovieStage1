@@ -25,6 +25,7 @@ public class UserReview {
     private String author;
     private String content;
     private String reviewUrl;
+    private String contentSnippet;
 
     public UserReview() {
 
@@ -60,5 +61,13 @@ public class UserReview {
 
     public void setReviewUrl(String reviewUrl) {
         this.reviewUrl = reviewUrl;
+    }
+
+    public String getContentSnippet() {
+        return contentSnippet;
+    }
+
+    public void setContentSnippet(String contentSnippet) {
+        this.contentSnippet = contentSnippet;
     }
 }

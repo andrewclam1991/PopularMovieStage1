@@ -55,7 +55,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="4dp"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Display1"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     tools:text="6.5 / 10" />
 
                 <!-- Vote Count -->
@@ -64,6 +64,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="4dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     tools:text="8902 votes" />
 
                 <!-- Release Date -->
@@ -72,6 +73,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="4dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     tools:text="2017" />
             </LinearLayout>
 
@@ -85,14 +87,13 @@
             android:lineSpacingMultiplier="1.15"
             android:paddingTop="16dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textSize="14sp"
-            android:typeface="normal"
             tools:text="@string/dummy_text" />
 
         <Button
             android:id="@+id/button_mark_favorite"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             android:layout_marginTop="16dp"
             android:text="@string/add_to_favorite_list" />
 
@@ -101,32 +102,82 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:lineSpacingMultiplier="1.15"
+            android:paddingBottom="8dp"
             android:paddingTop="16dp"
             android:text="@string/related_video_label"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         <!-- Related Video Recycler View -->
         <android.support.v7.widget.RecyclerView
             android:id="@+id/related_video_rv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="16dp" />
+            android:paddingTop="8dp"
+            tools:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            tools:listitem="@layout/related_video_list_item"
+            tools:orientation="horizontal" />
+
+        <!-- Loading Indicator for reviews -->
+        <ProgressBar
+            android:id="@+id/pb_related_video_loading_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="16dp"
+            android:visibility="gone" />
+
+        <!-- Empty View when there are error or no related videos -->
+        <TextView
+            android:id="@+id/tv_related_video_empty_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="16dp"
+            android:text="@string/no_related_videos"
+            android:visibility="gone" />
 
         <!-- User Reviews -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:lineSpacingMultiplier="1.15"
-            android:paddingTop="16dp"
+            android:paddingBottom="8dp"
+            android:paddingTop="32dp"
             android:text="@string/user_reviews_label"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:typeface="sans" />
 
         <!-- User Reviews Recycler View -->
         <android.support.v7.widget.RecyclerView
             android:id="@+id/user_reviews_rv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="16dp" />
+            android:paddingTop="8dp"
+            tools:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            tools:layout_height="250dp"
+            tools:listitem="@layout/review_list_item"
+            tools:orientation="horizontal" />
+
+        <!-- Loading Indicator for reviews -->
+        <ProgressBar
+            android:id="@+id/pb_user_review_loading_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="16dp"
+            android:visibility="gone" />
+
+        <!-- Empty View when there are error or no user reviews -->
+        <TextView
+            android:id="@+id/tv_user_reviews_empty_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="16dp"
+            android:text="@string/no_user_reviews"
+            android:visibility="gone" />
 
     </LinearLayout>
 

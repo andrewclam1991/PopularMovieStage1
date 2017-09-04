@@ -112,6 +112,7 @@
     <orderEntry type="jdk" jdkName="Android API 26 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="support-core-ui-26.0.2" level="project" />
+    <orderEntry type="library" name="cardview-v7-26.0.2" level="project" />
     <orderEntry type="library" name="picasso-2.5.2" level="project" />
     <orderEntry type="library" name="support-media-compat-26.0.2" level="project" />
     <orderEntry type="library" name="constraint-layout-1.0.2" level="project" />

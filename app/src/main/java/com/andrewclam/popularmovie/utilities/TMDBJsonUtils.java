@@ -283,13 +283,36 @@ public final class TMDBJsonUtils {
                 String id = result.getString(TMDB_REVIEW_ID);
                 String author = result.getString(TMDB_REVIEW_AUTHOR);
                 String content = result.getString(TMDB_REVIEW_CONTENT);
-                String url = result.getString(TMDB_REVIEW_URL);
+                String urlStr = result.getString(TMDB_REVIEW_URL);
+
+                /**********************
+                 * Content Sanitation *
+                 **********************/
+                // remove blanks and empty lines
+                content = content.replaceAll("(?m)^[ \t]*\r?\n", "");
+                content = content.trim();
 
                 /* Store each element into the data model class */
                 entry.setReviewId(id);
                 entry.setAuthor(author);
                 entry.setContent(content);
-                entry.setReviewUrl(url);
+                entry.setReviewUrl(urlStr);
+
+                /********************
+                 * CREATE A SNIPPET *
+                 ********************/
+                // only create snippet of the review if it more than a certain length
+                // 140 character seems like a good number
+                if (content.length() > 100) {
+                    // create shorten version of the full review (snippet) and store it
+                    StringBuilder contentSnippet = new StringBuilder(content);
+                    contentSnippet = contentSnippet.delete(100, contentSnippet.length()).append(" ... ");
+                    entry.setContentSnippet(contentSnippet.toString());
+
+                } else {
+                    // Use full content for the snippet
+                    entry.setContentSnippet(content);
+                }
 
                 /* Add the entry object to the list */
                 entries.add(entry);

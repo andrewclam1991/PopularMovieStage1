@@ -53,6 +53,7 @@ public class NetworkUtils {
     private static final String TMDB_PATH_BASE_URL = "https://api.themoviedb.org/3";
     private static final String TMDB_PATH_MOVIE = "movie";
     private static final String TMDB_PATH_VIDEO = "videos";
+    private static final String TMDB_PATH_REVIEWS = "reviews";
 
     // TMDB Uri Query Parameters
     private static final String TMDB_QUERY_API_KEY = "api_key";
@@ -262,6 +263,45 @@ public class NetworkUtils {
         return url;
     }
 
+
+    public static URL buildUserReviewUrl(@NonNull Long movieId, @NonNull String apiKey) {
+        // Convert the movieId to String and check
+        final String movieIdStr = String.valueOf(movieId);
+        if (movieIdStr == null || movieIdStr.isEmpty()) {
+            throw new IllegalArgumentException("buildUserReviewUrl() parameter movieId can't be empty or null");
+        }
+
+        if (apiKey.isEmpty()) {
+            throw new IllegalArgumentException("buildUserReviewUrl() parameter apiKey can't be empty");
+        }
+
+        // Use the Uri.parse() to build the Uri according to the template
+        // the resulting uri is used to generate the URL that we will use to query the TMDB server
+        // example uri: https://api.themoviedb.org/3/movie/211672/reviews?api_key=[key]
+        // uri structure :  [BASE_URL] / [PATH_MOVIE] / [PATH_MOVIE_ID] / [PATH_REVIEWS] [?Query = Parameter]
+
+        Uri.Builder builder = Uri.parse(TMDB_PATH_BASE_URL).buildUpon()
+                .appendPath(TMDB_PATH_MOVIE)
+                .appendPath(movieIdStr)
+                .appendPath(TMDB_PATH_REVIEWS)
+                .appendQueryParameter(TMDB_QUERY_API_KEY, apiKey); // << Define API KEY in resource
+
+        Uri builtUri = builder.build();
+
+        @Nullable URL url = null;
+
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            Log.e(TAG, "buildUserReviewUrl() from Uri failed due to malformed URL");
+            e.printStackTrace();
+        }
+
+        // Log the url for debug purposes
+        Log.i(TAG, "buildUserReviewUrl() url returns: " + url);
+
+        return url;
+    }
     /**
      * This method returns the entire result from the HTTP response.
      * Source: Udacity Sunshine App

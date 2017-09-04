@@ -103,7 +103,7 @@ public class FetchUserReviewAsyncTask extends AsyncTask<Void, Void, ArrayList<Us
 
         try {
             // Get the url required by the network util
-            URL url = NetworkUtils.buildVideoKeyUrl(mMovieId, mApiKey);
+            URL url = NetworkUtils.buildUserReviewUrl(mMovieId, mApiKey);
 
             // Check for null url
             if (url == null) return null;
