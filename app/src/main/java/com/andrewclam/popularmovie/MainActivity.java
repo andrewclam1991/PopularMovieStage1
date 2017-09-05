@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements
 
     /*Constants */
     public static final String EXTRA_MOVIE_ENTRY_OBJECT = "extra_movie_entry_obj";
-    /**
+    /*
      * Start Activity For Result codes
      * Use this for the MainActivity to restartLoader and refresh the dataset
      */
@@ -66,20 +67,24 @@ public class MainActivity extends AppCompatActivity implements
     /*Log Tag*/
     private static final String TAG = MainActivity.class.getSimpleName();
     /*Constant - Keys*/
-    private static final String LIST_TYPE_SELECTOR_KEY = "instance_sort_val";
-    private static final String USER_SHOW_FAVORITES_KEY = "user_show_favorite_movies";
+    private static final String LIST_STATE_KEY = "list_state_key";
+    private static final String LIST_TYPE_SELECTOR_KEY = "list_type_selector_key";
+    private static final String USER_SHOW_FAVORITES_KEY = "favorite_key";
     /*
     * This ID will be used to identify the Loader responsible for loading our offline database. In
     * some cases, one Activity can deal with many Loaders. However, in our case, there is only one.
     * We will still use this ID to initialize the loader and create the loader for best practice.
     */
     private static final int ID_MOVIE_LISTING_LOADER = 52;
+
     /*Instance Var*/
     private ProgressBar mProgressBar;
     private LinearLayout mErrorMsgLayout;
     private RecyclerView mRecyclerView;
     private MovieListingsAdapter mAdapter;
+    private GridLayoutManager mLayoutManager;
     private String mListType;
+    private Parcelable mListState;
     private Context mContext;
 
     @Override
@@ -102,10 +107,10 @@ public class MainActivity extends AppCompatActivity implements
 
         // Init layout manager
         int spanSize = LayoutManagerUtils.getSpanSize(this);
-        GridLayoutManager layoutManager = new GridLayoutManager(this, spanSize);
+        mLayoutManager = new GridLayoutManager(this, spanSize);
 
         // Attach the layout manager to the recyclerView
-        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setLayoutManager(mLayoutManager);
 
         // Back the recyclerView with the adapter
         mRecyclerView.setAdapter(mAdapter);
@@ -113,8 +118,9 @@ public class MainActivity extends AppCompatActivity implements
         // See if savedInstanceState exists and where we retained user's query selection
         if (savedInstanceState != null) {
             mListType = savedInstanceState.getString(LIST_TYPE_SELECTOR_KEY);
+            mListState = savedInstanceState.getParcelable(LIST_STATE_KEY);
         } else {
-            // Default to popular and zero at position
+            // Default to popular
             mListType = TMDB_PATH_POPULAR;
         }
 
@@ -162,6 +168,12 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Get the current layout manager's list state
+        mListState = mLayoutManager.onSaveInstanceState();
+
+        // Save the layout manager's list state
+        savedInstanceState.putParcelable(LIST_STATE_KEY, mListState);
+
         // Save the user's current sort value
         savedInstanceState.putString(LIST_TYPE_SELECTOR_KEY, mListType);
 
@@ -249,6 +261,11 @@ public class MainActivity extends AppCompatActivity implements
      * This method shows the entry data when it is available and hides the error msg
      */
     private void showEntryData() {
+        // Check if there is an existing listState, restore it.
+        if (mListState != null) {
+            mLayoutManager.onRestoreInstanceState(mListState);
+        }
+
         mErrorMsgLayout.setVisibility(View.GONE);
         mRecyclerView.setVisibility(View.VISIBLE);
     }
