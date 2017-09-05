@@ -28,4 +28,6 @@
     <string name="read_more">Read More</string>
     <string name="action_added_to_favorite">Added to favorites.</string>
     <string name="action_removed_from_favorite">Removed from favorites.</string>
+    <string name="error_no_trailer_to_share">Sorry, this movie doesn\'t have a trailer</string>
+    <string name="action_share_this_movie_trailer">Share The Trailer</string>
 </resources>
