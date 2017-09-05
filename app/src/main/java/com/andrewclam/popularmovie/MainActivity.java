@@ -22,6 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -54,10 +55,8 @@ import static com.andrewclam.popularmovie.utilities.NetworkUtils.TMDB_PATH_TOP_R
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>, MovieListingsAdapter.OnMovieEntryClickListener {
-
-    /*Constants */
     public static final String EXTRA_MOVIE_ENTRY_OBJECT = "extra_movie_entry_obj";
-    /**
+    /*
      * Start Activity For Result codes
      * Use this for the MainActivity to restartLoader and refresh the dataset
      */
@@ -66,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements
     /*Log Tag*/
     private static final String TAG = MainActivity.class.getSimpleName();
     /*Constant - Keys*/
+    private static final String LIST_POSITION_KEY = "list_position_key";
     private static final String LIST_TYPE_SELECTOR_KEY = "instance_sort_val";
     private static final String USER_SHOW_FAVORITES_KEY = "user_show_favorite_movies";
     /*
@@ -73,14 +73,18 @@ public class MainActivity extends AppCompatActivity implements
     * some cases, one Activity can deal with many Loaders. However, in our case, there is only one.
     * We will still use this ID to initialize the loader and create the loader for best practice.
     */
-    private static final int ID_MOVIE_LISTING_LOADER = 52;
+    private static final int ID_MOVIE_LISTING_LOADER = 123;
+
     /*Instance Var*/
+    private Context mContext;
     private ProgressBar mProgressBar;
     private LinearLayout mErrorMsgLayout;
     private RecyclerView mRecyclerView;
+    private GridLayoutManager mLayoutManager;
     private MovieListingsAdapter mAdapter;
     private String mListType;
-    private Context mContext;
+    private int mListPosition;
+    private boolean mScrolled = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,10 +106,10 @@ public class MainActivity extends AppCompatActivity implements
 
         // Init layout manager
         int spanSize = LayoutManagerUtils.getSpanSize(this);
-        GridLayoutManager layoutManager = new GridLayoutManager(this, spanSize);
+        mLayoutManager = new GridLayoutManager(this, spanSize);
 
         // Attach the layout manager to the recyclerView
-        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setLayoutManager(mLayoutManager);
 
         // Back the recyclerView with the adapter
         mRecyclerView.setAdapter(mAdapter);
@@ -113,10 +117,28 @@ public class MainActivity extends AppCompatActivity implements
         // See if savedInstanceState exists and where we retained user's query selection
         if (savedInstanceState != null) {
             mListType = savedInstanceState.getString(LIST_TYPE_SELECTOR_KEY);
+            mListPosition = savedInstanceState.getInt(LIST_POSITION_KEY);
         } else {
-            // Default to popular and zero at position
+            // Default to popular and the first position
             mListType = TMDB_PATH_POPULAR;
+            mListPosition = 0;
         }
+
+        // Attach a on scroll listener to trigger
+        // (!) mScrolled is used to determined whether to save the first visible
+        // element's position when the activity recreates
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                // scroll state has been changed
+                if (!mScrolled) {
+                    mScrolled = true;
+                    Log.d(TAG, "showMovieData() recycler scroll state changed logged");
+                }
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+        });
+
 
         // Show the loading indicator
         mProgressBar.setVisibility(View.VISIBLE);
@@ -162,7 +184,58 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        // Save the user's current sort value
+//        /* (!) Due to row limitations,  with grid layout view the find the first visible
+//         * would get the first column of the row in different orientation. More complicated because
+//         * gridsize is calculated in runtime, adapting to different screen sizes and ratios
+//         *
+//         * ex.
+//         * 1st vertical view (initial view, ROW 2 is visible, 4 is the first element)
+//         * [1] [2] [3]
+//         * [4#] [5] [6] <- visible row
+//         * [7] [8] [9]
+//         *
+//         * -> Rotate to horizontal
+//         * 1st Horizontal View (smooth scroll to row that contains 4,)
+//         * [1##] [2] [3] [4#] <- visible row
+//         * [5] [6] [7] [8]
+//         * [9]
+//         *
+//         *
+//         * Now, the get first visible would return 1, and on next rotation, the screen would
+//         * not return to the 1st vertical view
+//         * -> Rotate to vertical
+//         * 2nd vertical view
+//         *
+//         * [1##] [2] [3] <- becomes visible, first element changed to [1]
+//         * [4] [5] [6]
+//         * [7] [8] [9]
+//         */
+//
+//        /* Solution:
+//         * Find the first visible element in the layout manager, store that value
+//         * if the conditions are met
+//         *
+//         * 1) the recycler registered a onScroll event and triggered the mScrolled flag
+//         * 2) When the screen orientation is of one type only
+//         */
+        Log.d(TAG, "onSavedInstanceState() entered");
+
+        if (mScrolled) {
+            Log.d(TAG, "onSavedInstanceState() mScrolled is true");
+
+            // when user has scrolled
+            // Update the list position to find the first visible item
+            mListPosition = mLayoutManager.findFirstVisibleItemPosition();
+
+            Log.d(TAG, "onSavedInstanceState() mListPosition updated to: " + mListPosition);
+        }
+
+        // Saved the updated or key the previously stated listPosition in the saved state
+        savedInstanceState.putInt(LIST_POSITION_KEY, mListPosition);
+
+        Log.d(TAG, "onSavedInstanceState() mListPosition saved: " + mListPosition);
+
+        // Save the user's current sort value and position
         savedInstanceState.putString(LIST_TYPE_SELECTOR_KEY, mListType);
 
         // Always call the superclass so it can save the view hierarchy state
@@ -240,7 +313,8 @@ public class MainActivity extends AppCompatActivity implements
 
                         // Bind the entries to the adapter for display
                         mAdapter.setMovieEntryData(entries);
-                        showEntryData();
+
+                        showMovieData();
                     }
                 }).execute();
     }
@@ -248,8 +322,14 @@ public class MainActivity extends AppCompatActivity implements
     /**
      * This method shows the entry data when it is available and hides the error msg
      */
-    private void showEntryData() {
+    private void showMovieData() {
+        // Smooth scroll the recycler view to the list position
+        mRecyclerView.smoothScrollToPosition(mListPosition);
+
+        Log.d(TAG, "showMovieData() recycler smooth scrolled to: " + mListPosition);
+
         mErrorMsgLayout.setVisibility(View.GONE);
+
         mRecyclerView.setVisibility(View.VISIBLE);
     }
 
@@ -327,12 +407,11 @@ public class MainActivity extends AppCompatActivity implements
 
         // only show the entryData if there are entries to show.
         if (entries.size() > 0) {
-            showEntryData();
+            showMovieData();
         } else {
             showErrorMsg();
         }
     }
-    // Register a broadcast receiver to detect network change, and do database sync
 
     /**
      * Called when a previously created loader is being reset, and thus making its data unavailable.
@@ -380,5 +459,12 @@ public class MainActivity extends AppCompatActivity implements
                 // call super's implementation in default
                 super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        // Detach the onScrollListener
+        mRecyclerView.clearOnScrollListeners();
+        super.onDestroy();
     }
 }
