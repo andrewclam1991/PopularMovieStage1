@@ -8,11 +8,13 @@
   ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <color name="colorPrimaryLight">#7c42bd</color>
     <color name="colorPrimary">#4a138c</color>
     <color name="colorPrimaryDark">#12005e</color>
     <color name="colorAccent">#ffd740</color>
+    <color name="colorSecondary">#ffb300</color>
+    <color name="colorSecondaryLight" tools:keep="@color/colorSecondaryLight">#ffe54c</color>
     <color name="colorTransparent">#00000000</color>
     <!--<color name="colorDivider">#BDBDBD</color>-->
 </resources>

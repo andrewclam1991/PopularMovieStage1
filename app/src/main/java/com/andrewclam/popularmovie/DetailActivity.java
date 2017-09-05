@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -73,6 +74,7 @@ public class DetailActivity extends AppCompatActivity {
     private static final String TAG = DetailActivity.class.getSimpleName();
 
     // UI views
+    private View rootView;
     private ImageView posterBannerIv;
     private ImageView posterIv;
     private TextView titleTv;
@@ -117,6 +119,7 @@ public class DetailActivity extends AppCompatActivity {
                 mContext = DetailActivity.this;
 
                 // Reference the UI views
+                rootView = findViewById(R.id.detail_root_view);
                 posterBannerIv = findViewById(R.id.iv_poster_banner);
                 posterIv = findViewById(R.id.iv_poster);
                 titleTv = findViewById(R.id.tv_title);
@@ -293,6 +296,9 @@ public class DetailActivity extends AppCompatActivity {
                 .load(posterUrl.toString())
                 .into(posterBannerIv);
 
+        // Make it semi-transparent to aid readability
+        posterBannerIv.setImageAlpha(126);
+
         // Load into the posterIv
         Picasso.with(this)
                 .load(posterUrl.toString())
@@ -340,6 +346,9 @@ public class DetailActivity extends AppCompatActivity {
      *                identifier in the client's database.
      */
     private void loadFavButton(Long movieId) {
+        // Set the color when the user clicks the button
+        favBtn.setRippleColor(ContextCompat.getColor(this, R.color.colorSecondary));
+
         // Build the Uri that points to the movie base on the id, this Uri is required
         // for getting the fav the fav status
         final Uri updateUri = buildMovieUriWithId(movieId);
@@ -368,6 +377,11 @@ public class DetailActivity extends AppCompatActivity {
                         // call getCurrentFavoriteStatus to update the current mFavStatus when
                         // the database update operation is complete
                         mFavStatus = getCurrentFavoriteStatus(updateUri);
+
+                        // Base on the current FavStatus, show user their update is done
+                        Snackbar.make(rootView,
+                                mFavStatus ? R.string.action_added_to_favorite : R.string.action_removed_from_favorite,
+                                Snackbar.LENGTH_SHORT).show();
 
                         // Set Result (when user exits this activity, to notify the starting activity
                         // of user has changed favorite result) whenever the this activity finishes.
@@ -474,12 +488,10 @@ public class DetailActivity extends AppCompatActivity {
             case 0:
                 // Current is false, button should show (add to favorite)
                 favBtn.setImageResource(R.drawable.ic_favorite_off_24dp);
-                favBtn.setRippleColor(ContextCompat.getColor(this, R.color.colorPrimary));
                 return false;
             case 1:
                 // Current is true, button should show (added to favorite)
                 favBtn.setImageResource(R.drawable.ic_favorite_on_24dp);
-                favBtn.setRippleColor(ContextCompat.getColor(this, R.color.colorAccent));
                 return true;
             default:
                 throw new SQLiteException("Error occurred, the stored fav value is out of range");
@@ -538,26 +550,4 @@ public class DetailActivity extends AppCompatActivity {
         // Exited for loop without any entry that matches the criteria
         return null;
     }
-
-//    private void setupActivityTitle(@NonNull final ActionBar actionBar, final String title) {
-//        AppBarLayout appBarLayout = findViewById(R.id.app_bar);
-//        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-//            boolean isShow = false;
-//            int scrollRange = -1;
-//
-//            @Override
-//            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-//                if (scrollRange == -1) {
-//                    scrollRange = appBarLayout.getTotalScrollRange();
-//                }
-//                if (scrollRange + verticalOffset == 0) {
-//                    actionBar.setTitle(title);
-//                    isShow = true;
-//                } else if(isShow) {
-//                    actionBar.setTitle(" ");
-//                    isShow = false;
-//                }
-//            }
-//        });
-//    }
 }

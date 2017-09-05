@@ -18,6 +18,7 @@
     tools:showIn="@layout/activity_detail">
 
     <LinearLayout
+        android:id="@+id/detail_root_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -65,7 +66,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="4dp"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     tools:text="6.5/10" />
 
                 <!-- Vote Count -->
@@ -74,7 +75,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="4dp"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     tools:text="8902 votes" />
 
                 <!-- Release Date -->
@@ -83,7 +84,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="4dp"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     tools:text="2017" />
             </LinearLayout>
 
@@ -96,7 +97,7 @@
             android:layout_height="wrap_content"
             android:lineSpacingMultiplier="1.15"
             android:paddingTop="16dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
             tools:text="@string/dummy_text" />
 
         <!-- Related Video Label -->
@@ -108,7 +109,8 @@
             android:paddingTop="16dp"
             android:text="@string/related_video_label"
             android:textAllCaps="true"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:textColor="@color/colorAccent" />
 
         <!-- Related Video Recycler View -->
         <android.support.v7.widget.RecyclerView
@@ -139,16 +141,17 @@
             android:text="@string/no_related_videos"
             android:visibility="gone" />
 
-        <!-- User Reviews -->
+        <!-- User Reviews Label -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:lineSpacingMultiplier="1.15"
             android:paddingBottom="8dp"
-            android:paddingTop="32dp"
+            android:paddingTop="16dp"
             android:text="@string/user_reviews_label"
             android:textAllCaps="true"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:textColor="@color/colorAccent"
             android:typeface="sans" />
 
         <!-- User Reviews Recycler View -->

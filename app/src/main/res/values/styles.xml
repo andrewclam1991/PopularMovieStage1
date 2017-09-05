@@ -27,8 +27,4 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark" />
 
-    <style name="transparent_title">
-        <item name="android:textColor">@color/colorTransparent</item>
-    </style>
-
 </resources>
