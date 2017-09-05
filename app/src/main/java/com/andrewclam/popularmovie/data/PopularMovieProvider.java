@@ -239,7 +239,7 @@ public class PopularMovieProvider extends ContentProvider {
                 // Get a writable database with the dbHelper
                 final SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
-                // call beginTransaction() with the SQlite db to begin a potentially
+                // call beginTransaction() with the SQLite db to begin a potentially
                 // long running transaction, remember to call endTransaction() when such transaction
                 // is complete.
                 db.beginTransaction();

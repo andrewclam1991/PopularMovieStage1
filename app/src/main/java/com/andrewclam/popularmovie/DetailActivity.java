@@ -16,11 +16,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,7 +33,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -72,11 +75,12 @@ public class DetailActivity extends AppCompatActivity {
     // UI views
     private ImageView posterBannerIv;
     private ImageView posterIv;
+    private TextView titleTv;
     private TextView releaseDateTv;
     private TextView voteAverageTv;
     private TextView voteCountTv;
     private TextView overViewTv;
-    private Button favBtn;
+    private FloatingActionButton favBtn;
     private boolean mFavStatus;
     private Context mContext;
 
@@ -115,11 +119,12 @@ public class DetailActivity extends AppCompatActivity {
                 // Reference the UI views
                 posterBannerIv = findViewById(R.id.iv_poster_banner);
                 posterIv = findViewById(R.id.iv_poster);
+                titleTv = findViewById(R.id.tv_title);
                 releaseDateTv = findViewById(R.id.tv_release_date);
                 voteAverageTv = findViewById(R.id.tv_vote_average);
                 voteCountTv = findViewById(R.id.tv_vote_count);
                 overViewTv = findViewById(R.id.tv_overview);
-                favBtn = findViewById(R.id.button_mark_favorite);
+                favBtn = findViewById(R.id.fav_btn);
 
                 // Initialize RelatedVideos RecyclerView and its Adapter
                 initRelatedVideoRv();
@@ -134,6 +139,33 @@ public class DetailActivity extends AppCompatActivity {
         } else {
             Log.e(TAG, "Intent doesn't have the required movie entry");
             finish();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_detail, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.action_share_movie:
+                // Share the first video of type trailer in the Related Video
+                // list
+                if (mShareTrailerUrl != null) {
+                    Toast.makeText(this, "" + mShareTrailerUrl, Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -235,7 +267,17 @@ public class DetailActivity extends AppCompatActivity {
 
         /* TITLE */
         // Set movie title as the activity title
-        if (getSupportActionBar() != null) getSupportActionBar().setTitle(entry.getTitle());
+        String title = entry.getTitle();
+        titleTv.setText(title);
+
+        // CollapsingToolbarLayout set title
+        CollapsingToolbarLayout mCollapsingToolbarLayout = findViewById(R.id.collapsing_toolbar_layout);
+        mCollapsingToolbarLayout.setTitleEnabled(true);
+        mCollapsingToolbarLayout.setTitle(title);
+        mCollapsingToolbarLayout.setExpandedTitleTextColor(
+                ColorStateList.valueOf(
+                        ContextCompat.getColor(this, R.color.colorTransparent)
+                ));
 
         /* RELEASE DATE */
         // Set the release date at the field
@@ -285,37 +327,9 @@ public class DetailActivity extends AppCompatActivity {
         /*******************
          * Movie's Reviews *
          *******************/
-        // Show user all the movie's related videos on record in TMDB
+        // Show user all the movie's related reviews on record in TMDB
         loadUserReviews(movieId);
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_detail, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        switch (id) {
-            case R.id.action_share_movie:
-                // Share the first video of type trailer in the Related Video
-                // list
-                if (mShareTrailerUrl != null) {
-                    Toast.makeText(this, "" + mShareTrailerUrl, Toast.LENGTH_SHORT).show();
-                }
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
 
     /**
      * setUpFavButton is a sub method that handles setting up the fav button. This button
@@ -404,7 +418,7 @@ public class DetailActivity extends AppCompatActivity {
 
     }
 
-    private void loadUserReviews(Long movieId) {
+    private void loadUserReviews(final Long movieId) {
         /******************************************
          * (!) Set API Key from the Resource file *
          ******************************************/
@@ -459,11 +473,13 @@ public class DetailActivity extends AppCompatActivity {
         switch (markedFavorite) {
             case 0:
                 // Current is false, button should show (add to favorite)
-                favBtn.setText(getString(R.string.add_to_favorite_list));
+                favBtn.setImageResource(R.drawable.ic_favorite_off_24dp);
+                favBtn.setRippleColor(ContextCompat.getColor(this, R.color.colorPrimary));
                 return false;
             case 1:
                 // Current is true, button should show (added to favorite)
-                favBtn.setText(getString(R.string.added_to_favorite_list));
+                favBtn.setImageResource(R.drawable.ic_favorite_on_24dp);
+                favBtn.setRippleColor(ContextCompat.getColor(this, R.color.colorAccent));
                 return true;
             default:
                 throw new SQLiteException("Error occurred, the stored fav value is out of range");
@@ -522,4 +538,26 @@ public class DetailActivity extends AppCompatActivity {
         // Exited for loop without any entry that matches the criteria
         return null;
     }
+
+//    private void setupActivityTitle(@NonNull final ActionBar actionBar, final String title) {
+//        AppBarLayout appBarLayout = findViewById(R.id.app_bar);
+//        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+//            boolean isShow = false;
+//            int scrollRange = -1;
+//
+//            @Override
+//            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+//                if (scrollRange == -1) {
+//                    scrollRange = appBarLayout.getTotalScrollRange();
+//                }
+//                if (scrollRange + verticalOffset == 0) {
+//                    actionBar.setTitle(title);
+//                    isShow = true;
+//                } else if(isShow) {
+//                    actionBar.setTitle(" ");
+//                    isShow = false;
+//                }
+//            }
+//        });
+//    }
 }

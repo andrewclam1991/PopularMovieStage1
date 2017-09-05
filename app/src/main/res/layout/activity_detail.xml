@@ -17,12 +17,14 @@
     tools:context="com.andrewclam.popularmovie.DetailActivity">
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/app_bar_height"
         android:fitsSystemWindows="true"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
@@ -51,5 +53,14 @@
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_detail" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fav_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        app:layout_anchor="@id/app_bar"
+        app:layout_anchorGravity="bottom|end"
+        app:srcCompat="@drawable/ic_favorite_on_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -18,7 +18,7 @@ import static com.andrewclam.popularmovie.data.PopularMovieDbContract.PopularMov
 
 /**
  * Defines table and column names for the movie entry database. this contract class keeps
- * the sqlite code organized and easier to maintain
+ * the SQLite code organized and easier to maintain
  */
 public class PopularMovieDbContract {
 
