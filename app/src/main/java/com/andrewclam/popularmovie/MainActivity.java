@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -22,7 +23,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements
     /*Log Tag*/
     private static final String TAG = MainActivity.class.getSimpleName();
     /*Constant - Keys*/
-    private static final String LIST_POSITION_KEY = "list_position_key";
+    private static final String LIST_STATE_KEY = "list_state_key";
     private static final String LIST_TYPE_SELECTOR_KEY = "instance_sort_val";
     private static final String USER_SHOW_FAVORITES_KEY = "user_show_favorite_movies";
     /*
@@ -83,8 +83,7 @@ public class MainActivity extends AppCompatActivity implements
     private GridLayoutManager mLayoutManager;
     private MovieListingsAdapter mAdapter;
     private String mListType;
-    private int mListPosition;
-    private boolean mScrolled = false;
+    private Parcelable mListState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,28 +116,11 @@ public class MainActivity extends AppCompatActivity implements
         // See if savedInstanceState exists and where we retained user's query selection
         if (savedInstanceState != null) {
             mListType = savedInstanceState.getString(LIST_TYPE_SELECTOR_KEY);
-            mListPosition = savedInstanceState.getInt(LIST_POSITION_KEY);
+            mListState = savedInstanceState.getParcelable(LIST_STATE_KEY);
         } else {
             // Default to popular and the first position
             mListType = TMDB_PATH_POPULAR;
-            mListPosition = 0;
         }
-
-        // Attach a on scroll listener to trigger
-        // (!) mScrolled is used to determined whether to save the first visible
-        // element's position when the activity recreates
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                // scroll state has been changed
-                if (!mScrolled) {
-                    mScrolled = true;
-                    Log.d(TAG, "showMovieData() recycler scroll state changed logged");
-                }
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-        });
-
 
         // Show the loading indicator
         mProgressBar.setVisibility(View.VISIBLE);
@@ -210,30 +192,12 @@ public class MainActivity extends AppCompatActivity implements
 //         * [4] [5] [6]
 //         * [7] [8] [9]
 //         */
-//
-//        /* Solution:
-//         * Find the first visible element in the layout manager, store that value
-//         * if the conditions are met
-//         *
-//         * 1) the recycler registered a onScroll event and triggered the mScrolled flag
-//         * 2) When the screen orientation is of one type only
-//         */
-        Log.d(TAG, "onSavedInstanceState() entered");
 
-        if (mScrolled) {
-            Log.d(TAG, "onSavedInstanceState() mScrolled is true");
+        // get the layout manager's list state
+        mListState = mLayoutManager.onSaveInstanceState();
 
-            // when user has scrolled
-            // Update the list position to find the first visible item
-            mListPosition = mLayoutManager.findFirstVisibleItemPosition();
-
-            Log.d(TAG, "onSavedInstanceState() mListPosition updated to: " + mListPosition);
-        }
-
-        // Saved the updated or key the previously stated listPosition in the saved state
-        savedInstanceState.putInt(LIST_POSITION_KEY, mListPosition);
-
-        Log.d(TAG, "onSavedInstanceState() mListPosition saved: " + mListPosition);
+        // Saved layout manager's list state parcelable
+        savedInstanceState.putParcelable(LIST_STATE_KEY, mListState);
 
         // Save the user's current sort value and position
         savedInstanceState.putString(LIST_TYPE_SELECTOR_KEY, mListType);
@@ -323,13 +287,13 @@ public class MainActivity extends AppCompatActivity implements
      * This method shows the entry data when it is available and hides the error msg
      */
     private void showMovieData() {
-        // Smooth scroll the recycler view to the list position
-        mRecyclerView.smoothScrollToPosition(mListPosition);
-
-        Log.d(TAG, "showMovieData() recycler smooth scrolled to: " + mListPosition);
+        // Restore the layout manager list state if the state is saved from the
+        // previous instance
+        if (mListState != null) {
+            mLayoutManager.onRestoreInstanceState(mListState);
+        }
 
         mErrorMsgLayout.setVisibility(View.GONE);
-
         mRecyclerView.setVisibility(View.VISIBLE);
     }
 
@@ -459,12 +423,5 @@ public class MainActivity extends AppCompatActivity implements
                 // call super's implementation in default
                 super.onActivityResult(requestCode, resultCode, data);
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        // Detach the onScrollListener
-        mRecyclerView.clearOnScrollListeners();
-        super.onDestroy();
     }
 }
