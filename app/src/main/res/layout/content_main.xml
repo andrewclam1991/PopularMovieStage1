@@ -38,11 +38,10 @@
             android:layout_gravity="center_horizontal"
             android:contentDescription="@string/content_description_error_msg_icon"
             android:padding="8dp"
-            android:src="@drawable/ic_broken_image_black_48dp"
-            android:tint="@color/colorPrimaryLight" />
+            android:tint="@color/colorPrimaryLight"
+            app:srcCompat="@drawable/ic_broken_image_black_48dp" />
 
         <TextView
-            android:id="@+id/tv_error_msg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:lineSpacingMultiplier="1.15"

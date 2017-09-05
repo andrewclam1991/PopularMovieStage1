@@ -12,7 +12,6 @@ package com.andrewclam.popularmovie.utilities;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.util.Log;
 
 /**
  * Created by Andrew Chi Heng Lam on 8/19/2017.
@@ -30,7 +29,7 @@ public final class LayoutManagerUtils {
         int currentWidth = config.screenWidthDp;
 
         // Log width
-        Log.i("LayoutManagerUtil: ", "Device's currentWidth is: " + currentWidth);
+        // Log.i("LayoutManagerUtil: ", "Device's currentWidth is: " + currentWidth);
 
         // Divide the currentWidth by the thumbnail dp width, to get an int number of movie entry that would fit;
         return currentWidth / THUMBNAIL_WIDTH_DP;

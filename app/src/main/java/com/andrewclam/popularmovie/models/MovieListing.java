@@ -8,21 +8,19 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.andrewclam.popularmovie;
+package com.andrewclam.popularmovie.models;
 
 import org.parceler.Parcel;
 
 /**
  * Created by Andrew Chi Heng Lam on 8/19/2017.
  * <p>
- * This model class uses Parceler to take care of its parcelable implementation,
- * when needed.
+ * This model class is use to store and to back displaying each the movie listing information.
+ * It uses Parceler to take care of its parcelable implementation, when needed.
  */
 
 @Parcel(Parcel.Serialization.BEAN)
-public class MovieEntry {
-
-    // This model class uses Parceler 3rd party lib to simplify implement parcelable, when needed
+public class MovieListing {
 
     /* Instance Vars */
     private long id;
@@ -31,10 +29,11 @@ public class MovieEntry {
     private String posterPath;
     private double voteAverage;
     private long voteCount;
+    private double popularity;
+    private boolean markedFavorite;
     private String overview;
-
     /* Public No-Arg constructor */
-    public MovieEntry() {
+    public MovieListing() {
 
     }
 
@@ -93,6 +92,22 @@ public class MovieEntry {
 
     public void setReleaseDate(String releaseDate) {
         this.releaseDate = releaseDate;
+    }
+
+    public double getPopularity() {
+        return popularity;
+    }
+
+    public void setPopularity(double popularity) {
+        this.popularity = popularity;
+    }
+
+    public boolean isMarkedFavorite() {
+        return markedFavorite;
+    }
+
+    public void setMarkedFavorite(boolean markedFavorite) {
+        this.markedFavorite = markedFavorite;
     }
 }
 

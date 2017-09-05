@@ -10,7 +10,7 @@
 
 <resources>
     <string name="app_name">PopularMovie</string>
-    <string name="vote_average">%1$.1f / 10</string>
+    <string name="vote_average">%1$.1f out of 10</string>
     <string name="vote_count">%1$d Votes</string>
     <string name="action_sort_by_rating">Sort by Rating</string>
     <string name="action_sort_by_popularity">Sort by Popularity</string>
@@ -19,4 +19,15 @@
     <string name="dummy_text" translatable="false">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate</string>
     <string name="error_msg_unable_to_fetch">Unable to fetch movies at this time.\nPlease try again later.</string>
     <string name="content_description_error_msg_icon">Unable to load movies icon</string>
+    <string name="action_show_favorites">My Favorites</string>
+    <string name="related_video_label">Related Videos</string>
+    <string name="user_reviews_label">User Reviews</string>
+    <string name="no_user_reviews">No User Reviews</string>
+    <string name="no_related_videos">No Related Videos</string>
+    <string name="action_share_movie">Share</string>
+    <string name="read_more">Read More</string>
+    <string name="action_added_to_favorite">Added to favorites.</string>
+    <string name="action_removed_from_favorite">Removed from favorites.</string>
+    <string name="error_no_trailer_to_share">Sorry, this movie doesn\'t have a trailer</string>
+    <string name="action_share_this_movie_trailer">Share The Trailer</string>
 </resources>

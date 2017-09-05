@@ -18,18 +18,17 @@
     tools:showIn="@layout/activity_detail">
 
     <LinearLayout
+        android:id="@+id/detail_root_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
 
         <!-- Movie Banner -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingTop="16dp">
+            android:orientation="horizontal">
 
             <!-- Movie Poster -->
             <ImageView
@@ -40,7 +39,7 @@
                 android:contentDescription="@string/content_description_movie_poster"
                 tools:src="@drawable/ic_broken_image_black_48dp" />
 
-            <!-- Rating and attributes -->
+            <!-- Title Rating and attributes -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -51,14 +50,24 @@
                 android:paddingRight="0dp"
                 android:paddingStart="8dp">
 
+                <!-- Title -->
+                <TextView
+                    android:id="@+id/tv_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-light"
+                    android:padding="4dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    tools:text="Best Movie" />
+
                 <!-- Vote Average -->
                 <TextView
                     android:id="@+id/tv_vote_average"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="4dp"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Display1"
-                    tools:text="6.5 / 10" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    tools:text="6.5/10" />
 
                 <!-- Vote Count -->
                 <TextView
@@ -66,14 +75,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="4dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     tools:text="8902 votes" />
 
                 <!-- Release Date -->
                 <TextView
                     android:id="@+id/tv_release_date"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="4dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     tools:text="2017" />
             </LinearLayout>
 
@@ -85,9 +96,93 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:lineSpacingMultiplier="1.15"
-            android:padding="16dp"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+            android:paddingTop="16dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
             tools:text="@string/dummy_text" />
+
+        <!-- Related Video Label -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingMultiplier="1.15"
+            android:paddingBottom="8dp"
+            android:paddingTop="16dp"
+            android:text="@string/related_video_label"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:textColor="@color/colorAccent" />
+
+        <!-- Related Video Recycler View -->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/related_video_rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            tools:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            tools:listitem="@layout/related_video_list_item"
+            tools:orientation="horizontal" />
+
+        <!-- Loading Indicator for reviews -->
+        <ProgressBar
+            android:id="@+id/pb_related_video_loading_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="16dp"
+            android:visibility="gone" />
+
+        <!-- Empty View when there are error or no related videos -->
+        <TextView
+            android:id="@+id/tv_related_video_empty_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="16dp"
+            android:text="@string/no_related_videos"
+            android:visibility="gone" />
+
+        <!-- User Reviews Label -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingMultiplier="1.15"
+            android:paddingBottom="8dp"
+            android:paddingTop="16dp"
+            android:text="@string/user_reviews_label"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:textColor="@color/colorAccent"
+            android:typeface="sans" />
+
+        <!-- User Reviews Recycler View -->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/user_reviews_rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            tools:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            tools:layout_height="250dp"
+            tools:listitem="@layout/review_list_item"
+            tools:orientation="horizontal" />
+
+        <!-- Loading Indicator for reviews -->
+        <ProgressBar
+            android:id="@+id/pb_user_review_loading_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="16dp"
+            android:visibility="gone" />
+
+        <!-- Empty View when there are error or no user reviews -->
+        <TextView
+            android:id="@+id/tv_user_reviews_empty_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="16dp"
+            android:text="@string/no_user_reviews"
+            android:visibility="gone" />
 
     </LinearLayout>
 
