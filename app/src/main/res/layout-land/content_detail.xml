@@ -35,7 +35,7 @@
                 android:id="@+id/iv_poster"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
+                android:layout_gravity="top"
                 android:layout_weight="1"
                 android:contentDescription="@string/content_description_movie_poster"
                 tools:src="@drawable/ic_broken_image_black_48dp" />
