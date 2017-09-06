@@ -145,7 +145,7 @@ public class DetailActivity extends AppCompatActivity {
                         // (!) Only populate the entry fields when the view are laid out, this is
                         // because we need the dynamic width of the poster image view to be
                         // calculated before loading the image in with picasso, picasso needs
-                        // the width in order to calculate the height to load the image
+                        // the width in order to calculate the height of the image.
                         populateEntryFields(entry);
                     }
                 });
