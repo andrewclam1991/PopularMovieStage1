@@ -12,7 +12,6 @@ package com.andrewclam.popularmovie.data;
 
 import android.net.Uri;
 import android.provider.BaseColumns;
-import android.support.annotation.NonNull;
 
 import static com.andrewclam.popularmovie.data.PopularMovieDbContract.PopularMovieEntry.CONTENT_URI;
 
@@ -67,7 +66,7 @@ public class PopularMovieDbContract {
      * @param movieId the unique movie id as fetched from TMDB)
      * @return an Uri that points to that particular movie on the user's database
      */
-    public static Uri buildMovieUriWithId(@NonNull Long movieId) {
+    public static Uri buildMovieUriWithId(Long movieId) {
         String movieIdStr = String.valueOf(movieId);
         return CONTENT_URI.buildUpon().appendPath(movieIdStr).build();
     }

@@ -258,6 +258,7 @@ public class PopularMovieProvider extends ContentProvider {
                             rowsInserted++;
                         }
                     }
+
                     db.setTransactionSuccessful();
 
                 } catch (Exception e) {
