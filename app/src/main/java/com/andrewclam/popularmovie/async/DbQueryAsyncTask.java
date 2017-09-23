@@ -20,7 +20,7 @@ import android.util.Log;
  * Created by Andrew Chi Heng Lam on 8/31/2017.
  * <p>
  * DbQueryAsyncTask
- * An implementation of the AsyncTask class to do database IO on a separate thread,
+ * An implementation of the AsyncTask class to query database IO on a separate thread,
  */
 
 public class DbQueryAsyncTask extends AsyncTask<Void, Void, Cursor> {
@@ -28,7 +28,7 @@ public class DbQueryAsyncTask extends AsyncTask<Void, Void, Cursor> {
     private static final String TAG = DbQueryAsyncTask.class.getSimpleName();
 
     /* Listener for callback */
-    private OnMovieQueryActionListener mListener;
+    private OnCursorActionListener mListener;
 
     /* ContentResolver */
     private ContentResolver mContentResolver;
@@ -73,7 +73,7 @@ public class DbQueryAsyncTask extends AsyncTask<Void, Void, Cursor> {
         return this;
     }
 
-    public DbQueryAsyncTask setUpdateUri(Uri updateUri) {
+    public DbQueryAsyncTask setQueryUri(Uri updateUri) {
         this.mQueryUri = updateUri;
         return this;
     }
@@ -98,7 +98,7 @@ public class DbQueryAsyncTask extends AsyncTask<Void, Void, Cursor> {
         return this;
     }
 
-    public DbQueryAsyncTask setListener(OnMovieQueryActionListener mListener) {
+    public DbQueryAsyncTask setListener(OnCursorActionListener mListener) {
         this.mListener = mListener;
         return this;
     }
@@ -147,7 +147,7 @@ public class DbQueryAsyncTask extends AsyncTask<Void, Void, Cursor> {
      * Interface for callback to the listener at stages where UI change is required
      * postExecute to notify caller whether the contentResolver.update() was successful.
      */
-    public interface OnMovieQueryActionListener {
+    public interface OnCursorActionListener {
         void onQueryComplete(Cursor dataCursor);
     }
 }

@@ -47,17 +47,17 @@ public class PopularMovieDbContract {
     public static final String PATH_MOVIES = "movies";
 
     public static final String PATH_FAVORITES = "favorites";
-
-    /**
-     * Returns just the selection part of the query from a unique movie id
-     * This is used to get the Uri of the movie from the database given its unique movie id
-     *
-     * @param id the unique movie's id as loaded from TMDB
-     * @return a Uri that points to the particular movie with the id
-     */
-    public static Uri buildMovieUriWithId(long id) {
-        return CONTENT_URI.buildUpon().appendPath(Long.toString(id)).build();
-    }
+//
+//    /**
+//     * Returns just the selection part of the query from a unique movie id
+//     * This is used to get the Uri of the movie from the database given its unique movie id
+//     *
+//     * @param id the unique movie's id as loaded from TMDB
+//     * @return a Uri that points to the particular movie with the id
+//     */
+//    public static Uri buildMovieUriWithId(long id) {
+//        return CONTENT_URI.buildUpon().appendPath(Long.toString(id)).build();
+//    }
 
     /**
      * Easy to use helper method to build the uri that points to a specific movie given its unique

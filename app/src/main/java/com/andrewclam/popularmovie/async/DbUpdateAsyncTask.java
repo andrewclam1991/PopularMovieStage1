@@ -21,7 +21,7 @@ import android.util.Log;
  * Created by Andrew Chi Heng Lam on 8/31/2017.
  * <p>
  * DbUpdateAsyncTask
- * An implementation of the AsyncTask class to do database IO on a separate thread,
+ * An implementation of the AsyncTask class to update database IO on a separate thread,
  */
 
 public class DbUpdateAsyncTask extends AsyncTask<Void, Void, Integer> {
@@ -29,7 +29,7 @@ public class DbUpdateAsyncTask extends AsyncTask<Void, Void, Integer> {
     private static final String TAG = DbUpdateAsyncTask.class.getSimpleName();
 
     /* Listener for callback */
-    private OnMovieUpdateActionListener mListener;
+    private OnUpdateActionListener mListener;
 
     /* ContentResolver */
     private ContentResolver mContentResolver;
@@ -92,7 +92,7 @@ public class DbUpdateAsyncTask extends AsyncTask<Void, Void, Integer> {
         return this;
     }
 
-    public DbUpdateAsyncTask setListener(OnMovieUpdateActionListener mListener) {
+    public DbUpdateAsyncTask setListener(OnUpdateActionListener mListener) {
         this.mListener = mListener;
         return this;
     }
@@ -147,7 +147,7 @@ public class DbUpdateAsyncTask extends AsyncTask<Void, Void, Integer> {
      * Interface for callback to the listener at stages where UI change is required
      * postExecute to notify caller whether the contentResolver.update() was successful.
      */
-    public interface OnMovieUpdateActionListener {
+    public interface OnUpdateActionListener {
         void onUpdateComplete(Integer rowsUpdated);
     }
 }

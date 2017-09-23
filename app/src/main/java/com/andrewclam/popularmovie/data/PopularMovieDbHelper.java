@@ -92,10 +92,10 @@ public class PopularMovieDbHelper extends SQLiteOpenHelper {
 
                         /*
                          * To ensure this table can only contain one movie entry per id, we declare
-                         * the movie id column to be unique. We also specify "ON CONFLICT IGNORE". This tells
-                         * SQLite that if we have a movie entry for a id and we attempt to
-                         * insert another movie entry with that movie id, we just ignore the old movie listing
-                         * entry.
+                         * the movie id column to be unique. We also specify "ON CONFLICT IGNORE".
+                         * This tells SQLite that if we have a movie entry for a id and we attempt to
+                         * insert another movie entry with that movie id, we just ignore the new
+                         * movie listing entry.
                          */
 
                         " UNIQUE (" + PopularMovieEntry.COLUMN_MOVIE_ID + ") ON CONFLICT IGNORE);";
