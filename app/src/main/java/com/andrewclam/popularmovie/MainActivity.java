@@ -55,8 +55,6 @@ import static com.andrewclam.popularmovie.utilities.NetworkUtils.TMDB_PATH_TOP_R
 
 public class MainActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>, MovieListingsAdapter.OnMovieEntryClickListener {
-
-    /*Constants */
     public static final String EXTRA_MOVIE_ENTRY_OBJECT = "extra_movie_entry_obj";
     /*
      * Start Activity For Result codes
@@ -68,24 +66,26 @@ public class MainActivity extends AppCompatActivity implements
     private static final String TAG = MainActivity.class.getSimpleName();
     /*Constant - Keys*/
     private static final String LIST_STATE_KEY = "list_state_key";
-    private static final String LIST_TYPE_SELECTOR_KEY = "list_type_selector_key";
-    private static final String USER_SHOW_FAVORITES_KEY = "favorite_key";
+
+    private static final String LIST_TYPE_SELECTOR_KEY = "instance_sort_val";
+    private static final String USER_SHOW_FAVORITES_KEY = "user_show_favorite_movies";
     /*
     * This ID will be used to identify the Loader responsible for loading our offline database. In
     * some cases, one Activity can deal with many Loaders. However, in our case, there is only one.
     * We will still use this ID to initialize the loader and create the loader for best practice.
     */
-    private static final int ID_MOVIE_LISTING_LOADER = 52;
+    private static final int ID_MOVIE_LISTING_LOADER = 123;
 
     /*Instance Var*/
+    private Context mContext;
     private ProgressBar mProgressBar;
     private LinearLayout mErrorMsgLayout;
     private RecyclerView mRecyclerView;
+    private GridLayoutManager mLayoutManager;
     private MovieListingsAdapter mAdapter;
     private GridLayoutManager mLayoutManager;
     private String mListType;
     private Parcelable mListState;
-    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements
             mListType = savedInstanceState.getString(LIST_TYPE_SELECTOR_KEY);
             mListState = savedInstanceState.getParcelable(LIST_STATE_KEY);
         } else {
-            // Default to popular
+            // Default to popular and the first position
             mListType = TMDB_PATH_POPULAR;
         }
 
@@ -168,13 +168,40 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        // Get the current layout manager's list state
+//        /* (!) Due to row limitations,  with grid layout view the find the first visible
+//         * would get the first column of the row in different orientation. More complicated because
+//         * gridsize is calculated in runtime, adapting to different screen sizes and ratios
+//         *
+//         * ex.
+//         * 1st vertical view (initial view, ROW 2 is visible, 4 is the first element)
+//         * [1] [2] [3]
+//         * [4#] [5] [6] <- visible row
+//         * [7] [8] [9]
+//         *
+//         * -> Rotate to horizontal
+//         * 1st Horizontal View (smooth scroll to row that contains 4,)
+//         * [1##] [2] [3] [4#] <- visible row
+//         * [5] [6] [7] [8]
+//         * [9]
+//         *
+//         *
+//         * Now, the get first visible would return 1, and on next rotation, the screen would
+//         * not return to the 1st vertical view
+//         * -> Rotate to vertical
+//         * 2nd vertical view
+//         *
+//         * [1##] [2] [3] <- becomes visible, first element changed to [1]
+//         * [4] [5] [6]
+//         * [7] [8] [9]
+//         */
+
+        // get the layout manager's list state
         mListState = mLayoutManager.onSaveInstanceState();
 
-        // Save the layout manager's list state
+        // Saved layout manager's list state parcelable
         savedInstanceState.putParcelable(LIST_STATE_KEY, mListState);
 
-        // Save the user's current sort value
+        // Save the user's current sort value and position
         savedInstanceState.putString(LIST_TYPE_SELECTOR_KEY, mListType);
 
         // Always call the superclass so it can save the view hierarchy state
@@ -252,7 +279,8 @@ public class MainActivity extends AppCompatActivity implements
 
                         // Bind the entries to the adapter for display
                         mAdapter.setMovieEntryData(entries);
-                        showEntryData();
+
+                        showMovieData();
                     }
                 }).execute();
     }
@@ -260,8 +288,9 @@ public class MainActivity extends AppCompatActivity implements
     /**
      * This method shows the entry data when it is available and hides the error msg
      */
-    private void showEntryData() {
-        // Check if there is an existing listState, restore it.
+    private void showMovieData() {
+        // Restore the layout manager list state if the state is saved from the
+        // previous instance
         if (mListState != null) {
             mLayoutManager.onRestoreInstanceState(mListState);
         }
@@ -344,12 +373,11 @@ public class MainActivity extends AppCompatActivity implements
 
         // only show the entryData if there are entries to show.
         if (entries.size() > 0) {
-            showEntryData();
+            showMovieData();
         } else {
             showErrorMsg();
         }
     }
-    // Register a broadcast receiver to detect network change, and do database sync
 
     /**
      * Called when a previously created loader is being reset, and thus making its data unavailable.
