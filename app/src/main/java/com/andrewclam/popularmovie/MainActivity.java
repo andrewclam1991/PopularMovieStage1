@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final String TAG = MainActivity.class.getSimpleName();
     /*Constant - Keys*/
     private static final String LIST_STATE_KEY = "list_state_key";
+
     private static final String LIST_TYPE_SELECTOR_KEY = "instance_sort_val";
     private static final String USER_SHOW_FAVORITES_KEY = "user_show_favorite_movies";
     /*
@@ -82,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements
     private RecyclerView mRecyclerView;
     private GridLayoutManager mLayoutManager;
     private MovieListingsAdapter mAdapter;
+    private GridLayoutManager mLayoutManager;
     private String mListType;
     private Parcelable mListState;
 

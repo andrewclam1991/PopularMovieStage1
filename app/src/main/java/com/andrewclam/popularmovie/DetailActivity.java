@@ -35,6 +35,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -74,7 +75,7 @@ public class DetailActivity extends AppCompatActivity {
     private static final String TAG = DetailActivity.class.getSimpleName();
 
     // UI views
-    private View rootView;
+    private View rootScrollView; // need to save instance state of
     private ImageView posterBannerIv;
     private ImageView posterIv;
     private TextView titleTv;
@@ -107,7 +108,6 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (getIntent() != null && getIntent().hasExtra(EXTRA_MOVIE_ENTRY_OBJECT)) {
@@ -119,7 +119,7 @@ public class DetailActivity extends AppCompatActivity {
                 mContext = DetailActivity.this;
 
                 // Reference the UI views
-                rootView = findViewById(R.id.detail_root_view);
+                rootScrollView = findViewById(R.id.detail_root_view);
                 posterBannerIv = findViewById(R.id.iv_poster_banner);
                 posterIv = findViewById(R.id.iv_poster);
                 titleTv = findViewById(R.id.tv_title);
@@ -136,7 +136,21 @@ public class DetailActivity extends AppCompatActivity {
                 initReviewsRv();
 
                 // Populate the referenced UI with the entry object
-                populateEntryFields(entry);
+                rootScrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        rootScrollView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                        // (!) Only populate the entry fields when the view are laid out, this is
+                        // because we need the dynamic width of the poster image view to be
+                        // calculated before loading the image in with picasso, picasso needs
+                        // the width in order to calculate the height of the image.
+                        populateEntryFields(entry);
+                    }
+                });
+
+                // Log posterIv size
+                Log.d(TAG, "posterIv width: " + posterIv.getWidth() + ", height: " + posterIv.getHeight());
             }
 
         } else {
@@ -144,6 +158,14 @@ public class DetailActivity extends AppCompatActivity {
             finish();
         }
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -168,7 +190,7 @@ public class DetailActivity extends AppCompatActivity {
                     shareTrailer(title, mShareTrailerUrl.toString());
                 } else {
                     // No trailer to share
-                    Snackbar.make(rootView, getString(R.string.error_no_trailer_to_share), Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(rootScrollView, getString(R.string.error_no_trailer_to_share), Snackbar.LENGTH_SHORT).show();
                 }
                 return true;
             default:
@@ -306,7 +328,11 @@ public class DetailActivity extends AppCompatActivity {
         // Load into the posterIv
         Picasso.with(this)
                 .load(posterUrl.toString())
+                .resize(posterIv.getWidth(), 0)
                 .into(posterIv);
+
+        // Log posterIv size
+        Log.d(TAG, "posterIv width: " + posterIv.getWidth() + ", height: " + posterIv.getHeight());
 
         /* VOTE AVERAGE */
         // Set the vote average score at the field
@@ -383,7 +409,7 @@ public class DetailActivity extends AppCompatActivity {
                         mFavStatus = getCurrentFavoriteStatus(updateUri);
 
                         // Base on the current FavStatus, show user their update is done
-                        Snackbar.make(rootView,
+                        Snackbar.make(rootScrollView,
                                 mFavStatus ? R.string.action_added_to_favorite : R.string.action_removed_from_favorite,
                                 Snackbar.LENGTH_SHORT).show();
 

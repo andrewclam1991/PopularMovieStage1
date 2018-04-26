@@ -44,7 +44,7 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_weight="3"
                 android:orientation="vertical"
                 android:paddingEnd="0dp"
                 android:paddingLeft="8dp"
@@ -56,9 +56,9 @@
                     android:id="@+id/tv_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-light"
                     android:padding="4dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    android:textSize="24sp"
                     tools:text="Best Movie" />
 
                 <!-- Vote Average -->
@@ -87,19 +87,20 @@
                     android:padding="4dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     tools:text="2017" />
+
+                <!-- Movie Overview -->
+                <TextView
+                    android:id="@+id/tv_overview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingMultiplier="1.15"
+                    android:padding="4dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    tools:text="@string/dummy_text" />
             </LinearLayout>
 
         </LinearLayout>
 
-        <!-- Movie Overview -->
-        <TextView
-            android:id="@+id/tv_overview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:lineSpacingMultiplier="1.15"
-            android:paddingTop="16dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small"
-            tools:text="@string/dummy_text" />
 
         <!-- Related Video Label -->
         <TextView
