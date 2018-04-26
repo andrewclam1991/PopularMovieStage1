@@ -18,7 +18,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.andrewclam.popularmovie.data.db.AppDbContract;
-import com.andrewclam.popularmovie.data.model.MovieListing;
+import com.andrewclam.popularmovie.data.model.Movie;
 
 import java.util.ArrayList;
 
@@ -47,17 +47,17 @@ public class PopularMovieDbSync {
   }
 
   /**
-   * Method to return an ArrayList of MovieListing from the client database to show the data
+   * Method to return an ArrayList of Movie from the client database to show the data
    * when the user is not online.
    *
    * @param dataCursor the Cursor that is returned from the query from the client's database
    */
-  public static ArrayList<MovieListing> parseEntriesFromCursor(Cursor dataCursor) {
-    ArrayList<MovieListing> entries = new ArrayList<>();
+  public static ArrayList<Movie> parseEntriesFromCursor(Cursor dataCursor) {
+    ArrayList<Movie> entries = new ArrayList<>();
 
     while (dataCursor.moveToNext()) {
       // Create a new entry to store the database
-      MovieListing entry = new MovieListing();
+      Movie entry = new Movie();
 
       // Get the index of each column from the cursor
       int idColIndex = dataCursor.getColumnIndex(AppDbContract.MovieListingEntry.COLUMN_MOVIE_TMDB_ID);
@@ -98,7 +98,7 @@ public class PopularMovieDbSync {
    * @param context application context
    * @param entries the downloaded entries, MovieListings
    */
-  public static void syncDatabase(final Context context, @Nullable final ArrayList<MovieListing> entries) {
+  public static void syncDatabase(final Context context, @Nullable final ArrayList<Movie> entries) {
     // Check if the entries is null or empty, return
     if (entries == null || entries.isEmpty()) {
       return;
@@ -120,7 +120,7 @@ public class PopularMovieDbSync {
 
     Thread syncDbRunnable = new Thread(() -> {
       try {
-        for (MovieListing entry : entries) {
+        for (Movie entry : entries) {
           // Parse the entry
           ContentValues contentValues = parseEntry(entry);
 
@@ -156,7 +156,7 @@ public class PopularMovieDbSync {
 
   }
 
-  private static void initDatabase(final Context context, final ArrayList<MovieListing> entries) {
+  private static void initDatabase(final Context context, final ArrayList<Movie> entries) {
     /*
      * After successfully showing the data, cache the data on a separate thread
      * call contentResolver->contentProvider
@@ -167,10 +167,10 @@ public class PopularMovieDbSync {
       ContentValues[] contentValuesArray = new ContentValues[entries.size()];
       try {
         // set a count index for the foreach loop, this index value is for referencing the
-        // correct ContentValue in the ContentValue[] to store each MovieListing entry.
+        // correct ContentValue in the ContentValue[] to store each Movie entry.
 
         int index = 0;
-        for (MovieListing entry : entries) {
+        for (Movie entry : entries) {
 
           // Create a new contentValue object to store the entry data
           ContentValues contentValues = parseEntry(entry);
@@ -203,7 +203,7 @@ public class PopularMovieDbSync {
    * @param entry a movie listing entry model object
    * @return a contentValue representation of the model object
    */
-  private static ContentValues parseEntry(MovieListing entry) {
+  private static ContentValues parseEntry(Movie entry) {
     // Create a new contentValue object to store the entry data
     ContentValues contentValues = new ContentValues();
 

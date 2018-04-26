@@ -12,7 +12,7 @@ package com.andrewclam.popularmovie.util;
 
 import android.util.Log;
 
-import com.andrewclam.popularmovie.data.model.MovieListing;
+import com.andrewclam.popularmovie.data.model.Movie;
 import com.andrewclam.popularmovie.data.model.RelatedVideo;
 import com.andrewclam.popularmovie.data.model.UserReview;
 
@@ -36,14 +36,14 @@ public final class TMDBJsonUtil {
     private static final String TAG = TMDBJsonUtil.class.getSimpleName();
 
     /**
-     * This method parses JSON from a web response and returns an ArrayList of MovieListing objects
+     * This method parses JSON from a web response and returns an ArrayList of Movie objects
      *
      * @param jsonResponse JSON response from server
      * @return an ArrayList of Movie Listing objects, each containing the movie general information data
      * @throws JSONException If JSON data cannot be properly parsed
      */
 
-    public static ArrayList<MovieListing> getMovieListingFromJson(String jsonResponse) throws JSONException {
+    public static ArrayList<Movie> getMovieListingFromJson(String jsonResponse) throws JSONException {
         // Test if the response is null, return null if it is
         if (jsonResponse == null) {
             Log.w(TAG, "Nothing to parse because jsonResponse is undefined");
@@ -80,7 +80,7 @@ public final class TMDBJsonUtil {
         final String TMDB_OVERVIEW = "overview";
 
         // Initialize an arrayList to store movie objects. This data will back the recycler view adapter.
-        ArrayList<MovieListing> entries = new ArrayList<>();
+        ArrayList<Movie> entries = new ArrayList<>();
 
         // Create a new JSON object out of the jsonResponse
         JSONObject resultJSON = new JSONObject(jsonResponse);
@@ -95,7 +95,7 @@ public final class TMDBJsonUtil {
 
             if (result != null) {
                 /* Create an instance of the model class to store the retrieved elements */
-                MovieListing entry = new MovieListing();
+                Movie entry = new Movie();
 
                 /* Retrieve each element from the result JSONObject */
                 long id = result.getLong(TMDB_ID);

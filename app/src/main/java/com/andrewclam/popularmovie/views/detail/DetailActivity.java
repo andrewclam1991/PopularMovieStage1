@@ -54,7 +54,7 @@ import com.andrewclam.popularmovie.async.DbUpdateAsyncTask;
 import com.andrewclam.popularmovie.async.FetchRelatedVideoAsyncTask;
 import com.andrewclam.popularmovie.async.FetchUserReviewAsyncTask;
 import com.andrewclam.popularmovie.data.db.AppDbContract;
-import com.andrewclam.popularmovie.data.model.MovieListing;
+import com.andrewclam.popularmovie.data.model.Movie;
 import com.andrewclam.popularmovie.data.model.RelatedVideo;
 import com.andrewclam.popularmovie.util.NetworkUtil;
 import com.squareup.picasso.Picasso;
@@ -120,7 +120,7 @@ public class DetailActivity extends AppCompatActivity {
 
         if (getIntent() != null && getIntent().hasExtra(EXTRA_MOVIE_ENTRY_OBJECT)) {
             // Unwrap the parcel to retrieve the entry object
-            final MovieListing entry = Parcels.unwrap(getIntent().getParcelableExtra(EXTRA_MOVIE_ENTRY_OBJECT));
+            final Movie entry = Parcels.unwrap(getIntent().getParcelableExtra(EXTRA_MOVIE_ENTRY_OBJECT));
 
             if (entry != null) {
                 // Init context
@@ -293,7 +293,7 @@ public class DetailActivity extends AppCompatActivity {
      *
      * @param entry the single parsed movie entry
      */
-    private void populateEntryFields(@NonNull MovieListing entry) {
+    private void populateEntryFields(@NonNull Movie entry) {
         /* MOVIE ID */
         // The id required to do favorite, video and comment's db and network io
         Long movieId = entry.getMovieId();

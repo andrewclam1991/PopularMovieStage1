@@ -13,13 +13,12 @@ package com.andrewclam.popularmovie.data.model;
 import org.parceler.Parcel;
 
 /**
- * Model class use to store and to back displaying each the movie listing data.
+ * Model class use to store movie metadata.
  */
-
 @Parcel(Parcel.Serialization.BEAN)
-public class MovieListing extends Entity{
+public class Movie extends Entity{
 
-  private long movieListingId;
+  private long movieId;
   private String title;
   private String releaseDate;
   private String posterPath;
@@ -30,16 +29,17 @@ public class MovieListing extends Entity{
   private String overview;
 
   /* Public No-Arg constructor */
-  public MovieListing() {
+  public Movie() {
 
   }
 
   public long getMovieId() {
-    return movieListingId;
+    return movieId;
   }
 
   public void setMovieId(long id) {
-    this.movieListingId = id;
+    super.setUid(String.valueOf(id));
+    this.movieId = id;
   }
 
   public String getTitle() {

@@ -1,52 +1,59 @@
 package com.andrewclam.popularmovie.data.model;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import java.util.UUID;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
- * Base model class for storing app data
+ * Model class supertype
+ * Provides common methods and states for all subtypes of {@link Entity}
  */
 public class Entity {
+  private String mUid;
+  private boolean mSetDelete;
 
   /**
-   * The unique id that represents this {@link Entity}
+   * Default constructor for the class
+   * Note: Require at least one no arg constructor for
+   * Firebase
    */
-  private String entityId;
+  Entity() { }
 
   /**
-   * Flag that indicates whether this {@link Entity} is marked
-   * for deletion.
+   * @return the set unique identifier of this {@link Entity}
    */
-  private boolean setDelete;
-
-  Entity(){}
-
-  @Nullable
-  public String getId() {
-    return entityId;
-  }
-
-  public void setId(@NonNull String id) {
-    this.entityId = id;
-  }
-
-  public boolean isSetDelete() {
-    return setDelete;
-  }
-
-  public void setSetDelete(boolean setDelete) {
-    this.setDelete = setDelete;
+  @NonNull
+  public final String getUid() {
+    return mUid;
   }
 
   /**
-   * Method to generate uuid classified by clazz type
-   * @param clazz sub-class type of {@link Entity}
-   * @param <E> type that is supported
-   * @return an uuid suitable to use as the {@link Entity#entityId}
+   * Set an unique identifier of this particular {@link Entity}
+   *
+   * @param uid unique identifier of this {@link Entity}
    */
-  public static <E extends Entity> String generateUUID (Class<E> clazz){
-    return clazz.getSimpleName().concat("-").concat(UUID.randomUUID().toString());
+  public final void setUid(@NonNull String uid) {
+    mUid = checkNotNull(uid, "uid can't be null or empty");
+  }
+
+  /**
+   * Control flag whether the entity record should be deleted from
+   * the underlying data sources
+   *
+   * @return whether this {@link Entity} is marked for deletion
+   */
+  public final boolean isSetDelete() {
+    return mSetDelete;
+  }
+
+  /**
+   * Mark this {@link Entity} for deletion
+   *
+   * @param setDelete whether to mark this {@link Entity} for deletion
+   */
+  public final void setDelete(boolean setDelete) {
+    mSetDelete = setDelete;
   }
 }

@@ -5,11 +5,13 @@ import android.support.annotation.Nullable;
 
 public class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHolderPresenter{
 
-  @Nullable
-  private MainContract.View mView;
-
   @Override
   public void loadItems() {
+
+  }
+
+  @Override
+  public void checkNetworkState() {
 
   }
 
@@ -19,18 +21,36 @@ public class MainPresenter implements MainContract.Presenter, MainContract.ItemV
   }
 
   @Override
-  public void setFilterOrder(@NonNull FilterOrder order) {
+  public void setSortType(@NonNull SortType type) {
 
+  }
+
+  @Override
+  public void setSortOrder(@NonNull SortOrder order) {
+
+  }
+
+  @NonNull
+  @Override
+  public FilterType getCurrentFilterType() {
+    return null;
+  }
+
+  @NonNull
+  @Override
+  public FilterType getCurrentSortType() {
+    return null;
+  }
+
+  @NonNull
+  @Override
+  public SortOrder getCurrentSortOrder() {
+    return null;
   }
 
   @Override
   public void setView(@NonNull MainContract.View view) {
-    mView = view;
-  }
 
-  @Override
-  public void dropView() {
-    mView = null;
   }
 
   @Override
@@ -39,7 +59,12 @@ public class MainPresenter implements MainContract.Presenter, MainContract.ItemV
   }
 
   @Override
-  public void onAdapterItemClicked(int adapterPosition) {
+  public void onAdapterItemClicked(int position) {
+
+  }
+
+  @Override
+  public void dropView() {
 
   }
 

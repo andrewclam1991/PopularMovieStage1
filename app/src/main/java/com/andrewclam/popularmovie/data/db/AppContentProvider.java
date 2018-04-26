@@ -41,33 +41,30 @@ public class AppContentProvider extends ContentProvider {
 
   /* Log Tag */
   private static final String TAG = AppContentProvider.class.getSimpleName();
-
+  /*
+   * Reference a Movie listing dbHelper to get writable/readable databases for each provider
+   * method to work with.
+   */
+  private AppDbHelper mAppDbHelper;
+  
   /*
    * These constant will be used to match URIs with the data they are looking for. We will take
    * advantage of the UriMatcher class to make that matching MUCH easier than doing something
    * ourselves, such as using regular expressions.
    */
   private static final int CODE_MOVIE = 100;
-  private static final int CODE_MOVIE_WITH_ID = 101;
-  private static final int CODE_MOVIE_FAVORITE = 102;
+  private static final int CODE_MOVIE_WITH_SERVICE_ID = 101;
+  private static final int CODE_MOVIE_FAVORITE = 103;
 
   /*
    * The URI Matcher used by this content provider. The leading "s" in this variable name
-   * signifies that this UriMatcher is a static member variable of WeatherProvider and is a
+   * signifies that this UriMatcher is a static member variable of it is a
    * common convention in Android programming.
    */
   private static final UriMatcher sUriMatcher = buildUriMatcher();
-
-  /*
-   * Reference a Movie listing dbHelper to get writable/readable databases for each provider
-   * method to work with.
-   */
-  private AppDbHelper mAppDbHelper;
-
+  
   /**
-   * Creates the UriMatcher that will match each URI to the CODE_MOVIE and
-   * CODE_MOVIE_WITH_ID and CODE_MOVIE_FAVORITE constants defined above.
-   *
+   * Creates the UriMatcher that will match each {@link Uri} to a 
    * @return A UriMatcher that correctly matches the uri to a provided constants
    */
   private static UriMatcher buildUriMatcher() {
@@ -81,20 +78,24 @@ public class AppContentProvider extends ContentProvider {
     final String authority = CONTENT_AUTHORITY;
 
     /*
-     This Uri: content://com.andrewclam.popularmovie/movies
-    */
+     * content://[AUTHORITY]/movies
+     */
     matcher.addURI(authority, AppDbContract.PATH_MOVIES, CODE_MOVIE);
 
     /*
-     This Uri: content://com.andrewclam.popularmovie/movies/id
-    */
-    matcher.addURI(authority, AppDbContract.PATH_MOVIES + "/#", CODE_MOVIE_WITH_ID);
-
+     * content://[AUTHORITY]/movies/uid/[id]
+     * Note: the id specified by the service api, it is a numeric id and it is suppose to 
+     * uniquely identifies the movie at the service api. Communication with the service api
+     * must use this Uri.
+     */
+    matcher.addURI(authority, AppDbContract.PATH_MOVIES + "/" + AppDbContract.PATH_UID + "/#",
+        CODE_MOVIE_WITH_SERVICE_ID);
+    
     /*
-     This Uri: content://com.andrewclam.popularmovie/movies/favorite
-    */
-    matcher.addURI(authority, AppDbContract.PATH_MOVIES + "/" +
-        AppDbContract.PATH_FAVORITES, CODE_MOVIE_FAVORITE);
+     * content://[AUTHORITY]/movies/favorite
+     */
+    matcher.addURI(authority, AppDbContract.PATH_MOVIES + "/" + AppDbContract.PATH_FAVORITES, 
+        CODE_MOVIE_FAVORITE);
 
     return matcher;
   }
@@ -274,8 +275,8 @@ public class AppContentProvider extends ContentProvider {
         selectionArgs = new String[]{AppDbContract.MovieListingEntry.ARG_MOVIE_FAVORITE_TRUE};
         break;
 
-      case CODE_MOVIE_WITH_ID:
-        // Want to get the particular movie by id
+      case CODE_MOVIE_WITH_SERVICE_ID:
+        // Want to get the particular movie by its service id
         inTables = AppDbContract.MovieListingEntry.TABLE_NAME;
         selection = AppDbContract.MovieListingEntry.COLUMN_MOVIE_TMDB_ID.concat("=?");
         selectionArgs = new String[]{uri.getLastPathSegment()};
@@ -329,7 +330,7 @@ public class AppContentProvider extends ContentProvider {
     final String inTables;
 
     switch (match) {
-      case CODE_MOVIE_WITH_ID:
+      case CODE_MOVIE_WITH_SERVICE_ID:
         inTables = AppDbContract.MovieListingEntry.TABLE_NAME;
         selection = AppDbContract.MovieListingEntry.COLUMN_MOVIE_TMDB_ID + "=?";
         selectionArgs = new String[]{uri.getLastPathSegment()};

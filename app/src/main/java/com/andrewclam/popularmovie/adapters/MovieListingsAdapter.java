@@ -18,7 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.andrewclam.popularmovie.R;
-import com.andrewclam.popularmovie.data.model.MovieListing;
+import com.andrewclam.popularmovie.data.model.Movie;
 import com.andrewclam.popularmovie.util.NetworkUtil;
 import com.squareup.picasso.Picasso;
 
@@ -38,7 +38,7 @@ public class MovieListingsAdapter extends RecyclerView.Adapter<MovieListingsAdap
     private final static String TAG = MovieListingsAdapter.class.getSimpleName();
     private final OnMovieEntryClickListener mOnItemClickedListener; // Activity pass this
     /*Instance Vars*/
-    private ArrayList<MovieListing> mEntries;
+    private ArrayList<Movie> mEntries;
 
     /*Default Constructor*/
     public MovieListingsAdapter(OnMovieEntryClickListener mOnItemClickedListener) {
@@ -114,7 +114,7 @@ public class MovieListingsAdapter extends RecyclerView.Adapter<MovieListingsAdap
      *
      * @param mEntries the new dataset that we want to update the adapter with
      */
-    public void setMovieEntryData(ArrayList<MovieListing> mEntries) {
+    public void setMovieEntryData(ArrayList<Movie> mEntries) {
         this.mEntries = mEntries;
         notifyDataSetChanged();
     }
@@ -124,7 +124,7 @@ public class MovieListingsAdapter extends RecyclerView.Adapter<MovieListingsAdap
      * Handle on itemClick event in each itemView inside the RecyclerView
      */
     public interface OnMovieEntryClickListener {
-        void onItemClicked(MovieListing entry);
+        void onItemClicked(Movie entry);
     }
 
     /**
@@ -149,7 +149,7 @@ public class MovieListingsAdapter extends RecyclerView.Adapter<MovieListingsAdap
                 int adapterPosition = getAdapterPosition();
 
                 // 2) Find the corresponding clicked entry in the entries
-                MovieListing entry = mEntries.get(adapterPosition);
+                Movie entry = mEntries.get(adapterPosition);
 
                 // 3) Use onClickHandler to notify the activity of a onClick event
                 // pass in the retrieved object

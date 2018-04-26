@@ -43,7 +43,7 @@ import com.andrewclam.popularmovie.adapters.MovieListingsAdapter;
 import com.andrewclam.popularmovie.async.FetchMovieAsyncTask;
 import com.andrewclam.popularmovie.async.PopularMovieDbSync;
 import com.andrewclam.popularmovie.data.db.AppDbContract;
-import com.andrewclam.popularmovie.data.model.MovieListing;
+import com.andrewclam.popularmovie.data.model.Movie;
 import com.andrewclam.popularmovie.util.LayoutManagerUtil;
 import com.andrewclam.popularmovie.util.NetworkUtil;
 
@@ -79,7 +79,6 @@ public class MainActivity extends AppCompatActivity implements
 
   /*Constant - Keys*/
   private static final String LIST_STATE_KEY = "list_state_key";
-
   private static final String LIST_TYPE_SELECTOR_KEY = "instance_sort_val";
   private static final String USER_SHOW_FAVORITES_KEY = "user_show_favorite_movies";
   /*
@@ -274,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements
           }
 
           @Override
-          public void onPostExecute(@Nullable ArrayList<MovieListing> entries) {
+          public void onPostExecute(@Nullable ArrayList<Movie> entries) {
             // Task complete, hide the loading indicator
             mProgressBar.setVisibility(View.GONE);
 
@@ -377,7 +376,7 @@ public class MainActivity extends AppCompatActivity implements
     mProgressBar.setVisibility(View.GONE);
 
     // Parse the cursor data into an ArrayList of movie listing
-    ArrayList<MovieListing> entries = parseEntriesFromCursor(data);
+    ArrayList<Movie> entries = parseEntriesFromCursor(data);
 
     // Bind the entries to the adapter for display
     mAdapter.setMovieEntryData(entries);
@@ -411,7 +410,7 @@ public class MainActivity extends AppCompatActivity implements
    * @param entry the particular entry that is clicked by the user
    */
   @Override
-  public void onItemClicked(MovieListing entry) {
+  public void onItemClicked(Movie entry) {
     // Starts the DetailActivity with the entry item to populate the movie entry info
     Intent intent = new Intent(MainActivity.this, DetailActivity.class);
     intent.putExtra(EXTRA_MOVIE_ENTRY_OBJECT, Parcels.wrap(entry));

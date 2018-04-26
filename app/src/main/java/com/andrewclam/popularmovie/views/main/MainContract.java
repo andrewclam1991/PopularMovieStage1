@@ -23,6 +23,12 @@ public interface MainContract {
      */
     void showLoadingMoviesError();
 
+    /**
+     * Allow the View to handle adapter notification
+     * when the underlying data set is changed
+     */
+    void onDataSetChanged();
+
   }
 
   /**
@@ -39,56 +45,89 @@ public interface MainContract {
   interface Presenter extends BasePresenter<View>{
 
     /**
-     * Enum that defines the sort filter type
-     */
-    enum FilterType{
-      DEFAULT, BY_POPULARITY, BY_RATING, FAVORITES_ONLY
-    }
-
-    /**
-     * Enum that defines the filter order
-     */
-    enum FilterOrder{
-      ASC, DESC
-    }
-
-    /**
      * Allow client to start loading {@link Entity}s
      */
     void loadItems();
 
     /**
-     * Allow client to filter the result base on the filter type
+     * Allows the View to communicate with the framework view
+     * to check if the network is available
+     */
+    void checkNetworkState();
+
+    /**
+     * Enum that defines the filter types
+     */
+    enum FilterType{
+      DEFAULT, FAVORITES
+    }
+
+    /**
+     * Enum that defines the sort types
+     */
+    enum SortType{
+      DEFAULT, BY_POPULARITY, BY_RATING,
+    }
+
+    /**
+     * Enum that defines the sort order
+     */
+    enum SortOrder {
+      DEFAULT, ASC, DESC
+    }
+
+    /**
+     * Allow client to filter the result base on a type
      * Note: Also allow the {@link FilterType} instance state to be restored
      * @param type any of the valid {@link FilterType}
      */
     void setFilterType(@NonNull FilterType type);
 
     /**
-     * Allow client to order the results base on the {@code order}
-     * Note: Also allow the {@link FilterOrder} instance state to be restored
-     * @param order any of the valid {@link FilterOrder}
+     * Allow client to sort the result base on a type
+     * Note: Also allow the {@link SortType} instance state to be restored
+     * @param type any of the valid {@link SortType}
      */
-    void setFilterOrder(@NonNull FilterOrder order);
-
+    void setSortType(@NonNull SortType type);
 
     /**
-     * Allow client to get the current filter type set by the user,
+     * Allow client to order the results base on the {@code order}
+     * Note: Also allow the {@link SortOrder} instance state to be restored
+     * @param order any of the valid {@link SortOrder}
+     */
+    void setSortOrder(@NonNull SortOrder order);
+
+    /**
+     * Allow client to get the current {@link FilterType} set by the user,
      * Note: handles screen rotation to persist user selection.
-     * @return the current filter type set by the user, if not set
-     * a default is returned
+     * @return the current {@link FilterType} set by the user, if not set
+     * a {@link FilterType#DEFAULT} is returned
      */
     @NonNull
     FilterType getCurrentFilterType();
 
     /**
-     * Allow client to get the current {@link FilterOrder} set by the user,
+     * Allow client to get the current {@link SortType} set by the user,
      * Note: handles screen rotation to persist user selection.
-     * @return the current {@link FilterOrder} set by the user, if not set
-     * a default is returned
+     * @return the current {@link SortType} set by the user, if not set
+     * a {@link SortType#DEFAULT} is returned
      */
     @NonNull
-    FilterOrder getCurrentFilterOrder();
+    FilterType getCurrentSortType();
+
+    /**
+     * Allow client to get the current {@link SortOrder} set by the user,
+     * Note: handles screen rotation to persist user selection.
+     * @return the current {@link SortOrder} set by the user, if not set
+     * a {@link SortOrder#DEFAULT} is returned
+     */
+    @NonNull
+    SortOrder getCurrentSortOrder();
+
+    // Constants
+    String FILTER_ORDER_KEY = "FILTER_ORDER_KEY";
+    String SORT_TYPE_KEY = "SORT_TYPE_KEY";
+    String SORT_ORDER_KEY = "SORT_ORDER_KEY";
   }
 
   /**
@@ -98,10 +137,24 @@ public interface MainContract {
    */
   interface ItemViewHolderPresenter<I extends ItemViewHolder>{
 
+    /**
+     * Method called when the adapter is ready to populate a {@link ItemViewHolder}
+     * with model data.
+     * @param holder the {@link ItemViewHolder} that is ready to be populated
+     * @param position the corresponding absolute position of the data within the list.
+     */
     void onAdapterBindViewHolder(I holder, int position);
 
-    void onAdapterItemClicked(int adapterPosition);
+    /**
+     * Method called when the adapter registered a user click on an element item.
+     * @param position the corresponding absolute position of the data within the list.
+     */
+    void onAdapterItemClicked(int position);
 
+    /**
+     * Method called when the adapter requests the current count of the items
+     * @return the current count of items
+     */
     int onAdapterRequestItemCount();
 
   }

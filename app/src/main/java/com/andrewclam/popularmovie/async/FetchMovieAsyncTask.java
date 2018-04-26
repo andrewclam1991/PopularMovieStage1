@@ -13,7 +13,7 @@ package com.andrewclam.popularmovie.async;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.andrewclam.popularmovie.data.model.MovieListing;
+import com.andrewclam.popularmovie.data.model.Movie;
 import com.andrewclam.popularmovie.util.NetworkUtil;
 import com.andrewclam.popularmovie.util.TMDBJsonUtil;
 
@@ -30,7 +30,7 @@ import java.util.ArrayList;
  * An implementation of the AsyncTask class to do network IO on a separate thread,
  */
 
-public class FetchMovieAsyncTask extends AsyncTask<Void, Void, ArrayList<MovieListing>> {
+public class FetchMovieAsyncTask extends AsyncTask<Void, Void, ArrayList<Movie>> {
     /*Debug Tag*/
     private static final String TAG = FetchMovieAsyncTask.class.getSimpleName();
 
@@ -100,9 +100,9 @@ public class FetchMovieAsyncTask extends AsyncTask<Void, Void, ArrayList<MovieLi
     }
 
     @Override
-    protected ArrayList<MovieListing> doInBackground(Void... voids) {
+    protected ArrayList<Movie> doInBackground(Void... voids) {
         // Init a arrayList to store the parsed movie entries
-        ArrayList<MovieListing> entries;
+        ArrayList<Movie> entries;
 
         try {
             // Get the url required by the network util
@@ -135,7 +135,7 @@ public class FetchMovieAsyncTask extends AsyncTask<Void, Void, ArrayList<MovieLi
     }
 
     @Override
-    protected void onPostExecute(ArrayList<MovieListing> entries) {
+    protected void onPostExecute(ArrayList<Movie> entries) {
         super.onPostExecute(entries);
         if (mListener != null) mListener.onPostExecute(entries);
     }
@@ -147,6 +147,6 @@ public class FetchMovieAsyncTask extends AsyncTask<Void, Void, ArrayList<MovieLi
     public interface onMovieEntryTaskInteractionListener {
         void onPreExecute();
 
-        void onPostExecute(ArrayList<MovieListing> entries);
+        void onPostExecute(ArrayList<Movie> entries);
     }
 }

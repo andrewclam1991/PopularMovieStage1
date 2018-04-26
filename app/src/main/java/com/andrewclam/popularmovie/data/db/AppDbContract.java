@@ -20,7 +20,7 @@ package com.andrewclam.popularmovie.data.db;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-import com.andrewclam.popularmovie.data.model.MovieListing;
+import com.andrewclam.popularmovie.data.model.Movie;
 
 import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieListingEntry.CONTENT_URI;
 
@@ -54,7 +54,7 @@ public class AppDbContract {
    * is a valid path for looking at weather data.
    */
   public static final String PATH_MOVIES = "movies";
-
+  public static final String PATH_UID = "uid";
   public static final String PATH_FAVORITES = "favorites";
 
   /**
@@ -70,7 +70,7 @@ public class AppDbContract {
   }
 
   /**
-   * {@link MovieListing}'s each row entry constants
+   * {@link Movie}'s each row entry constants
    */
   public static final class MovieListingEntry implements BaseColumns {
     public static final Uri CONTENT_URI =
