@@ -15,14 +15,13 @@ import org.parceler.Parcel;
 import java.net.URL;
 
 /**
- * Created by Andrew Chi Heng Lam on 9/2/2017.
- * A Model Class to store a particular movies' associated video info.
- * It uses Parceler to take care of its parcelable implementation, when needed.
+ * Model class to store a particular movies' associated video data.
  */
 
 @Parcel(Parcel.Serialization.BEAN)
-public class RelatedVideo {
-  private String videoId;
+public class RelatedVideo extends Entity{
+
+  private String relatedVideoId;
   private String key;
   private String name;
   private String providerSite;
@@ -35,12 +34,12 @@ public class RelatedVideo {
 
   }
 
-  public String getVideoId() {
-    return videoId;
+  public String getRelatedVideoId() {
+    return relatedVideoId;
   }
 
-  public void setVideoId(String videoId) {
-    this.videoId = videoId;
+  public void setRelatedVideoId(String relatedVideoId) {
+    this.relatedVideoId = relatedVideoId;
   }
 
   public String getKey() {

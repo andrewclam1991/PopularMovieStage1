@@ -20,7 +20,9 @@ package com.andrewclam.popularmovie.data.db;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.CONTENT_URI;
+import com.andrewclam.popularmovie.data.model.MovieListing;
+
+import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieListingEntry.CONTENT_URI;
 
 /**
  * Defines table and column names for the movie entry database. this contract class keeps
@@ -28,97 +30,65 @@ import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.CONTE
  */
 public class AppDbContract {
 
-    /*
-     * The "Content authority" is a name for the entire content provider, similar to the
-     * relationship between a domain name and its website. A convenient string to use for the
-     * content authority is the package name for the app, which is guaranteed to be unique on the
-     * Play Store.
-     */
-    public static final String CONTENT_AUTHORITY = "com.andrewclam.popularmovie";
+  /*
+   * The "Content authority" is a name for the entire content provider, similar to the
+   * relationship between a domain name and its website. A convenient string to use for the
+   * content authority is the package name for the app, which is guaranteed to be unique on the
+   * Play Store.
+   */
+  static final String CONTENT_AUTHORITY = "com.andrewclam.popularmovie";
 
-    /*
-     * Use CONTENT_AUTHORITY to create the base of all URI's which apps will use to contact
-     * the content provider for PopularMovie.
-     */
-    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+  /*
+   * Use CONTENT_AUTHORITY to create the base of all URI's which apps will use to contact
+   * the content provider for PopularMovie.
+   */
+  static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
-    /*
-     * Possible paths that can be appended to BASE_CONTENT_URI to form valid URI's that Sunshine
-     * can handle. For instance,
-     *
-     *     content://com.andrewclam.popularmovie/favorites/
-     *     [           BASE_CONTENT_URI         ][ PATH_FAVORITES ]
-     *
-     * is a valid path for looking at weather data.
-     */
-    public static final String PATH_MOVIES = "movies";
+  /*
+   * Possible paths that can be appended to BASE_CONTENT_URI to form valid URI's that Sunshine
+   * can handle. For instance,
+   *
+   *     content://com.andrewclam.popularmovie/favorites/
+   *     [           BASE_CONTENT_URI         ][ PATH_FAVORITES ]
+   *
+   * is a valid path for looking at weather data.
+   */
+  public static final String PATH_MOVIES = "movies";
 
-    public static final String PATH_FAVORITES = "favorites";
-//
-//    /**
-//     * Returns just the selection part of the query from a unique movie id
-//     * This is used to get the Uri of the movie from the database given its unique movie id
-//     *
-//     * @param id the unique movie's id as loaded from TMDB
-//     * @return a Uri that points to the particular movie with the id
-//     */
-//    public static Uri buildMovieUriWithId(long id) {
-//        return CONTENT_URI.buildUpon().appendPath(Long.toString(id)).build();
-//    }
+  public static final String PATH_FAVORITES = "favorites";
 
-    /**
-     * Easy to use helper method to build the uri that points to a specific movie given its unique
-     * movie id
-     *
-     * @param movieId the unique movie id as fetched from TMDB)
-     * @return an Uri that points to that particular movie on the user's database
-     */
-    public static Uri buildMovieUriWithId(Long movieId) {
-        String movieIdStr = String.valueOf(movieId);
-        return CONTENT_URI.buildUpon().appendPath(movieIdStr).build();
-    }
+  /**
+   * Convenience method that provides a {@link Uri} that points to a specific
+   * movie given its unique movie id
+   *
+   * @param movieId the unique movie id as fetched from TMDB)
+   * @return an Uri that points to that particular movie on the user's database
+   */
+  public static Uri buildMovieUriWithId(Long movieId) {
+    String movieIdStr = String.valueOf(movieId);
+    return CONTENT_URI.buildUpon().appendPath(movieIdStr).build();
+  }
 
-    /* Inner class that defines the table contents of the movie table */
-    public static final class MovieEntry implements BaseColumns {
+  /**
+   * {@link MovieListing}'s each row entry constants
+   */
+  public static final class MovieListingEntry implements BaseColumns {
+    public static final Uri CONTENT_URI =
+        BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOVIES).build();
 
-        /* The base CONTENT_URI used to query the movie table from the content provider */
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
-                .appendPath(PATH_MOVIES)
-                .build();
+    public static final String TABLE_NAME = "movies_table";
+    public static final String COLUMN_MOVIE_TMDB_ID = "tmdb_id";
+    public static final String COLUMN_TITLE = "title";
+    public static final String COLUMN_RELEASE_DATE = "release_date";
+    public static final String COLUMN_POSTER_PATH = "poster_path";
+    public static final String COLUMN_VOTE_AVERAGE = "vote_average";
+    public static final String COLUMN_VOTE_COUNT = "vote_count";
+    public static final String COLUMN_OVERVIEW = "overview";
+    public static final String COLUMN_POPULARITY = "popularity";
+    public static final String COLUMN_FAVORITE = "favorite";
 
-        /* Used internally as the name of our database table table. */
-        public static final String TABLE_NAME = "movie_listing_tb";
-
-        /* Unique id that identifies a particular movie on the TMDB*/
-        public static final String COLUMN_MOVIE_ID = "id";
-
-        /* Movie's title */
-        public static final String COLUMN_TITLE = "title";
-
-        /* Movie Release Date*/
-        public static final String COLUMN_RELEASE_DATE = "release_date";
-
-        /* Movie's image poster path*/
-        public static final String COLUMN_POSTER_PATH = "poster_path";
-
-        /* Movie's average vote rating */
-        public static final String COLUMN_VOTE_AVERAGE = "vote_average";
-
-        /* Movie's rating's vote count*/
-        public static final String COLUMN_VOTE_COUNT = "vote_count";
-
-        /* Movie's overview, synopsis*/
-        public static final String COLUMN_OVERVIEW = "overview";
-
-        /* Movie's popularity index */
-        public static final String COLUMN_POPULARITY = "popularity";
-
-        /* Movie's favorite status, client toggle this selection */
-        public static final String COLUMN_FAVORITE = "favorite";
-
-        /* Constant String for boolean COLUMN Favorite*/
-        public static final String SELECTION_ARG_MOVIE_FAVORITE_TRUE = "1";
-
-        public static final String SELECTION_ARG_MOVIE_FAVORITE_FALSE = "0";
-    }
+    /* Valid values for boolean COLUMN Favorite*/
+    public static final String ARG_MOVIE_FAVORITE_TRUE = "1";
+    public static final String ARG_MOVIE_FAVORITE_FALSE = "0";
+  }
 }

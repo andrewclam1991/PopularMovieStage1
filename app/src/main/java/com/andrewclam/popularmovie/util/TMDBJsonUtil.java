@@ -108,7 +108,7 @@ public final class TMDBJsonUtil {
                 String overView = result.getString(TMDB_OVERVIEW);
 
                 /* Store each element into the data model class */
-                entry.setId(id);
+                entry.setMovieId(id);
                 entry.setTitle(title);
                 entry.setReleaseDate(releaseDate);
                 entry.setPosterPath(posterPath);
@@ -193,7 +193,7 @@ public final class TMDBJsonUtil {
                 String type = result.getString(TMDB_VIDEO_TYPE);
 
                 /* Store each element into the data model class */
-                entry.setVideoId(movieId);
+                entry.setRelatedVideoId(movieId);
                 entry.setProviderKey(providerKey);
                 entry.setName(name);
                 entry.setProviderSite(providerSite);
@@ -293,7 +293,7 @@ public final class TMDBJsonUtil {
                 content = content.trim();
 
                 /* Store each element into the data model class */
-                entry.setReviewId(id);
+                entry.setUserReviewId(id);
                 entry.setAuthor(author);
                 entry.setContent(content);
                 entry.setReviewUrl(urlStr);

@@ -60,18 +60,18 @@ public class PopularMovieDbSync {
       MovieListing entry = new MovieListing();
 
       // Get the index of each column from the cursor
-      int idColIndex = dataCursor.getColumnIndex(AppDbContract.MovieEntry.COLUMN_MOVIE_ID);
-      int titleColIndex = dataCursor.getColumnIndex(AppDbContract.MovieEntry.COLUMN_TITLE);
-      int releaseDateColIndex = dataCursor.getColumnIndex(AppDbContract.MovieEntry.COLUMN_RELEASE_DATE);
-      int posterPathColIndex = dataCursor.getColumnIndex(AppDbContract.MovieEntry.COLUMN_POSTER_PATH);
-      int voteAvgColIndex = dataCursor.getColumnIndex(AppDbContract.MovieEntry.COLUMN_VOTE_AVERAGE);
-      int voteCountColIndex = dataCursor.getColumnIndex(AppDbContract.MovieEntry.COLUMN_VOTE_COUNT);
-      int popularityColIndex = dataCursor.getColumnIndex(AppDbContract.MovieEntry.COLUMN_POPULARITY);
-      int overviewColIndex = dataCursor.getColumnIndex(AppDbContract.MovieEntry.COLUMN_OVERVIEW);
-      int favColIndex = dataCursor.getColumnIndex(AppDbContract.MovieEntry.COLUMN_FAVORITE);
+      int idColIndex = dataCursor.getColumnIndex(AppDbContract.MovieListingEntry.COLUMN_MOVIE_TMDB_ID);
+      int titleColIndex = dataCursor.getColumnIndex(AppDbContract.MovieListingEntry.COLUMN_TITLE);
+      int releaseDateColIndex = dataCursor.getColumnIndex(AppDbContract.MovieListingEntry.COLUMN_RELEASE_DATE);
+      int posterPathColIndex = dataCursor.getColumnIndex(AppDbContract.MovieListingEntry.COLUMN_POSTER_PATH);
+      int voteAvgColIndex = dataCursor.getColumnIndex(AppDbContract.MovieListingEntry.COLUMN_VOTE_AVERAGE);
+      int voteCountColIndex = dataCursor.getColumnIndex(AppDbContract.MovieListingEntry.COLUMN_VOTE_COUNT);
+      int popularityColIndex = dataCursor.getColumnIndex(AppDbContract.MovieListingEntry.COLUMN_POPULARITY);
+      int overviewColIndex = dataCursor.getColumnIndex(AppDbContract.MovieListingEntry.COLUMN_OVERVIEW);
+      int favColIndex = dataCursor.getColumnIndex(AppDbContract.MovieListingEntry.COLUMN_FAVORITE);
 
       // Set each field to the entry
-      entry.setId(dataCursor.getLong(idColIndex));
+      entry.setMovieId(dataCursor.getLong(idColIndex));
       entry.setTitle(dataCursor.getString(titleColIndex));
       entry.setReleaseDate(dataCursor.getString(releaseDateColIndex));
       entry.setPosterPath(dataCursor.getString(posterPathColIndex));
@@ -126,7 +126,7 @@ public class PopularMovieDbSync {
 
           // load the cursor from using a particular movie id
           Cursor cursor = context.getContentResolver().query(
-              buildMovieUriWithId(entry.getId()),
+              buildMovieUriWithId(entry.getMovieId()),
               null,
               null,
               null,
@@ -134,11 +134,11 @@ public class PopularMovieDbSync {
 
           if (cursor == null || cursor.getCount() == 0) {
             // The cursor doesn't exist, insert an entry in the db
-            context.getContentResolver().insert(AppDbContract.MovieEntry.CONTENT_URI, contentValues);
+            context.getContentResolver().insert(AppDbContract.MovieListingEntry.CONTENT_URI, contentValues);
 
           } else if (cursor.moveToNext()) {
             // The cursor is valid, update the current entry in the db
-            Uri uriToUpdate = buildMovieUriWithId(entry.getId());
+            Uri uriToUpdate = buildMovieUriWithId(entry.getMovieId());
             context.getContentResolver().update(uriToUpdate, contentValues, null, null);
 
             // Close up the cursor after update
@@ -187,7 +187,7 @@ public class PopularMovieDbSync {
 
       } finally {
         // use the contentResolver bulkInsert to insert all the cv values
-        context.getContentResolver().bulkInsert(AppDbContract.MovieEntry.CONTENT_URI, contentValuesArray);
+        context.getContentResolver().bulkInsert(AppDbContract.MovieListingEntry.CONTENT_URI, contentValuesArray);
       }
     });
 
@@ -207,14 +207,14 @@ public class PopularMovieDbSync {
     // Create a new contentValue object to store the entry data
     ContentValues contentValues = new ContentValues();
 
-    contentValues.put(AppDbContract.MovieEntry.COLUMN_MOVIE_ID, entry.getId());
-    contentValues.put(AppDbContract.MovieEntry.COLUMN_TITLE, entry.getTitle());
-    contentValues.put(AppDbContract.MovieEntry.COLUMN_RELEASE_DATE, entry.getReleaseDate());
-    contentValues.put(AppDbContract.MovieEntry.COLUMN_POSTER_PATH, entry.getPosterPath());
-    contentValues.put(AppDbContract.MovieEntry.COLUMN_VOTE_AVERAGE, entry.getVoteAverage());
-    contentValues.put(AppDbContract.MovieEntry.COLUMN_VOTE_COUNT, entry.getVoteCount());
-    contentValues.put(AppDbContract.MovieEntry.COLUMN_OVERVIEW, entry.getOverview());
-    contentValues.put(AppDbContract.MovieEntry.COLUMN_POPULARITY, entry.getPopularity());
+    contentValues.put(AppDbContract.MovieListingEntry.COLUMN_MOVIE_TMDB_ID, entry.getMovieId());
+    contentValues.put(AppDbContract.MovieListingEntry.COLUMN_TITLE, entry.getTitle());
+    contentValues.put(AppDbContract.MovieListingEntry.COLUMN_RELEASE_DATE, entry.getReleaseDate());
+    contentValues.put(AppDbContract.MovieListingEntry.COLUMN_POSTER_PATH, entry.getPosterPath());
+    contentValues.put(AppDbContract.MovieListingEntry.COLUMN_VOTE_AVERAGE, entry.getVoteAverage());
+    contentValues.put(AppDbContract.MovieListingEntry.COLUMN_VOTE_COUNT, entry.getVoteCount());
+    contentValues.put(AppDbContract.MovieListingEntry.COLUMN_OVERVIEW, entry.getOverview());
+    contentValues.put(AppDbContract.MovieListingEntry.COLUMN_POPULARITY, entry.getPopularity());
 
     return contentValues;
   }

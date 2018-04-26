@@ -21,7 +21,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry;
+import com.andrewclam.popularmovie.data.db.AppDbContract.MovieListingEntry;
 
 /**
  * Created by Andrew Chi Heng Lam on 8/31/2017.
@@ -63,7 +63,7 @@ public class AppDbHelper extends SQLiteOpenHelper {
                 /*
                 * Create a table with the given table name in the contract
                 * */
-                "CREATE TABLE " + MovieEntry.TABLE_NAME + " (" +
+                "CREATE TABLE " + MovieListingEntry.TABLE_NAME + " (" +
 
                         /*
                          * MovieListingEntry did not explicitly declare a column called "_ID". However,
@@ -75,27 +75,27 @@ public class AppDbHelper extends SQLiteOpenHelper {
                          * TMDB.
                          */
 
-                        MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        MovieListingEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 
-                        MovieEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL, " +
+                        MovieListingEntry.COLUMN_MOVIE_TMDB_ID + " INTEGER NOT NULL, " +
 
-                        MovieEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
+                        MovieListingEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
 
-                        MovieEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, " +
+                        MovieListingEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, " +
 
-                        MovieEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL, " +
+                        MovieListingEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL, " +
 
-                        MovieEntry.COLUMN_VOTE_AVERAGE + " REAL NOT NULL, " +
+                        MovieListingEntry.COLUMN_VOTE_AVERAGE + " REAL NOT NULL, " +
 
-                        MovieEntry.COLUMN_VOTE_COUNT + " INTEGER NOT NULL, " +
+                        MovieListingEntry.COLUMN_VOTE_COUNT + " INTEGER NOT NULL, " +
 
-                        MovieEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
+                        MovieListingEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
 
-                        MovieEntry.COLUMN_POPULARITY + " REAL NOT NULL, " +
+                        MovieListingEntry.COLUMN_POPULARITY + " REAL NOT NULL, " +
 
                         // Favorite should contain boolean, but SQLite doesn't have this data type
                         // instead, use INTEGER 1 to represent true, and 0 as false, default to false (0)
-                        MovieEntry.COLUMN_FAVORITE + " INTEGER DEFAULT 0, " +
+                        MovieListingEntry.COLUMN_FAVORITE + " INTEGER DEFAULT 0, " +
 
                         /*
                          * To ensure this table can only contain one movie entry per id, we declare
@@ -105,7 +105,7 @@ public class AppDbHelper extends SQLiteOpenHelper {
                          * movie listing entry.
                          */
 
-                        " UNIQUE (" + MovieEntry.COLUMN_MOVIE_ID + ") ON CONFLICT IGNORE);";
+                        " UNIQUE (" + MovieListingEntry.COLUMN_MOVIE_TMDB_ID + ") ON CONFLICT IGNORE);";
 
         /*
          * After we've spelled out our SQLite table creation statement above, we actually execute
@@ -128,7 +128,7 @@ public class AppDbHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + MovieEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + MovieListingEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
 }

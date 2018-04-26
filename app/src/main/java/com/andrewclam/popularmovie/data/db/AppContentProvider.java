@@ -27,25 +27,16 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
-import com.andrewclam.popularmovie.BuildConfig;
 import com.google.common.base.Strings;
 
 import static com.andrewclam.popularmovie.data.db.AppDbContract.CONTENT_AUTHORITY;
-import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.COLUMN_MOVIE_ID;
-import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.CONTENT_URI;
-import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.SELECTION_ARG_MOVIE_FAVORITE_TRUE;
-import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.TABLE_NAME;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Created by Andrew Chi Heng Lam on 8/31/2017.
- * <p>
- * This class serves as the ContentProvider for all of users' offline PopularMovie's data.
- * This class allows us to bulk insert, query, update movie listing.
+ * This class is an implementation of a {@link ContentProvider},
+ * it exposes CRUD methods to interface with the local SQLite database.
  */
-
 public class AppContentProvider extends ContentProvider {
 
   /* Log Tag */
@@ -145,7 +136,7 @@ public class AppContentProvider extends ContentProvider {
   @Override
   public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
     // Argument sanity check
-    if (!checkInsertArgs(uri, contentValues)) {
+    if (checkInsertArgs(uri, contentValues)) {
       throw new IllegalArgumentException("invalid arguments for insert()");
     }
 
@@ -158,7 +149,7 @@ public class AppContentProvider extends ContentProvider {
     switch (match) {
       // Movies
       case CODE_MOVIE:
-        inTables = AppDbContract.MovieEntry.TABLE_NAME;
+        inTables = AppDbContract.MovieListingEntry.TABLE_NAME;
         break;
       default:
         throw new UnsupportedOperationException("Unknown or Unsupported Uri for Insert()");
@@ -173,7 +164,7 @@ public class AppContentProvider extends ContentProvider {
     db.close();
 
     // Notify the resolver if the uri has been changed, and return the newly inserted URI
-    if (id <= 0) {
+    if (id < 0) {
       throw new SQLException("Failed to insert row into " + uri.toString());
     } else {
       checkNotNull(getContext()).getContentResolver().notifyChange(uri, null);
@@ -201,7 +192,7 @@ public class AppContentProvider extends ContentProvider {
     // Argument sanity check
     checkNotNull(uri, "uri can't be null");
 
-    // Gets match id base on the supplied uri using the sUriMatcher
+    // Gets match id that would determine which table to bulk insert
     final int match = sUriMatcher.match(uri);
 
     // Stores the matched database table
@@ -210,16 +201,16 @@ public class AppContentProvider extends ContentProvider {
     switch (match) {
       // Movies
       case CODE_MOVIE:
-        inTables = AppDbContract.MovieEntry.TABLE_NAME;
+        inTables = AppDbContract.MovieListingEntry.TABLE_NAME;
         break;
 
       default:
-        throw new UnsupportedOperationException("Unknown uri for insert: " + uri);
+        throw new UnsupportedOperationException("Unknown or Unsupported Uri for bulkInsert()");
     }
 
     /*
      * Gets an instance of a writable database, then starts bulk insert as a single transaction
-      *into the matched database table (inTables), after transaction then releases db resources.
+     * into the matched database table (inTables), after transaction then releases db resources.
      */
     final SQLiteDatabase db = checkNotNull(mAppDbHelper).getWritableDatabase();
     final int rowInserted;
@@ -227,7 +218,7 @@ public class AppContentProvider extends ContentProvider {
     try {
       for (ContentValues value : values) {
         long newID = db.insertOrThrow(inTables, null, value);
-        if (newID <= 0) {
+        if (newID < 0) {
           throw new SQLException("Failed to insert row into " + uri);
         }
       }
@@ -263,166 +254,113 @@ public class AppContentProvider extends ContentProvider {
   public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
                       @Nullable String[] selectionArgs, @Nullable String sortOrder) {
 
-    // Use uri matcher, the match determines how we handle the query()
-    int match = sUriMatcher.match(uri);
+    // Gets match id that would determine which table and how to query
+    final int match = sUriMatcher.match(uri);
 
-    // Init a cursor for return
-    Cursor cursor;
+    // Stores the matched database table
+    final String inTables;
 
     switch (match) {
-      case CODE_MOVIE_FAVORITE: {
-        // Get the readable database using the dbHelper
-        final SQLiteDatabase db = mAppDbHelper.getReadableDatabase();
+      // Movies
+      case CODE_MOVIE:
+        // Want to get the list of all movies
+        inTables = AppDbContract.MovieListingEntry.TABLE_NAME;
+        break;
 
-        // Set selection to select favorite, selectionArg handles the "=?" wildcard
-        selection = AppDbContract.MovieEntry.COLUMN_FAVORITE + "=?";
-
-        // Set selectionArgs to select movie favorite that is true
-        selectionArgs = new String[]{SELECTION_ARG_MOVIE_FAVORITE_TRUE};
-
-        // Return a cursor of movie listings in the database that matches the
-        // parameter criteria
-        cursor = db.query(
-            AppDbContract.MovieEntry.TABLE_NAME,
-            projection,
-            selection,
-            selectionArgs,
-            null,
-            null,
-            sortOrder
-        );
-      }
-      break;
+      case CODE_MOVIE_FAVORITE:
+        // Want to get the list of all movies that are marked favorite
+        inTables = AppDbContract.MovieListingEntry.TABLE_NAME;
+        selection = AppDbContract.MovieListingEntry.COLUMN_FAVORITE.concat("=?");
+        selectionArgs = new String[]{AppDbContract.MovieListingEntry.ARG_MOVIE_FAVORITE_TRUE};
+        break;
 
       case CODE_MOVIE_WITH_ID:
-        /* Get the movie id from the Uri, if the uri matches this pattern,
-         * the id should be appended at the end of the uri
-         */
-        String idStr = uri.getLastPathSegment();
-
-        // Set selection to select movie id, selectionArg handles the "=?" wildcard
-        selection = AppDbContract.MovieEntry.COLUMN_MOVIE_ID + "=?";
-
-        // Set selectionArgs to Use the idStr as the only argument
-        selectionArgs = new String[]{idStr};
-
-        // no break, continue to the shared logic in CODE_MOVIE
-      case CODE_MOVIE:
-        // Get the readable database using the dbHelper
-        final SQLiteDatabase db = mAppDbHelper.getReadableDatabase();
-
-        // Return a cursor of movie listings in the database that matches the
-        // parameter criteria
-        cursor = db.query(
-            AppDbContract.MovieEntry.TABLE_NAME,
-            projection,
-            selection,
-            selectionArgs,
-            null,
-            null, sortOrder
-        );
+        // Want to get the particular movie by id
+        inTables = AppDbContract.MovieListingEntry.TABLE_NAME;
+        selection = AppDbContract.MovieListingEntry.COLUMN_MOVIE_TMDB_ID.concat("=?");
+        selectionArgs = new String[]{uri.getLastPathSegment()};
         break;
 
       default:
-        throw new UnsupportedOperationException("Unsupported or unknown Uri for query()");
+        throw new UnsupportedOperationException("Unknown or Unsupported Uri for query()");
     }
 
+    // Get the readable database using the dbHelper
+    final SQLiteDatabase db = mAppDbHelper.getReadableDatabase();
+
+    // Init a cursor for return
+    final Cursor cursor;
+    cursor = db.query(
+        inTables,
+        projection,
+        selection,
+        selectionArgs,
+        null,
+        null,
+        sortOrder
+    );
+
     return cursor;
-  }
-
-
-  @Override
-  public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-    // Normally, delete function returns an int of the rowsDeleted
-
-    throw new UnsupportedOperationException("#SadFace, MovieListing Provider doesn't support " +
-        "delete()");
   }
 
   /**
    * Update() implementation to allow database to sync and update each movie, and allow user to
    * favorite and un-favorite a movie
    *
-   * @param uri           the uri that points to some row of data base (will be determined by the uri matcher)
+   * @param uri           the {@link Uri} that points to some row within a databae
    * @param contentValues the content values that contains columns of data to be updated
    * @param selection     selection for the column to be updated
-   * @param selectionArgs the argument of column
+   * @param selectionArgs the argument for column selection parameter
    * @return the number of rows updated
    */
   @Override
   public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String selection,
                     @Nullable String[] selectionArgs) {
 
-    if (contentValues == null || contentValues.size() == 0) {
-      // No content value, nothing to update, return 0
+    if (checkInsertArgs(uri,contentValues)) {
+      // No content value to update, return rows updated 0
       return 0;
     }
 
-    // Use uri matcher to make sure the call is pointing to a particular movie listing
-    int match = sUriMatcher.match(uri);
-    int rowsUpdated;
+    // Gets match id that would determine which table and how to update a row
+    final int match = sUriMatcher.match(uri);
+
+    // Stores the matched database table(s)
+    final String inTables;
+
     switch (match) {
       case CODE_MOVIE_WITH_ID:
-        /*
-         *  Get the movie id from the Uri, if the uri matches this pattern,
-         *  the id should be appended at the end of the uri
-         */
-        String idStr = uri.getLastPathSegment();
-
-        // Set selection to select movie id, selectionArg handles the "=?" wildcard
-        selection = AppDbContract.MovieEntry.COLUMN_MOVIE_ID + "=?";
-
-        // Set selectionArgs to Use the idStr as the only argument
-        selectionArgs = new String[]{idStr};
-
-        /************************************
-         * Sanitize Parameter ContentValues *
-         ************************************/
-        // (!) MOVIE ID SHOULDN'T CHANGE
-        // Check if contentValues contains an update in movie id, it shouldn't contain it
-        // but if it does, check to make sure it matches the Uri idStr. if not throw an
-        // exception.
-
-        // Try to get the contentValue with the string key, user of this content provider
-        // shouldn't set this field, but we will check.
-        Long cvId = contentValues.getAsLong(COLUMN_MOVIE_ID);
-
-        // if the value is not null, the user has "accidentally" set the value
-        if (cvId != null) {
-          String cvIdStr = String.valueOf(cvId);
-          if (!cvIdStr.equals(idStr)) {
-            throw new IllegalArgumentException("ContentValues should not contain value " +
-                "for changing the unique movie id, modifying the movie id of an " +
-                "existing record is prohibited");
-          }
-
-          // The cvId is equal to the uri's appended id, no change will occur so let it
-          // slide
-        }
-
-        /***********************
-         * Sanitation Complete *
-         ***********************/
-        // Get the writable database using the mAppDbHelper, and call the update
-        final SQLiteDatabase db = mAppDbHelper.getWritableDatabase();
-        rowsUpdated = db.update(TABLE_NAME, contentValues, selection, selectionArgs);
-
-        // Close database connection for good measure after update
-        db.close();
-
-        // Notify the content resolver of modified dataset if there are rowsUpdated
-        if (rowsUpdated > 0) {
-          if (getContext() != null) getContext().getContentResolver()
-              .notifyChange(uri, null);
-        }
-
-        // Return the number of rows updated, positive number indicate an update with
-        // modification is complete
-        return rowsUpdated;
+        inTables = AppDbContract.MovieListingEntry.TABLE_NAME;
+        selection = AppDbContract.MovieListingEntry.COLUMN_MOVIE_TMDB_ID + "=?";
+        selectionArgs = new String[]{uri.getLastPathSegment()};
+        break;
 
       default:
         throw new UnsupportedOperationException("Unsupported or unknown Uri for update()");
     }
+
+    /*
+     * Gets an instance of a writable database, then starts update with the provided
+     * into the matched database table (inTables), then release database source with close()
+     */
+    final SQLiteDatabase db = mAppDbHelper.getWritableDatabase();
+    final int rowsUpdated = db.update(inTables, contentValues, selection, selectionArgs);
+    db.close();
+
+    // Check if there are rows updated, notify the content resolver of change if so.
+    if (rowsUpdated > 0) {
+      checkNotNull(getContext()).getContentResolver().notifyChange(uri, null);
+    }
+    // Return the number of rows updated, positive number indicate rows updated
+    return rowsUpdated;
+  }
+
+  /**
+   * delete() is not supported in this app
+   */
+  @Override
+  public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
+    throw new UnsupportedOperationException("delete() is not supported");
   }
 
   @Nullable
@@ -432,7 +370,8 @@ public class AppContentProvider extends ContentProvider {
   }
 
   /**
-   * Helper method to check {@link #insert(Uri, ContentValues)}'s provided arg(s)
+   * Helper method to check {@link #insert(Uri, ContentValues)} or
+   * {@link #update(Uri, ContentValues, String, String[])}'s provided arg(s)
    *
    * @param uri           arg uri for {@link #insert(Uri, ContentValues)}
    * @param contentValues arg {@link #insert(Uri, ContentValues)}
@@ -451,6 +390,6 @@ public class AppContentProvider extends ContentProvider {
         .size() == 0) {
       hasNoErrors = false;
     }
-    return hasNoErrors;
+    return !hasNoErrors;
   }
 }

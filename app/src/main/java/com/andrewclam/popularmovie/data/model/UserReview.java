@@ -13,15 +13,14 @@ package com.andrewclam.popularmovie.data.model;
 import org.parceler.Parcel;
 
 /**
- * Created by Andrew Chi Heng Lam on 9/2/2017.
- * A Model Class to store a particular movies' associated user review, includes the unique id,
+ * Model Class to store a particular movies' associated user review, includes the unique id,
  * author and the review content
- * It uses Parceler to take care of its parcelable implementation, when needed.
  */
 
 @Parcel(Parcel.Serialization.BEAN)
-public class UserReview {
-  private String reviewId;
+public class UserReview extends Entity{
+
+  private String userReviewId;
   private String author;
   private String content;
   private String reviewUrl;
@@ -29,12 +28,12 @@ public class UserReview {
 
   public UserReview() {}
 
-  public String getReviewId() {
-    return reviewId;
+  public String getUserReviewId() {
+    return userReviewId;
   }
 
-  public void setReviewId(String reviewId) {
-    this.reviewId = reviewId;
+  public void setUserReviewId(String userReviewId) {
+    this.userReviewId = userReviewId;
   }
 
   public String getAuthor() {

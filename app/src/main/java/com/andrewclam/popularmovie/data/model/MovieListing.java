@@ -13,17 +13,13 @@ package com.andrewclam.popularmovie.data.model;
 import org.parceler.Parcel;
 
 /**
- * Created by Andrew Chi Heng Lam on 8/19/2017.
- * <p>
- * This model class is use to store and to back displaying each the movie listing information.
- * It uses Parceler to take care of its parcelable implementation, when needed.
+ * Model class use to store and to back displaying each the movie listing data.
  */
 
 @Parcel(Parcel.Serialization.BEAN)
-public class MovieListing {
+public class MovieListing extends Entity{
 
-  /* Instance Vars */
-  private long id;
+  private long movieListingId;
   private String title;
   private String releaseDate;
   private String posterPath;
@@ -38,12 +34,12 @@ public class MovieListing {
 
   }
 
-  public long getId() {
-    return id;
+  public long getMovieId() {
+    return movieListingId;
   }
 
-  public void setId(long id) {
-    this.id = id;
+  public void setMovieId(long id) {
+    this.movieListingId = id;
   }
 
   public String getTitle() {
