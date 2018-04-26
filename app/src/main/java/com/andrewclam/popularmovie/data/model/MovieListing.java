@@ -38,7 +38,6 @@ public class MovieListing {
 
   }
 
-  /* Getter and Setters */
   public long getId() {
     return id;
   }

@@ -40,7 +40,7 @@ public class AppDbHelper extends SQLiteOpenHelper {
      * If you change the database schema, you must increment the database version or the onUpgrade
      * method will not be called.
      */
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 1;
 
     public AppDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

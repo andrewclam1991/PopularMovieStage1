@@ -42,6 +42,9 @@ import static com.andrewclam.popularmovie.data.db.AppDbContract.PopularMovieEntr
 
 public class AppContentProvider extends ContentProvider {
 
+  /* Log Tag */
+  private static final String TAG = AppContentProvider.class.getSimpleName();
+
   /*
    * These constant will be used to match URIs with the data they are looking for. We will take
    * advantage of the UriMatcher class to make that matching MUCH easier than doing something
@@ -50,14 +53,14 @@ public class AppContentProvider extends ContentProvider {
   private static final int CODE_MOVIE = 100;
   private static final int CODE_MOVIE_WITH_ID = 101;
   private static final int CODE_MOVIE_FAVORITE = 102;
-  /*Log Tag*/
-  private static final String TAG = AppContentProvider.class.getSimpleName();
+
   /*
    * The URI Matcher used by this content provider. The leading "s" in this variable name
    * signifies that this UriMatcher is a static member variable of WeatherProvider and is a
    * common convention in Android programming.
    */
   private static final UriMatcher sUriMatcher = buildUriMatcher();
+
   /*
    * Reference a Movie listing dbHelper to get writable/readable databases for each provider
    * method to work with.
@@ -210,7 +213,6 @@ public class AppContentProvider extends ContentProvider {
             null,
             null, sortOrder
         );
-
         break;
 
       default:

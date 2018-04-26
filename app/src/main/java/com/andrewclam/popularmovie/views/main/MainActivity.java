@@ -66,14 +66,17 @@ import static com.andrewclam.popularmovie.util.NetworkUtil.TMDB_PATH_TOP_RATED;
 public class MainActivity extends AppCompatActivity implements
     LoaderManager.LoaderCallbacks<Cursor>, MovieListingsAdapter.OnMovieEntryClickListener {
   public static final String EXTRA_MOVIE_ENTRY_OBJECT = "extra_movie_entry_obj";
+
   /*
    * Start Activity For Result codes
    * Use this for the MainActivity to restartLoader and refresh the dataset
    */
   public static final int FAVORITE_CHANGE_REQUEST = 200;
   public static final int FAVORITE_CHANGED_RESULT = 201;
+
   /*Log Tag*/
   private static final String TAG = MainActivity.class.getSimpleName();
+
   /*Constant - Keys*/
   private static final String LIST_STATE_KEY = "list_state_key";
 

@@ -118,6 +118,7 @@ public class AppDbContract {
 
         /* Constant String for boolean COLUMN Favorite*/
         public static final String SELECTION_ARG_MOVIE_FAVORITE_TRUE = "1";
+
         public static final String SELECTION_ARG_MOVIE_FAVORITE_FALSE = "0";
     }
 }

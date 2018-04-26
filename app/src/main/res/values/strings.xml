@@ -31,4 +31,7 @@
     <string name="error_no_trailer_to_share">Sorry, this movie doesn\'t have a trailer</string>
     <string name="action_share_this_movie_trailer">Share The Trailer</string>
     <string name="tmdb_api_key">api_key_here</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
