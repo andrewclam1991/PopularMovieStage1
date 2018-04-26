@@ -46,22 +46,36 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // Dependencies for Android framework support libraries
+    //noinspection GradleCompatible
     implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
     implementation "com.android.support:cardview-v7:$rootProject.supportLibraryVersion"
     implementation "com.android.support:design:$rootProject.supportLibraryVersion"
     implementation "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
     implementation "com.android.support:support-v4:$rootProject.supportLibraryVersion"
     implementation "com.android.support.constraint:constraint-layout:$rootProject.constraintLayoutVersion"
-    implementation "com.android.support.test.espresso:espresso-idling-resource:$rootProject.espressoVersion"
+
+    // Dependencies for Dagger
+    implementation "com.google.dagger:dagger:$rootProject.daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
+    implementation "com.google.dagger:dagger-android:$rootProject.daggerVersion"
+    implementation "com.google.dagger:dagger-android-support:$rootProject.daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-android-processor:$rootProject.daggerVersion"
 
     // Dependencies for RxJava extensions
     implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxjavaVersion"
     implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxandroidVersion"
     implementation "com.squareup.sqlbrite3:sqlbrite:$rootProject.sqlbriteVersion"
 
+    // Dependencies 3rd party libs
+    implementation "com.google.guava:guava:$rootProject.guavaVersion"
+    // TODO remove dependency on parceler for serialization, query backend instead
+    implementation "org.parceler:parceler-api:$rootProject.parcelerVersion"
+    annotationProcessor "org.parceler:parceler:$rootProject.parcelerVersion"
+    implementation "com.squareup.picasso:picasso:$rootProject.picassoVersion"
+
     // Dependencies for local unit tests
-    implementation 'com.android.support:support-v4:27.1.1'
     testImplementation "junit:junit:$rootProject.ext.junitVersion"
+    testImplementation "org.robolectric:robolectric:$rootProject.ext.robolectricVersion"
     testImplementation "org.mockito:mockito-all:$rootProject.ext.mockitoVersion"
     testImplementation "org.hamcrest:hamcrest-all:$rootProject.ext.hamcrestVersion"
 
@@ -70,14 +84,11 @@ dependencies {
     androidTestImplementation "com.android.support.test:rules:$rootProject.ext.runnerVersion"
 
     // Dependencies for Android Espresso UI Testing
+    implementation "com.android.support.test.espresso:espresso-idling-resource:$rootProject.espressoVersion"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:$rootProject.espressoVersion"
     androidTestImplementation "com.android.support.test.espresso:espresso-contrib:$rootProject.espressoVersion"
     androidTestImplementation "com.android.support.test.espresso:espresso-intents:$rootProject.espressoVersion"
     androidTestImplementation "com.android.support.test.espresso.idling:idling-concurrent:$rootProject.espressoVersion"
 
-    // Dependencies 3rd party libs
-    implementation "com.google.guava:guava:$rootProject.guavaVersion"
-    implementation "org.parceler:parceler-api:$rootProject.parcelerVersion"
-    annotationProcessor "org.parceler:parceler:$rootProject.parcelerVersion"
-    implementation "com.squareup.picasso:picasso:$rootProject.picassoVersion"
+
 }

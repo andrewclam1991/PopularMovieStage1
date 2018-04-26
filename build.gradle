@@ -42,9 +42,10 @@ ext {
     compileSdkVersion = 27
 
     // App dependencies
-    supportLibraryVersion = '27.1.0'
+    supportLibraryVersion = '27.1.1'
     constraintLayoutVersion = '1.1.0'
     guavaVersion = '25.0-android'
+    daggerVersion = '2.15'
     rxjavaVersion = '2.1.12'
     rxandroidVersion = '2.0.2'
     sqlbriteVersion = '3.2.0'
@@ -58,4 +59,5 @@ ext {
     rulesVersion = '1.0.0'
     mockitoVersion = '1.10.19'
     espressoVersion = '3.0.1'
+    robolectricVersion = '3.8'
 }
