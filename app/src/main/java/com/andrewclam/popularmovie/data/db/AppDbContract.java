@@ -22,7 +22,7 @@ import android.provider.BaseColumns;
 
 import com.andrewclam.popularmovie.data.model.Movie;
 
-import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieListingEntry.CONTENT_URI;
+import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.CONTENT_URI_MOVIES;
 
 /**
  * Defines table and column names for the movie entry database. this contract class keeps
@@ -66,14 +66,14 @@ public class AppDbContract {
    */
   public static Uri buildMovieUriWithId(Long movieId) {
     String movieIdStr = String.valueOf(movieId);
-    return CONTENT_URI.buildUpon().appendPath(movieIdStr).build();
+    return CONTENT_URI_MOVIES.buildUpon().appendPath(movieIdStr).build();
   }
 
   /**
    * {@link Movie}'s each row entry constants
    */
-  public static final class MovieListingEntry implements BaseColumns {
-    public static final Uri CONTENT_URI =
+  public static final class MovieEntry extends MaintainableColumn implements BaseColumns {
+    public static final Uri CONTENT_URI_MOVIES =
         BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOVIES).build();
 
     public static final String TABLE_NAME = "movies_table";
@@ -88,7 +88,15 @@ public class AppDbContract {
     public static final String COLUMN_FAVORITE = "favorite";
 
     /* Valid values for boolean COLUMN Favorite*/
-    public static final String ARG_MOVIE_FAVORITE_TRUE = "1";
-    public static final String ARG_MOVIE_FAVORITE_FALSE = "0";
+    public static final int ARG_MOVIE_FAVORITE_TRUE = 1;
+    public static final int ARG_MOVIE_FAVORITE_FALSE = 0;
+  }
+
+  /**
+   * All maintainable column with maintenance related flags
+   */
+  static abstract class MaintainableColumn {
+    // delete flag
+    public static final String COLUMN_NAME_DELETE_FLAG = "delete_flag";
   }
 }

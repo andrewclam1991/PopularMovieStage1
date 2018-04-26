@@ -68,7 +68,7 @@ import java.util.function.Predicate;
 
 import static com.andrewclam.popularmovie.views.main.MainActivity.EXTRA_MOVIE_ENTRY_OBJECT;
 import static com.andrewclam.popularmovie.views.main.MainActivity.FAVORITE_CHANGED_RESULT;
-import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieListingEntry.COLUMN_FAVORITE;
+import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.COLUMN_FAVORITE;
 import static com.andrewclam.popularmovie.data.db.AppDbContract.buildMovieUriWithId;
 
 /**
@@ -400,7 +400,7 @@ public class DetailActivity extends AppCompatActivity {
         View.OnClickListener onFavClickListener = view -> {
             // On Click, toggle the mMarkedFavorite and update with that value
             final ContentValues contentValues = new ContentValues();
-            contentValues.put(AppDbContract.MovieListingEntry.COLUMN_FAVORITE, !mFavStatus);
+            contentValues.put(AppDbContract.MovieEntry.COLUMN_FAVORITE, !mFavStatus);
 
             // Get a reference to the contentResolver
             final ContentResolver contentResolver = mContext.getContentResolver();

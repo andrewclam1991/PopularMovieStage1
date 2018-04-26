@@ -150,7 +150,7 @@ public class AppContentProvider extends ContentProvider {
     switch (match) {
       // Movies
       case CODE_MOVIE:
-        inTables = AppDbContract.MovieListingEntry.TABLE_NAME;
+        inTables = AppDbContract.MovieEntry.TABLE_NAME;
         break;
       default:
         throw new UnsupportedOperationException("Unknown or Unsupported Uri for Insert()");
@@ -202,7 +202,7 @@ public class AppContentProvider extends ContentProvider {
     switch (match) {
       // Movies
       case CODE_MOVIE:
-        inTables = AppDbContract.MovieListingEntry.TABLE_NAME;
+        inTables = AppDbContract.MovieEntry.TABLE_NAME;
         break;
 
       default:
@@ -265,20 +265,20 @@ public class AppContentProvider extends ContentProvider {
       // Movies
       case CODE_MOVIE:
         // Want to get the list of all movies
-        inTables = AppDbContract.MovieListingEntry.TABLE_NAME;
+        inTables = AppDbContract.MovieEntry.TABLE_NAME;
         break;
 
       case CODE_MOVIE_FAVORITE:
         // Want to get the list of all movies that are marked favorite
-        inTables = AppDbContract.MovieListingEntry.TABLE_NAME;
-        selection = AppDbContract.MovieListingEntry.COLUMN_FAVORITE.concat("=?");
-        selectionArgs = new String[]{AppDbContract.MovieListingEntry.ARG_MOVIE_FAVORITE_TRUE};
+        inTables = AppDbContract.MovieEntry.TABLE_NAME;
+        selection = AppDbContract.MovieEntry.COLUMN_FAVORITE.concat("=?");
+        selectionArgs = new String[]{AppDbContract.MovieEntry.ARG_MOVIE_FAVORITE_TRUE};
         break;
 
       case CODE_MOVIE_WITH_SERVICE_ID:
         // Want to get the particular movie by its service id
-        inTables = AppDbContract.MovieListingEntry.TABLE_NAME;
-        selection = AppDbContract.MovieListingEntry.COLUMN_MOVIE_TMDB_ID.concat("=?");
+        inTables = AppDbContract.MovieEntry.TABLE_NAME;
+        selection = AppDbContract.MovieEntry.COLUMN_MOVIE_TMDB_ID.concat("=?");
         selectionArgs = new String[]{uri.getLastPathSegment()};
         break;
 
@@ -331,8 +331,8 @@ public class AppContentProvider extends ContentProvider {
 
     switch (match) {
       case CODE_MOVIE_WITH_SERVICE_ID:
-        inTables = AppDbContract.MovieListingEntry.TABLE_NAME;
-        selection = AppDbContract.MovieListingEntry.COLUMN_MOVIE_TMDB_ID + "=?";
+        inTables = AppDbContract.MovieEntry.TABLE_NAME;
+        selection = AppDbContract.MovieEntry.COLUMN_MOVIE_TMDB_ID + "=?";
         selectionArgs = new String[]{uri.getLastPathSegment()};
         break;
 

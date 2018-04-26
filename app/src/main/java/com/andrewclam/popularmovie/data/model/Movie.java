@@ -25,8 +25,8 @@ public class Movie extends Entity{
   private double voteAverage;
   private long voteCount;
   private double popularity;
-  private boolean markedFavorite;
   private String overview;
+  private boolean setFavorite;
 
   /* Public No-Arg constructor */
   public Movie() {
@@ -98,12 +98,12 @@ public class Movie extends Entity{
     this.popularity = popularity;
   }
 
-  public boolean isMarkedFavorite() {
-    return markedFavorite;
+  public boolean isSetFavorite() {
+    return setFavorite;
   }
 
-  public void setMarkedFavorite(boolean markedFavorite) {
-    this.markedFavorite = markedFavorite;
+  public void setFavorite(boolean setFavorite) {
+    this.setFavorite = setFavorite;
   }
 }
 
