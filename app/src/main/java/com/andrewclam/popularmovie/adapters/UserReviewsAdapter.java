@@ -19,7 +19,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.andrewclam.popularmovie.R;
-import com.andrewclam.popularmovie.models.UserReview;
+import com.andrewclam.popularmovie.data.model.UserReview;
 
 import java.util.ArrayList;
 

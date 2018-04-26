@@ -14,7 +14,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.andrewclam.popularmovie.MainActivity"
+    tools:context="com.andrewclam.popularmovie.views.main.MainActivity"
     tools:showIn="@layout/activity_main">
 
     <!-- Recycler View to show the movies -->

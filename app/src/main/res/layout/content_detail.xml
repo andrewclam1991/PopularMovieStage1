@@ -15,7 +15,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.andrewclam.popularmovie.DetailActivity"
+    tools:context="com.andrewclam.popularmovie.views.detail.DetailActivity"
     tools:showIn="@layout/activity_detail">
 
     <LinearLayout

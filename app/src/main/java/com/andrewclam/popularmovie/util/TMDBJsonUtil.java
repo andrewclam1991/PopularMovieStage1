@@ -8,13 +8,13 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.andrewclam.popularmovie.utilities;
+package com.andrewclam.popularmovie.util;
 
 import android.util.Log;
 
-import com.andrewclam.popularmovie.models.MovieListing;
-import com.andrewclam.popularmovie.models.RelatedVideo;
-import com.andrewclam.popularmovie.models.UserReview;
+import com.andrewclam.popularmovie.data.model.MovieListing;
+import com.andrewclam.popularmovie.data.model.RelatedVideo;
+import com.andrewclam.popularmovie.data.model.UserReview;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,14 +26,14 @@ import java.util.ArrayList;
 /**
  * Created by Andrew Chi Heng Lam on 8/19/2017.
  * <p>
- * TMDBJsonUtils contain methods to parse the JSON response into individual readable fields, and stores each object
+ * TMDBJsonUtil contain methods to parse the JSON response into individual readable fields, and stores each object
  * in a model class (eg. movie)
  */
 
-public final class TMDBJsonUtils {
+public final class TMDBJsonUtil {
 
     // Log Tag
-    private static final String TAG = TMDBJsonUtils.class.getSimpleName();
+    private static final String TAG = TMDBJsonUtil.class.getSimpleName();
 
     /**
      * This method parses JSON from a web response and returns an ArrayList of MovieListing objects
@@ -205,7 +205,7 @@ public final class TMDBJsonUtils {
                  ************************/
                 // Use networkUtility to build the provider video url and set the url in the
                 // entry object
-                URL videoURL = NetworkUtils.buildProviderVideoUrl(providerKey);
+                URL videoURL = NetworkUtil.buildProviderVideoUrl(providerKey);
                 entry.setVideoUrl(videoURL);
 
                 /**********************************
@@ -213,7 +213,7 @@ public final class TMDBJsonUtils {
                  **********************************/
                 // Use networkUtility to build the provider video's thumbnail url and set the url in the
                 // entry object
-                URL thumbnailUrl = NetworkUtils.buildProviderVideoThumbnailUrl(providerKey);
+                URL thumbnailUrl = NetworkUtil.buildProviderVideoThumbnailUrl(providerKey);
                 entry.setThumbnailUrl(thumbnailUrl);
 
                 /* Add the entry object to the list */

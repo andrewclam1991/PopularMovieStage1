@@ -18,8 +18,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.andrewclam.popularmovie.R;
-import com.andrewclam.popularmovie.models.MovieListing;
-import com.andrewclam.popularmovie.utilities.NetworkUtils;
+import com.andrewclam.popularmovie.data.model.MovieListing;
+import com.andrewclam.popularmovie.util.NetworkUtil;
 import com.squareup.picasso.Picasso;
 
 import java.net.URL;
@@ -166,10 +166,10 @@ public class MovieListingsAdapter extends RecyclerView.Adapter<MovieListingsAdap
          * @param posterPath the downloaded entry poster image's path (needs to set base url)
          */
         public void loadPoster(String posterPath) {
-            // Use NetworkUtils to form the query url, pass in the posterPath
-            URL posterUrl = NetworkUtils.buildImageUrl(posterPath);
+            // Use NetworkUtil to form the query url, pass in the posterPath
+            URL posterUrl = NetworkUtil.buildImageUrl(posterPath);
 
-            Picasso.with(mPosterIv.getContext())
+            Picasso.get()
                     .load(posterUrl.toString())
                     .into(mPosterIv);
         }

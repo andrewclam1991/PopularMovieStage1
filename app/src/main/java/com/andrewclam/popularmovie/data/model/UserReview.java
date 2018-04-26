@@ -8,7 +8,7 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.andrewclam.popularmovie.models;
+package com.andrewclam.popularmovie.data.model;
 
 import org.parceler.Parcel;
 
@@ -21,53 +21,51 @@ import org.parceler.Parcel;
 
 @Parcel(Parcel.Serialization.BEAN)
 public class UserReview {
-    private String reviewId;
-    private String author;
-    private String content;
-    private String reviewUrl;
-    private String contentSnippet;
+  private String reviewId;
+  private String author;
+  private String content;
+  private String reviewUrl;
+  private String contentSnippet;
 
-    public UserReview() {
+  public UserReview() {}
 
-    }
+  public String getReviewId() {
+    return reviewId;
+  }
 
-    public String getReviewId() {
-        return reviewId;
-    }
+  public void setReviewId(String reviewId) {
+    this.reviewId = reviewId;
+  }
 
-    public void setReviewId(String reviewId) {
-        this.reviewId = reviewId;
-    }
+  public String getAuthor() {
+    return author;
+  }
 
-    public String getAuthor() {
-        return author;
-    }
+  public void setAuthor(String author) {
+    this.author = author;
+  }
 
-    public void setAuthor(String author) {
-        this.author = author;
-    }
+  public String getContent() {
+    return content;
+  }
 
-    public String getContent() {
-        return content;
-    }
+  public void setContent(String content) {
+    this.content = content;
+  }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
+  public String getReviewUrl() {
+    return reviewUrl;
+  }
 
-    public String getReviewUrl() {
-        return reviewUrl;
-    }
+  public void setReviewUrl(String reviewUrl) {
+    this.reviewUrl = reviewUrl;
+  }
 
-    public void setReviewUrl(String reviewUrl) {
-        this.reviewUrl = reviewUrl;
-    }
+  public String getContentSnippet() {
+    return contentSnippet;
+  }
 
-    public String getContentSnippet() {
-        return contentSnippet;
-    }
-
-    public void setContentSnippet(String contentSnippet) {
-        this.contentSnippet = contentSnippet;
-    }
+  public void setContentSnippet(String contentSnippet) {
+    this.contentSnippet = contentSnippet;
+  }
 }

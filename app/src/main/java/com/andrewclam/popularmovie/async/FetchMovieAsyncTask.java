@@ -13,9 +13,9 @@ package com.andrewclam.popularmovie.async;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.andrewclam.popularmovie.models.MovieListing;
-import com.andrewclam.popularmovie.utilities.NetworkUtils;
-import com.andrewclam.popularmovie.utilities.TMDBJsonUtils;
+import com.andrewclam.popularmovie.data.model.MovieListing;
+import com.andrewclam.popularmovie.util.NetworkUtil;
+import com.andrewclam.popularmovie.util.TMDBJsonUtil;
 
 import org.json.JSONException;
 
@@ -106,19 +106,19 @@ public class FetchMovieAsyncTask extends AsyncTask<Void, Void, ArrayList<MovieLi
 
         try {
             // Get the url required by the network util
-            URL url = NetworkUtils.buildMovieListingUrl(mSortByValue, mApiKey);
+            URL url = NetworkUtil.buildMovieListingUrl(mSortByValue, mApiKey);
 
             // Check for null url
             if (url == null) return null;
 
             // Get httpResponse using the url
-            String jsonResponse = NetworkUtils.getResponseFromHttpUrl(url);
+            String jsonResponse = NetworkUtil.getResponseFromHttpUrl(url);
 
             // Check for null response
             if (jsonResponse == null) return null;
 
             // Got a JsonResponse from the web, parse the jsonResponse using the JsonUtils
-            entries = TMDBJsonUtils.getMovieListingFromJson(jsonResponse);
+            entries = TMDBJsonUtil.getMovieListingFromJson(jsonResponse);
 
         } catch (IOException e) {
             Log.e(TAG, "FetchMovieAsyncTask - doInBackground - IO Error occurred while getting the jsonResponse from the url");

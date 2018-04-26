@@ -1,14 +1,21 @@
 /*
  * Copyright <2017> <ANDREW LAM>
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+ * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+ * to whom the Software is furnished to do so, subject to the following conditions:
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+ * Software.
  *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+ * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+ * OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.andrewclam.popularmovie;
+package com.andrewclam.popularmovie.views.detail;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -40,15 +47,16 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.andrewclam.popularmovie.R;
 import com.andrewclam.popularmovie.adapters.RelatedVideosAdapter;
 import com.andrewclam.popularmovie.adapters.UserReviewsAdapter;
 import com.andrewclam.popularmovie.async.DbUpdateAsyncTask;
 import com.andrewclam.popularmovie.async.FetchRelatedVideoAsyncTask;
 import com.andrewclam.popularmovie.async.FetchUserReviewAsyncTask;
-import com.andrewclam.popularmovie.data.PopularMovieDbContract;
-import com.andrewclam.popularmovie.models.MovieListing;
-import com.andrewclam.popularmovie.models.RelatedVideo;
-import com.andrewclam.popularmovie.utilities.NetworkUtils;
+import com.andrewclam.popularmovie.data.db.AppDbContract;
+import com.andrewclam.popularmovie.data.model.MovieListing;
+import com.andrewclam.popularmovie.data.model.RelatedVideo;
+import com.andrewclam.popularmovie.util.NetworkUtil;
 import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
@@ -58,10 +66,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static com.andrewclam.popularmovie.MainActivity.EXTRA_MOVIE_ENTRY_OBJECT;
-import static com.andrewclam.popularmovie.MainActivity.FAVORITE_CHANGED_RESULT;
-import static com.andrewclam.popularmovie.data.PopularMovieDbContract.PopularMovieEntry.COLUMN_FAVORITE;
-import static com.andrewclam.popularmovie.data.PopularMovieDbContract.buildMovieUriWithId;
+import static com.andrewclam.popularmovie.views.main.MainActivity.EXTRA_MOVIE_ENTRY_OBJECT;
+import static com.andrewclam.popularmovie.views.main.MainActivity.FAVORITE_CHANGED_RESULT;
+import static com.andrewclam.popularmovie.data.db.AppDbContract.PopularMovieEntry.COLUMN_FAVORITE;
+import static com.andrewclam.popularmovie.data.db.AppDbContract.buildMovieUriWithId;
 
 /**
  * Created by Andrew Chi Heng Lam on 8/19/2017.
@@ -314,11 +322,11 @@ public class DetailActivity extends AppCompatActivity {
 
         /* POSTER (and Banner) */
         // Load the entry's poster image into the imageView using picasso
-        // Use NetworkUtils to form the query url, pass in the posterPath
-        URL posterUrl = NetworkUtils.buildImageUrl(entry.getPosterPath());
+        // Use NetworkUtil to form the query url, pass in the posterPath
+        URL posterUrl = NetworkUtil.buildImageUrl(entry.getPosterPath());
 
         // Load into the posterBannerIv
-        Picasso.with(this)
+        Picasso.get()
                 .load(posterUrl.toString())
                 .into(posterBannerIv);
 
@@ -326,7 +334,7 @@ public class DetailActivity extends AppCompatActivity {
         posterBannerIv.setImageAlpha(126);
 
         // Load into the posterIv
-        Picasso.with(this)
+        Picasso.get()
                 .load(posterUrl.toString())
                 .resize(posterIv.getWidth(), 0)
                 .into(posterIv);
@@ -392,7 +400,7 @@ public class DetailActivity extends AppCompatActivity {
         View.OnClickListener onFavClickListener = view -> {
             // On Click, toggle the mMarkedFavorite and update with that value
             final ContentValues contentValues = new ContentValues();
-            contentValues.put(PopularMovieDbContract.PopularMovieEntry.COLUMN_FAVORITE, !mFavStatus);
+            contentValues.put(AppDbContract.PopularMovieEntry.COLUMN_FAVORITE, !mFavStatus);
 
             // Get a reference to the contentResolver
             final ContentResolver contentResolver = mContext.getContentResolver();

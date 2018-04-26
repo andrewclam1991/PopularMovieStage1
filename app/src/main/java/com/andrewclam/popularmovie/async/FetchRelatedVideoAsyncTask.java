@@ -13,9 +13,9 @@ package com.andrewclam.popularmovie.async;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.andrewclam.popularmovie.models.RelatedVideo;
-import com.andrewclam.popularmovie.utilities.NetworkUtils;
-import com.andrewclam.popularmovie.utilities.TMDBJsonUtils;
+import com.andrewclam.popularmovie.data.model.RelatedVideo;
+import com.andrewclam.popularmovie.util.NetworkUtil;
+import com.andrewclam.popularmovie.util.TMDBJsonUtil;
 
 import org.json.JSONException;
 
@@ -103,19 +103,19 @@ public class FetchRelatedVideoAsyncTask extends AsyncTask<Void, Void, ArrayList<
 
         try {
             // Get the url required by the network util
-            URL url = NetworkUtils.buildVideoKeyUrl(mMovieId, mApiKey);
+            URL url = NetworkUtil.buildVideoKeyUrl(mMovieId, mApiKey);
 
             // Check for null url
             if (url == null) return null;
 
             // Get httpResponse using the url
-            String jsonResponse = NetworkUtils.getResponseFromHttpUrl(url);
+            String jsonResponse = NetworkUtil.getResponseFromHttpUrl(url);
 
             // Check for null response
             if (jsonResponse == null) return null;
 
             // Got a JsonResponse from the web, parse the jsonResponse using the JsonUtils
-            entries = TMDBJsonUtils.getRelatedVideoFromJson(jsonResponse);
+            entries = TMDBJsonUtil.getRelatedVideoFromJson(jsonResponse);
 
         } catch (IOException e) {
             Log.e(TAG, "FetchRelatedVideoAsyncTask - doInBackground - IO Error occurred while getting the jsonResponse from the url");

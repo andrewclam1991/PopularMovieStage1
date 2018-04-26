@@ -8,7 +8,7 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.andrewclam.popularmovie.utilities;
+package com.andrewclam.popularmovie.util;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -31,7 +31,7 @@ import java.util.Scanner;
  * NetworkUtil class contains method for communicating with server.
  */
 
-public class NetworkUtils {
+public class NetworkUtil {
 
     public static final String TMDB_PATH_TOP_RATED = "top_rated";
 
@@ -44,7 +44,7 @@ public class NetworkUtils {
     public static final String TMDB_PATH_POPULAR = "popular";
     /* Instance Vars and Constants */
     // Log tag
-    private static final String TAG = NetworkUtils.class.getSimpleName();
+    private static final String TAG = NetworkUtil.class.getSimpleName();
 
     /*************
      * URL Paths *

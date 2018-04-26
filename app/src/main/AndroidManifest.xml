@@ -22,7 +22,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".views.main.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar">
@@ -33,13 +33,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DetailActivity"
+            android:name=".views.detail.DetailActivity"
             android:label="@string/title_activity_detail"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".views.main.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.andrewclam.popularmovie.MainActivity" />
+                android:value="com.andrewclam.popularmovie.views.main.MainActivity" />
         </activity>
 
         <!--
@@ -47,7 +47,7 @@
          of our application, "android:exported" is set to false
         -->
         <provider
-            android:name=".data.PopularMovieProvider"
+            android:name=".data.db.AppContentProvider"
             android:authorities="com.andrewclam.popularmovie"
             android:exported="false" />
 

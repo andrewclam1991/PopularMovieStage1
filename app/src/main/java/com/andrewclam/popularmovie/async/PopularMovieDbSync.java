@@ -17,12 +17,12 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.andrewclam.popularmovie.data.PopularMovieDbContract;
-import com.andrewclam.popularmovie.models.MovieListing;
+import com.andrewclam.popularmovie.data.db.AppDbContract;
+import com.andrewclam.popularmovie.data.model.MovieListing;
 
 import java.util.ArrayList;
 
-import static com.andrewclam.popularmovie.data.PopularMovieDbContract.buildMovieUriWithId;
+import static com.andrewclam.popularmovie.data.db.AppDbContract.buildMovieUriWithId;
 
 /**
  * Created by Andrew Chi Heng Lam on 8/31/2017.
@@ -60,15 +60,15 @@ public class PopularMovieDbSync {
             MovieListing entry = new MovieListing();
 
             // Get the index of each column from the cursor
-            int idColIndex = dataCursor.getColumnIndex(PopularMovieDbContract.PopularMovieEntry.COLUMN_MOVIE_ID);
-            int titleColIndex = dataCursor.getColumnIndex(PopularMovieDbContract.PopularMovieEntry.COLUMN_TITLE);
-            int releaseDateColIndex = dataCursor.getColumnIndex(PopularMovieDbContract.PopularMovieEntry.COLUMN_RELEASE_DATE);
-            int posterPathColIndex = dataCursor.getColumnIndex(PopularMovieDbContract.PopularMovieEntry.COLUMN_POSTER_PATH);
-            int voteAvgColIndex = dataCursor.getColumnIndex(PopularMovieDbContract.PopularMovieEntry.COLUMN_VOTE_AVERAGE);
-            int voteCountColIndex = dataCursor.getColumnIndex(PopularMovieDbContract.PopularMovieEntry.COLUMN_VOTE_COUNT);
-            int popularityColIndex = dataCursor.getColumnIndex(PopularMovieDbContract.PopularMovieEntry.COLUMN_POPULARITY);
-            int overviewColIndex = dataCursor.getColumnIndex(PopularMovieDbContract.PopularMovieEntry.COLUMN_OVERVIEW);
-            int favColIndex = dataCursor.getColumnIndex(PopularMovieDbContract.PopularMovieEntry.COLUMN_FAVORITE);
+            int idColIndex = dataCursor.getColumnIndex(AppDbContract.PopularMovieEntry.COLUMN_MOVIE_ID);
+            int titleColIndex = dataCursor.getColumnIndex(AppDbContract.PopularMovieEntry.COLUMN_TITLE);
+            int releaseDateColIndex = dataCursor.getColumnIndex(AppDbContract.PopularMovieEntry.COLUMN_RELEASE_DATE);
+            int posterPathColIndex = dataCursor.getColumnIndex(AppDbContract.PopularMovieEntry.COLUMN_POSTER_PATH);
+            int voteAvgColIndex = dataCursor.getColumnIndex(AppDbContract.PopularMovieEntry.COLUMN_VOTE_AVERAGE);
+            int voteCountColIndex = dataCursor.getColumnIndex(AppDbContract.PopularMovieEntry.COLUMN_VOTE_COUNT);
+            int popularityColIndex = dataCursor.getColumnIndex(AppDbContract.PopularMovieEntry.COLUMN_POPULARITY);
+            int overviewColIndex = dataCursor.getColumnIndex(AppDbContract.PopularMovieEntry.COLUMN_OVERVIEW);
+            int favColIndex = dataCursor.getColumnIndex(AppDbContract.PopularMovieEntry.COLUMN_FAVORITE);
 
             // Set each field to the entry
             entry.setId(dataCursor.getLong(idColIndex));
@@ -134,7 +134,7 @@ public class PopularMovieDbSync {
 
                     if (cursor == null || cursor.getCount() == 0) {
                         // The cursor doesn't exist, insert an entry in the db
-                        context.getContentResolver().insert(PopularMovieDbContract.PopularMovieEntry.CONTENT_URI, contentValues);
+                        context.getContentResolver().insert(AppDbContract.PopularMovieEntry.CONTENT_URI, contentValues);
 
                     } else if (cursor.moveToNext()) {
                         // The cursor is valid, update the current entry in the db
@@ -187,7 +187,7 @@ public class PopularMovieDbSync {
 
             } finally {
                 // use the contentResolver bulkInsert to insert all the cv values
-                context.getContentResolver().bulkInsert(PopularMovieDbContract.PopularMovieEntry.CONTENT_URI, contentValuesArray);
+                context.getContentResolver().bulkInsert(AppDbContract.PopularMovieEntry.CONTENT_URI, contentValuesArray);
             }
         });
 
@@ -207,14 +207,14 @@ public class PopularMovieDbSync {
         // Create a new contentValue object to store the entry data
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(PopularMovieDbContract.PopularMovieEntry.COLUMN_MOVIE_ID, entry.getId());
-        contentValues.put(PopularMovieDbContract.PopularMovieEntry.COLUMN_TITLE, entry.getTitle());
-        contentValues.put(PopularMovieDbContract.PopularMovieEntry.COLUMN_RELEASE_DATE, entry.getReleaseDate());
-        contentValues.put(PopularMovieDbContract.PopularMovieEntry.COLUMN_POSTER_PATH, entry.getPosterPath());
-        contentValues.put(PopularMovieDbContract.PopularMovieEntry.COLUMN_VOTE_AVERAGE, entry.getVoteAverage());
-        contentValues.put(PopularMovieDbContract.PopularMovieEntry.COLUMN_VOTE_COUNT, entry.getVoteCount());
-        contentValues.put(PopularMovieDbContract.PopularMovieEntry.COLUMN_OVERVIEW, entry.getOverview());
-        contentValues.put(PopularMovieDbContract.PopularMovieEntry.COLUMN_POPULARITY, entry.getPopularity());
+        contentValues.put(AppDbContract.PopularMovieEntry.COLUMN_MOVIE_ID, entry.getId());
+        contentValues.put(AppDbContract.PopularMovieEntry.COLUMN_TITLE, entry.getTitle());
+        contentValues.put(AppDbContract.PopularMovieEntry.COLUMN_RELEASE_DATE, entry.getReleaseDate());
+        contentValues.put(AppDbContract.PopularMovieEntry.COLUMN_POSTER_PATH, entry.getPosterPath());
+        contentValues.put(AppDbContract.PopularMovieEntry.COLUMN_VOTE_AVERAGE, entry.getVoteAverage());
+        contentValues.put(AppDbContract.PopularMovieEntry.COLUMN_VOTE_COUNT, entry.getVoteCount());
+        contentValues.put(AppDbContract.PopularMovieEntry.COLUMN_OVERVIEW, entry.getOverview());
+        contentValues.put(AppDbContract.PopularMovieEntry.COLUMN_POPULARITY, entry.getPopularity());
 
         return contentValues;
     }
