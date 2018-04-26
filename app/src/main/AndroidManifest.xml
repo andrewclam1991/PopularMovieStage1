@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.andrewclam.popularmovie">
 
     <!-- Permission required for network IO and network detection -->
@@ -13,7 +14,10 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:fullBackupContent="@xml/backup_descriptor"
+        tools:ignore="GoogleAppIndexingWarning">
+
         <activity
             android:name=".views.main.MainActivity"
             android:label="@string/app_name"
@@ -25,6 +29,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".views.detail.DetailActivity"
             android:label="@string/title_activity_detail"
@@ -35,13 +40,10 @@
                 android:value="com.andrewclam.popularmovie.views.main.MainActivity" />
         </activity>
 
-        <!--
-         Register the Movie ContentProvider, since this provider will only be used inside
-         of our application, "android:exported" is set to false
-        -->
+        <!-- Providers -->
         <provider
             android:name=".data.db.AppContentProvider"
-            android:authorities="com.andrewclam.popularmovie"
+            android:authorities="@string/app_package_name"
             android:exported="false" />
 
     </application>

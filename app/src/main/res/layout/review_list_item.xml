@@ -63,7 +63,7 @@ Using ConstraintLayout to maintain the imageView in aspectRatio 2:3
             android:layout_marginRight="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="0dp"
-            android:text="@string/read_more"
+            android:text="@string/action_read_more"
             android:textAppearance="@style/TextAppearance.AppCompat.Button"
             android:visibility="gone"
             tools:visibility="visible" />
