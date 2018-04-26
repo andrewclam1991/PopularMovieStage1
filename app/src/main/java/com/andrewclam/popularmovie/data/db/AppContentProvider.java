@@ -18,20 +18,26 @@
 package com.andrewclam.popularmovie.data.db;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.andrewclam.popularmovie.BuildConfig;
+import com.google.common.base.Strings;
+
 import static com.andrewclam.popularmovie.data.db.AppDbContract.CONTENT_AUTHORITY;
-import static com.andrewclam.popularmovie.data.db.AppDbContract.PopularMovieEntry.COLUMN_MOVIE_ID;
-import static com.andrewclam.popularmovie.data.db.AppDbContract.PopularMovieEntry.CONTENT_URI;
-import static com.andrewclam.popularmovie.data.db.AppDbContract.PopularMovieEntry.SELECTION_ARG_MOVIE_FAVORITE_TRUE;
-import static com.andrewclam.popularmovie.data.db.AppDbContract.PopularMovieEntry.TABLE_NAME;
+import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.COLUMN_MOVIE_ID;
+import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.CONTENT_URI;
+import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.SELECTION_ARG_MOVIE_FAVORITE_TRUE;
+import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.TABLE_NAME;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created by Andrew Chi Heng Lam on 8/31/2017.
@@ -65,14 +71,13 @@ public class AppContentProvider extends ContentProvider {
    * Reference a Movie listing dbHelper to get writable/readable databases for each provider
    * method to work with.
    */
-  private AppDbHelper mDbHelper;
+  private AppDbHelper mAppDbHelper;
 
   /**
    * Creates the UriMatcher that will match each URI to the CODE_MOVIE and
    * CODE_MOVIE_WITH_ID and CODE_MOVIE_FAVORITE constants defined above.
    *
-   * @return A UriMatcher that correctly matches the constants for CODE_MOVIE, CODE_MOVIE_WITH_ID
-   * and CODE_MOVIE_FAVORITE
+   * @return A UriMatcher that correctly matches the uri to a provided constants
    */
   private static UriMatcher buildUriMatcher() {
     /*
@@ -84,23 +89,19 @@ public class AppContentProvider extends ContentProvider {
     final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
     final String authority = CONTENT_AUTHORITY;
 
-        /*
-         This Uri: content://com.andrewclam.popularmovie/movies
-         example uses: do operations on the whole movie listing, with user supplied parameters
-         projection, selection, selectionArgs and sortOrder
-        */
+    /*
+     This Uri: content://com.andrewclam.popularmovie/movies
+    */
     matcher.addURI(authority, AppDbContract.PATH_MOVIES, CODE_MOVIE);
 
-        /*
-         This Uri: content://com.andrewclam.popularmovie/movies/id
-         example uses: do operation on a individual movie listing
-        */
+    /*
+     This Uri: content://com.andrewclam.popularmovie/movies/id
+    */
     matcher.addURI(authority, AppDbContract.PATH_MOVIES + "/#", CODE_MOVIE_WITH_ID);
 
-        /*
-         This Uri: content://com.andrewclam.popularmovie/movies/favorite
-         example uses: query the user's list of favorite movie
-        */
+    /*
+     This Uri: content://com.andrewclam.popularmovie/movies/favorite
+    */
     matcher.addURI(authority, AppDbContract.PATH_MOVIES + "/" +
         AppDbContract.PATH_FAVORITES, CODE_MOVIE_FAVORITE);
 
@@ -116,7 +117,7 @@ public class AppContentProvider extends ContentProvider {
    * databases) should be deferred until the content provider is used (via {@link #query},
    * {@link #bulkInsert(Uri, ContentValues[])}, etc).
    * <p>
-   * Deferred initialization keeps application startup fast, avoids unnecessary work if the
+   * Deferred lazy initialization keeps application startup fast, avoids unnecessary work if the
    * provider turns out not to be needed, and stops database errors (such as a full disk) from
    * halting application launch.
    *
@@ -126,13 +127,121 @@ public class AppContentProvider extends ContentProvider {
   public boolean onCreate() {
     /*
      * As noted in the comment above, onCreate is run on the main thread, so performing any
-     * lengthy operations will cause lag in your app. Since MovieListingDbHelper's constructor is
+     * lengthy operations will cause lag in your app. Since AppDbHelper's constructor is
      * very lightweight, we are safe to perform that initialization here.
      */
-    mDbHelper = new AppDbHelper(getContext());
+    mAppDbHelper = new AppDbHelper(getContext());
     return true;
   }
 
+  /**
+   * Insert() implementation to handle single-row data insert into the client database
+   *
+   * @param uri           the content {@link Uri}
+   * @param contentValues contentValues to be inserted into the data
+   * @return the newly inserted data row's Uri
+   */
+  @Nullable
+  @Override
+  public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
+    // Argument sanity check
+    if (!checkInsertArgs(uri, contentValues)) {
+      throw new IllegalArgumentException("invalid arguments for insert()");
+    }
+
+    // Gets match id base on the supplied uri using the sUriMatcher
+    final int match = sUriMatcher.match(uri);
+
+    // Stores the matched database table
+    final String inTables;
+
+    switch (match) {
+      // Movies
+      case CODE_MOVIE:
+        inTables = AppDbContract.MovieEntry.TABLE_NAME;
+        break;
+      default:
+        throw new UnsupportedOperationException("Unknown or Unsupported Uri for Insert()");
+    }
+
+    /*
+     * Gets an instance of a writable database, then inserts a row into the matched database
+     * table (inTables), after insert then releases db resources.
+     */
+    final SQLiteDatabase db = checkNotNull(mAppDbHelper).getWritableDatabase();
+    final long id = db.insert(inTables, null, contentValues);
+    db.close();
+
+    // Notify the resolver if the uri has been changed, and return the newly inserted URI
+    if (id <= 0) {
+      throw new SQLException("Failed to insert row into " + uri.toString());
+    } else {
+      checkNotNull(getContext()).getContentResolver().notifyChange(uri, null);
+      return ContentUris.withAppendedId(uri, id);
+    }
+
+  }
+
+  /**
+   * Handles requests to insert a set of new rows. In PopularMovie, we are only going to be
+   * inserting multiple rows of data at a time from a JSON response from TMDB, which contains many
+   * json objects.
+   * <p>
+   * There is no use case for inserting a single row of data into our ContentProvider, and so we
+   * are only going to implement bulkInsert. In a normal ContentProvider's implementation,
+   * you will probably want to provide proper functionality for the insert method as well.
+   *
+   * @param uri    The content:// URI of the insertion request.
+   * @param values An array of sets of column_name/value pairs to add to the database.
+   *               This must not be {@code null}.
+   * @return The number of values that were inserted.
+   */
+  @Override
+  public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
+    // Argument sanity check
+    checkNotNull(uri, "uri can't be null");
+
+    // Gets match id base on the supplied uri using the sUriMatcher
+    final int match = sUriMatcher.match(uri);
+
+    // Stores the matched database table
+    final String inTables;
+
+    switch (match) {
+      // Movies
+      case CODE_MOVIE:
+        inTables = AppDbContract.MovieEntry.TABLE_NAME;
+        break;
+
+      default:
+        throw new UnsupportedOperationException("Unknown uri for insert: " + uri);
+    }
+
+    /*
+     * Gets an instance of a writable database, then starts bulk insert as a single transaction
+      *into the matched database table (inTables), after transaction then releases db resources.
+     */
+    final SQLiteDatabase db = checkNotNull(mAppDbHelper).getWritableDatabase();
+    final int rowInserted;
+    db.beginTransaction();
+    try {
+      for (ContentValues value : values) {
+        long newID = db.insertOrThrow(inTables, null, value);
+        if (newID <= 0) {
+          throw new SQLException("Failed to insert row into " + uri);
+        }
+      }
+      db.setTransactionSuccessful();
+      checkNotNull(getContext()).getContentResolver().notifyChange(uri, null);
+      rowInserted = values.length;
+    } finally {
+      // release db resources
+      db.endTransaction();
+      db.close();
+    }
+
+    return rowInserted;
+  }
 
   /**
    * Handles query requests from clients. We will use this method in PopularMovie to query for all
@@ -162,12 +271,11 @@ public class AppContentProvider extends ContentProvider {
 
     switch (match) {
       case CODE_MOVIE_FAVORITE: {
-        // (!) scoped this CODE_MOVIE_FAVORITE case to contain the SQLiteDatabase db var declaration and assignment
         // Get the readable database using the dbHelper
-        final SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        final SQLiteDatabase db = mAppDbHelper.getReadableDatabase();
 
         // Set selection to select favorite, selectionArg handles the "=?" wildcard
-        selection = AppDbContract.PopularMovieEntry.COLUMN_FAVORITE + "=?";
+        selection = AppDbContract.MovieEntry.COLUMN_FAVORITE + "=?";
 
         // Set selectionArgs to select movie favorite that is true
         selectionArgs = new String[]{SELECTION_ARG_MOVIE_FAVORITE_TRUE};
@@ -175,7 +283,7 @@ public class AppContentProvider extends ContentProvider {
         // Return a cursor of movie listings in the database that matches the
         // parameter criteria
         cursor = db.query(
-            AppDbContract.PopularMovieEntry.TABLE_NAME,
+            AppDbContract.MovieEntry.TABLE_NAME,
             projection,
             selection,
             selectionArgs,
@@ -193,7 +301,7 @@ public class AppContentProvider extends ContentProvider {
         String idStr = uri.getLastPathSegment();
 
         // Set selection to select movie id, selectionArg handles the "=?" wildcard
-        selection = AppDbContract.PopularMovieEntry.COLUMN_MOVIE_ID + "=?";
+        selection = AppDbContract.MovieEntry.COLUMN_MOVIE_ID + "=?";
 
         // Set selectionArgs to Use the idStr as the only argument
         selectionArgs = new String[]{idStr};
@@ -201,12 +309,12 @@ public class AppContentProvider extends ContentProvider {
         // no break, continue to the shared logic in CODE_MOVIE
       case CODE_MOVIE:
         // Get the readable database using the dbHelper
-        final SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        final SQLiteDatabase db = mAppDbHelper.getReadableDatabase();
 
         // Return a cursor of movie listings in the database that matches the
         // parameter criteria
         cursor = db.query(
-            AppDbContract.PopularMovieEntry.TABLE_NAME,
+            AppDbContract.MovieEntry.TABLE_NAME,
             projection,
             selection,
             selectionArgs,
@@ -222,123 +330,6 @@ public class AppContentProvider extends ContentProvider {
     return cursor;
   }
 
-  /**
-   * Handles requests to insert a set of new rows. In PopularMovie, we are only going to be
-   * inserting multiple rows of data at a time from a JSON response from TMDB, which contains many
-   * json objects.
-   * <p>
-   * There is no use case for inserting a single row of data into our ContentProvider, and so we
-   * are only going to implement bulkInsert. In a normal ContentProvider's implementation,
-   * you will probably want to provide proper functionality for the insert method as well.
-   *
-   * @param uri    The content:// URI of the insertion request.
-   * @param values An array of sets of column_name/value pairs to add to the database.
-   *               This must not be {@code null}.
-   * @return The number of values that were inserted.
-   */
-  @Override
-  public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
-    // Use uri matcher to make sure the call is pointing to the movie
-    int match = sUriMatcher.match(uri);
-
-    switch (match) {
-      case CODE_MOVIE:
-        // BulkInsert should only work in this case at the /movie path
-        // any other case would resort to super's implementation
-
-        // Get a writable database with the dbHelper
-        final SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
-        // call beginTransaction() with the SQLite db to begin a potentially
-        // long running transaction, remember to call endTransaction() when such transaction
-        // is complete.
-        db.beginTransaction();
-
-        // Initialize a int to hold the number of rows inserted, this will be the return val
-        int rowsInserted = 0;
-
-        // Try-finally to do the operation, finally block should only execute when the try
-        // block is complete or throws an error/exception
-        try {
-
-          for (ContentValues value : values) {
-            long _id = db.insert(TABLE_NAME, null, value);
-            if (_id != -1) {
-              // If the insert is successful, increment the rowsInserted by one
-              rowsInserted++;
-            }
-          }
-
-          db.setTransactionSuccessful();
-
-        } catch (Exception e) {
-          e.printStackTrace();
-        } finally {
-
-          // Try block op ended, end this db transaction.
-          db.endTransaction();
-
-          // Close database connection for good measure after insert
-          db.close();
-        }
-
-        // Notify the content resolver of modified dataset if there are rowsInserted
-        if (rowsInserted > 0) {
-          if (getContext() != null) getContext().getContentResolver()
-              .notifyChange(uri, null);
-
-          Log.d(TAG, "Successfully bulk inserted, insertedRows " + rowsInserted);
-        }
-
-        return rowsInserted;
-      default:
-        // no matching uri found, use parent class's implementation
-        return super.bulkInsert(uri, values);
-    }
-  }
-
-  /**
-   * Insert() implementation to handle single-row data insert into the client database
-   *
-   * @param uri           the Uri, should be matching the CODE_MOVIE
-   * @param contentValues contentValues to be inserted into the data
-   * @return the new data row's Uri
-   */
-  @Nullable
-  @Override
-  public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
-    // Normally, insert function returns the uri to the data that is just inserted
-    if (contentValues == null || contentValues.size() == 0) {
-      // No content values, nothing to insert, return a null Uri
-      return null;
-    }
-
-    // Use uri matcher to make sure the call is pointing to the movie
-    int match = sUriMatcher.match(uri);
-    switch (match) {
-      case CODE_MOVIE:
-        // Get a writable database with the dbHelper
-        final SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
-        // do database insertion
-        Long rowId = db.insert(TABLE_NAME, null, contentValues);
-
-        // If the rowId insert is not -1, insert is successful, notify the contentResolver
-        if (rowId != -1) {
-          if (getContext() != null) getContext().getContentResolver()
-              .notifyChange(uri, null);
-
-          Log.d(TAG, "Successfully single insertion, inserted row's id " + rowId);
-        }
-
-        // Form the uri using the rowId and return the Uri
-        String rowIdStr = String.valueOf(rowId);
-        return CONTENT_URI.buildUpon().appendPath(rowIdStr).build();
-      default:
-        throw new UnsupportedOperationException("Unknown or Unsupported Uri for Insert()");
-    }
-
-  }
 
   @Override
   public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
@@ -379,7 +370,7 @@ public class AppContentProvider extends ContentProvider {
         String idStr = uri.getLastPathSegment();
 
         // Set selection to select movie id, selectionArg handles the "=?" wildcard
-        selection = AppDbContract.PopularMovieEntry.COLUMN_MOVIE_ID + "=?";
+        selection = AppDbContract.MovieEntry.COLUMN_MOVIE_ID + "=?";
 
         // Set selectionArgs to Use the idStr as the only argument
         selectionArgs = new String[]{idStr};
@@ -412,8 +403,8 @@ public class AppContentProvider extends ContentProvider {
         /***********************
          * Sanitation Complete *
          ***********************/
-        // Get the writable database using the mDbHelper, and call the update
-        final SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        // Get the writable database using the mAppDbHelper, and call the update
+        final SQLiteDatabase db = mAppDbHelper.getWritableDatabase();
         rowsUpdated = db.update(TABLE_NAME, contentValues, selection, selectionArgs);
 
         // Close database connection for good measure after update
@@ -438,5 +429,28 @@ public class AppContentProvider extends ContentProvider {
   @Override
   public String getType(@NonNull Uri uri) {
     return null;
+  }
+
+  /**
+   * Helper method to check {@link #insert(Uri, ContentValues)}'s provided arg(s)
+   *
+   * @param uri           arg uri for {@link #insert(Uri, ContentValues)}
+   * @param contentValues arg {@link #insert(Uri, ContentValues)}
+   * @return true if arg(s) are good, false otherwise
+   */
+  private boolean checkInsertArgs(@NonNull Uri uri, @Nullable ContentValues contentValues) {
+    boolean hasNoErrors = true;
+    // check for null, and then check if content is empty
+    if (Strings.isNullOrEmpty(checkNotNull(uri, "uri can't be null for insert()")
+        .toString())) {
+      hasNoErrors = false;
+    }
+
+    // Check for null, and then check if it is empty
+    if (checkNotNull(contentValues, "contentValues can'ts be null for insert()")
+        .size() == 0) {
+      hasNoErrors = false;
+    }
+    return hasNoErrors;
   }
 }

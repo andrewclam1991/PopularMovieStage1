@@ -20,7 +20,7 @@ package com.andrewclam.popularmovie.data.db;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-import static com.andrewclam.popularmovie.data.db.AppDbContract.PopularMovieEntry.CONTENT_URI;
+import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.CONTENT_URI;
 
 /**
  * Defines table and column names for the movie entry database. this contract class keeps
@@ -79,7 +79,7 @@ public class AppDbContract {
     }
 
     /* Inner class that defines the table contents of the movie table */
-    public static final class PopularMovieEntry implements BaseColumns {
+    public static final class MovieEntry implements BaseColumns {
 
         /* The base CONTENT_URI used to query the movie table from the content provider */
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()

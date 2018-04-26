@@ -338,15 +338,15 @@ public class MainActivity extends AppCompatActivity implements
 
         switch (mListType) {
           case TMDB_PATH_POPULAR:
-            mSortOrderStr = AppDbContract.PopularMovieEntry.COLUMN_POPULARITY
+            mSortOrderStr = AppDbContract.MovieEntry.COLUMN_POPULARITY
                 + " DESC";
             break;
           case TMDB_PATH_TOP_RATED:
-            mSortOrderStr = AppDbContract.PopularMovieEntry.COLUMN_VOTE_AVERAGE
+            mSortOrderStr = AppDbContract.MovieEntry.COLUMN_VOTE_AVERAGE
                 + " DESC";
             break;
           case USER_SHOW_FAVORITES_KEY:
-            selection = AppDbContract.PopularMovieEntry.COLUMN_FAVORITE + "=?";
+            selection = AppDbContract.MovieEntry.COLUMN_FAVORITE + "=?";
             selectionArgs = new String[]{"1"};
             mSortOrderStr = null;
             break;
@@ -355,7 +355,7 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         return new CursorLoader(this,
-            AppDbContract.PopularMovieEntry.CONTENT_URI,
+            AppDbContract.MovieEntry.CONTENT_URI,
             null,
             selection,
             selectionArgs,
