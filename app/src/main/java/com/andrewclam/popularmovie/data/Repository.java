@@ -40,8 +40,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Singleton
 public class Repository<E extends Entity> implements DataSource<E> {
 
-  // private static final String LOG_TAG = Repository.class.getSimpleName();
-
   @NonNull
   private final DataSource<E> mRemoteDataSource;
 
