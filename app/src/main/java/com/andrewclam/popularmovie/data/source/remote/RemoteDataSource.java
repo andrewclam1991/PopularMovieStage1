@@ -29,7 +29,7 @@ import io.reactivex.Flowable;
  * @param <E> type of {@link Entity}
  */
 @Singleton
-abstract class RemoteDataSource<E extends Entity, Q extends RemoteDataSource.QueryParams>
+abstract class RemoteDataSource<E extends Entity>
     implements DataSource<E> {
 
   @Override
@@ -53,16 +53,10 @@ abstract class RemoteDataSource<E extends Entity, Q extends RemoteDataSource.Que
   /**
    * Allow subclass to implement and provide the {@link Entity} specific query {@link URL},
    * according to the service api requirement.
-   * @return an {@link Uri.Builder} that is specific to the {@link Entity} type
+   * @return an {@link Uri} that is specific to the {@link Entity} type
    */
   @NonNull
-  abstract Uri.Builder provideBaseUriBuilder();
-
-  private Uri appendQueryParameter(@NonNull Uri.Builder builder,
-                                   @NonNull Q queryParam,
-                                   @NonNull String value){
-    return builder.appendQueryParameter(queryParam.toString(),value).build();
-  }
+  abstract Uri provideRequestUri();
 
   @Override
   public final Completable add(@NonNull E item) {
@@ -89,7 +83,4 @@ abstract class RemoteDataSource<E extends Entity, Q extends RemoteDataSource.Que
     return Completable.complete();
   }
 
-  interface QueryParams {
-
-  }
 }

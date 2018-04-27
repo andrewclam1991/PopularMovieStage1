@@ -28,7 +28,7 @@ import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.CONTE
  * Defines table and column names for the movie entry database. this contract class keeps
  * the SQLite code organized and easier to maintain
  */
-public class AppDbContract {
+public final class AppDbContract {
 
   /*
    * The "Content authority" is a name for the entire content provider, similar to the
