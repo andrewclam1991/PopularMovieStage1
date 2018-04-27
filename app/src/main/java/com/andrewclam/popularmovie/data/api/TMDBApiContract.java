@@ -5,8 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
 import android.support.v4.util.Pair;
+import android.view.View;
 
-import com.andrewclam.popularmovie.data.api.TMDBApiContract.TMDBContract.DiscoverMovie.SortByArgs.SortByArg;
 import com.andrewclam.popularmovie.data.model.Movie;
 import com.andrewclam.popularmovie.data.model.RelatedVideo;
 import com.andrewclam.popularmovie.data.model.UserReview;
@@ -16,6 +16,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.net.URL;
 import java.util.List;
+
+import static com.andrewclam.popularmovie.data.api.TMDBApiContract.TMDBContract.DiscoverMovie.SortByArg.POPULARITY_ASC;
+import static com.andrewclam.popularmovie.data.api.TMDBApiContract.TMDBContract.DiscoverMovie.SortByArg.POPULARITY_DESC;
+import static com.andrewclam.popularmovie.data.api.TMDBApiContract.TMDBContract.DiscoverMovie.SortByArg.VOTE_AVERAGE_ASC;
+import static com.andrewclam.popularmovie.data.api.TMDBApiContract.TMDBContract.DiscoverMovie.SortByArg.VOTE_AVERAGE_DESC;
 
 /**
  * Defines a set of constants against the supported TMDB APIs
@@ -31,7 +36,8 @@ public final class TMDBApiContract {
    */
   public static final class TMDBContract {
     // Note: Contract class should never be instantiated
-    private TMDBContract(){}
+    private TMDBContract() {
+    }
 
     // Scheme, authority and base content uri
     private static final String SCHEME = "https";
@@ -65,26 +71,22 @@ public final class TMDBApiContract {
       static final Uri REQUEST_URI_DISCOVER_MOVIE = BASE_TMDB_REQUEST_URI.buildUpon()
           .appendPath(PATH_DISCOVER).appendPath(PATH_MOVIE).build();
 
-      static final String QUERY_SORT_BY_KEY = "sort_by";
-      static final String QUERY_PAGE = "page";
+      public static final String QUERY_SORT_BY_KEY = "sort_by";
+      public static final String QUERY_PAGE = "page";
 
       /**
-       * {@link SortByArgs} Defines a list of allowed values for {@link #QUERY_SORT_BY_KEY},
-       * its default argument is {@link SortByArgs#POPULARITY_DESC}
+       * {@link SortByArg} Defines a list of allowed values for {@link #QUERY_SORT_BY_KEY},
+       * its default argument is {@link SortByArg#POPULARITY_DESC}
        */
-      public static final class SortByArgs {
+      @StringDef({POPULARITY_DESC, POPULARITY_ASC, VOTE_AVERAGE_DESC, VOTE_AVERAGE_ASC})
+      @Retention(RetentionPolicy.SOURCE)
+      public @interface SortByArgument {}
+
+      public static final class SortByArg {
         public static final String POPULARITY_DESC = "popularity.desc";
         public static final String POPULARITY_ASC = "popularity.asc";
         public static final String VOTE_AVERAGE_DESC = "vote_average.desc";
         public static final String VOTE_AVERAGE_ASC = "vote_average.asc";
-
-        @StringDef({
-            POPULARITY_DESC,
-            POPULARITY_ASC,
-            VOTE_AVERAGE_DESC,
-            VOTE_AVERAGE_ASC})
-        @Retention(RetentionPolicy.SOURCE)
-        public @interface SortByArg{}
       }
 
       /**
@@ -111,9 +113,9 @@ public final class TMDBApiContract {
         }
         Uri.Builder builder = REQUEST_URI_DISCOVER_MOVIE.buildUpon();
         builder.appendQueryParameter(QUERY_API_KEY, apiKey);
+
         return builder.build();
       }
-
 
       @NonNull
       public static Uri getRequestUriWithParams(@NonNull String apiKey,
@@ -125,7 +127,6 @@ public final class TMDBApiContract {
         for (Pair<String, String> param : params) {
           builder.appendQueryParameter(param.first, param.second);
         }
-
         return builder.build();
       }
     }
@@ -196,7 +197,8 @@ public final class TMDBApiContract {
    */
   public static final class TMDBImageContract {
     // Note: Contract class should never be instantiated
-    private TMDBImageContract(){}
+    private TMDBImageContract() {
+    }
 
     private static final String SCHEME = "https";
     private static final String AUTHORITY = "https://image.tmdb.org/";
