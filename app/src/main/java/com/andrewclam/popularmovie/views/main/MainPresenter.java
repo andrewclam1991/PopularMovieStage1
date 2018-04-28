@@ -8,7 +8,7 @@ import com.andrewclam.popularmovie.data.DataSource;
 import com.andrewclam.popularmovie.data.Repository;
 import com.andrewclam.popularmovie.data.api.TMDBApiContract;
 import com.andrewclam.popularmovie.data.model.Movie;
-import com.andrewclam.popularmovie.data.source.remote.DiscoverMovieServiceApiWrapper;
+import com.andrewclam.popularmovie.data.ServiceApiWrapper;
 import com.andrewclam.popularmovie.util.schedulers.BaseSchedulerProvider;
 
 import java.util.List;
@@ -58,7 +58,7 @@ public class MainPresenter implements MainContract.Presenter, MainContract.ItemV
     mMovieRepository.refresh();
 
     Disposable disposable =
-        new DiscoverMovieServiceApiWrapper(mMovieRepository)
+        new ServiceApiWrapper<>(mMovieRepository)
             .setApiRequestUri(this::getInstanceApiRequestUri)
             .getItems()
             .flatMap(Flowable::fromIterable)

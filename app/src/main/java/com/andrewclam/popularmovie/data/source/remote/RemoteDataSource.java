@@ -72,7 +72,6 @@ abstract class RemoteDataSource<E extends Entity> implements DataSource<E> {
   @NonNull
   abstract Single<List<E>> parseList(String jsonResponse);
 
-
   @Override
   public final Completable add(@NonNull E item) {
     return Completable.complete();
