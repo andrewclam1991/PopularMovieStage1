@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 
 
 import com.andrewclam.popularmovie.MyApplication;
+import com.andrewclam.popularmovie.data.source.MovieRepositoryModule;
 import com.andrewclam.popularmovie.di.modules.ActivityBindingModule;
 import com.andrewclam.popularmovie.di.modules.ApplicationModule;
 import com.andrewclam.popularmovie.di.modules.ContentResolverModule;
@@ -41,7 +42,8 @@ import dagger.android.support.AndroidSupportInjectionModule;
     SchedulerProviderModule.class,
 
     // Persistence modules
-    ContentResolverModule.class})
+    ContentResolverModule.class,
+    MovieRepositoryModule.class})
 public interface AppComponent extends AndroidInjector<DaggerApplication> {
 
   void inject(MyApplication application);

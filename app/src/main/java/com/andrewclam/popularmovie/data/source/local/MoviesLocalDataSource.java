@@ -28,7 +28,7 @@ import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.CONTE
  */
 
 @Singleton
-class MoviesLocalDataSource extends LocalDataSource<Movie> {
+public class MoviesLocalDataSource extends LocalDataSource<Movie> {
 
   @Inject
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

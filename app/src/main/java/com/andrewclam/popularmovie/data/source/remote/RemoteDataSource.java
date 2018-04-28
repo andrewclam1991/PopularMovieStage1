@@ -18,8 +18,8 @@ import io.reactivex.Single;
 
 /**
  * Implementation of {@link DataSource<Entity>} that exposes methods to access a remote data source
- * Note: This implementation is a GET-only RESTful service api consumer, therefore
- * POST, PUT and DELETE operations are finalized and simply ignored.
+ * Note: This implementation is a GET-only RESTful service api consumer, therefore POST, PUT and
+ * DELETE operations are finalized and simply return completed.
  * @param <E> type of {@link Entity}
  */
 @Singleton
