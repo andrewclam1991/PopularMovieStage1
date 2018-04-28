@@ -1,12 +1,15 @@
 package com.andrewclam.popularmovie.views.main;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.andrewclam.popularmovie.data.DataSource;
 import com.andrewclam.popularmovie.data.Repository;
+import com.andrewclam.popularmovie.data.api.TMDBApiContract;
 import com.andrewclam.popularmovie.data.model.Movie;
+import com.andrewclam.popularmovie.data.source.remote.DiscoverMovieServiceApiWrapper;
 import com.andrewclam.popularmovie.util.schedulers.BaseSchedulerProvider;
-import com.google.common.base.Optional;
 
 import java.util.List;
 
@@ -16,10 +19,10 @@ import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-public class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHolderPresenter{
+public class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHolderPresenter {
 
   @NonNull
-  private final Repository<Movie> mMovieRepository;
+  private final DataSource<Movie> mMovieRepository;
 
   @NonNull
   private final BaseSchedulerProvider mSchedulerProvider;
@@ -32,7 +35,7 @@ public class MainPresenter implements MainContract.Presenter, MainContract.ItemV
 
   @Inject
   MainPresenter(@NonNull Repository<Movie> movieRepository,
-                @NonNull BaseSchedulerProvider schedulerProvider){
+                @NonNull BaseSchedulerProvider schedulerProvider) {
     mMovieRepository = movieRepository;
     mSchedulerProvider = schedulerProvider;
     mCompositeDisposable = new CompositeDisposable();
@@ -54,19 +57,30 @@ public class MainPresenter implements MainContract.Presenter, MainContract.ItemV
 
     mMovieRepository.refresh();
 
-    Disposable disposable = mMovieRepository.getItems()
-        .flatMap(Flowable::fromIterable)
-        .toList()
-        .subscribeOn(mSchedulerProvider.io())
-        .observeOn(mSchedulerProvider.ui())
-        .subscribe(
-            this::handleOnNext
-        );
-
+    Disposable disposable =
+        new DiscoverMovieServiceApiWrapper(mMovieRepository)
+            .setApiRequestUri(this::getInstanceApiRequestUri)
+            .getItems()
+            .flatMap(Flowable::fromIterable)
+            .toList()
+            .subscribeOn(mSchedulerProvider.io())
+            .observeOn(mSchedulerProvider.ui())
+            .subscribe(
+                this::handleOnNext
+            );
     mCompositeDisposable.add(disposable);
   }
 
-  private void handleOnNext(@NonNull List<Movie> movies){
+  /**
+   * Determines the uri to use for querying the service api
+   * this method can vary in runtime and change uri base on user selection
+   * @return runtime-generated uri
+   */
+  private Uri getInstanceApiRequestUri(){
+    return TMDBApiContract.TMDBContract.DiscoverMovie.getRequestUriWithParams("",null);
+  }
+
+  private void handleOnNext(@NonNull List<Movie> movies) {
     // TODO handle presenting the list of movies
   }
 

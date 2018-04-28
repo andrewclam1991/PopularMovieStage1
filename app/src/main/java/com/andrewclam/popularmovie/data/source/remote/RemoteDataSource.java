@@ -1,26 +1,20 @@
 package com.andrewclam.popularmovie.data.source.remote;
 
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.util.Pair;
 
 import com.andrewclam.popularmovie.data.DataSource;
 import com.andrewclam.popularmovie.data.model.Entity;
-import com.andrewclam.popularmovie.data.model.Movie;
-import com.andrewclam.popularmovie.di.annotations.Remote;
 import com.google.common.base.Optional;
 
-import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 /**
  * Implementation of {@link DataSource<Entity>} that exposes methods to access a remote data source
@@ -29,12 +23,11 @@ import io.reactivex.Flowable;
  * @param <E> type of {@link Entity}
  */
 @Singleton
-abstract class RemoteDataSource<E extends Entity>
-    implements DataSource<E> {
+abstract class RemoteDataSource<E extends Entity> implements DataSource<E> {
 
   @Override
   public void refresh() {
-
+    // No implementation, repository handles data refresh
   }
 
   @Inject
@@ -42,21 +35,43 @@ abstract class RemoteDataSource<E extends Entity>
 
   @Override
   public Flowable<List<E>> getItems() {
-    return null;
+    // make the http request with the provided uri
+    // get the json response
+    // parse the json response into pojo
+    // add each pojo into a list
+    // return the list
+    return getJsonResponse(null)
+        .flatMap(this::parseList)
+        .toFlowable();
   }
 
   @Override
   public Flowable<Optional<E>> getItem(@NonNull String entityId) {
-    return null;
+    // parse the json response into pojo
+    // add each pojo into a list
+    // return the item
+    return getJsonResponse(null)
+        .flatMap(this::parse)
+        .toFlowable();
   }
 
   /**
-   * Allow subclass to implement and provide the {@link Entity} specific query {@link URL},
-   * according to the service api requirement.
-   * @return an {@link Uri} that is specific to the {@link Entity} type
+   * TODO Implement the http request steps
+   * Responsible for making the http request with the provided uri
+   * and returns a json response for processing
+   * @return a json formatted String data
    */
   @NonNull
-  abstract Uri provideRequestUri();
+  private Single<String> getJsonResponse(@NonNull Uri uri){
+    return null;
+  }
+
+  @NonNull
+  abstract Single<Optional<E>> parse(String jsonResponse);
+
+  @NonNull
+  abstract Single<List<E>> parseList(String jsonResponse);
+
 
   @Override
   public final Completable add(@NonNull E item) {
