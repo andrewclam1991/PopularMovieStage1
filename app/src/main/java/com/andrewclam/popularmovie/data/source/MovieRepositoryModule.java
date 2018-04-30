@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import com.andrewclam.popularmovie.data.DataSource;
 import com.andrewclam.popularmovie.data.Repository;
-import com.andrewclam.popularmovie.data.ServiceApiDataSourceDecorator;
 import com.andrewclam.popularmovie.data.model.Movie;
 import com.andrewclam.popularmovie.data.source.local.MoviesLocalDataSource;
 import com.andrewclam.popularmovie.di.annotations.Local;
@@ -31,7 +30,6 @@ public abstract class MovieRepositoryModule {
   @Singleton
   @Binds
   @Remote
-  // TODO implement MoviesRemoteDataSource
   abstract DataSource<Movie> providesRemoteDataSource(MoviesLocalDataSource dataSource);
 
 }

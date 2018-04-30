@@ -1,16 +1,16 @@
 package com.andrewclam.popularmovie.views.main;
 
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.andrewclam.popularmovie.data.DataSource;
 import com.andrewclam.popularmovie.data.Repository;
-import com.andrewclam.popularmovie.data.api.TMDBApiContract;
+import com.andrewclam.popularmovie.data.api.TMDBApiService;
 import com.andrewclam.popularmovie.data.model.Movie;
-import com.andrewclam.popularmovie.data.ServiceApiDataSourceDecorator;
+import com.andrewclam.popularmovie.data.ServiceApiDecorator;
 import com.andrewclam.popularmovie.util.schedulers.BaseSchedulerProvider;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -18,6 +18,10 @@ import javax.inject.Inject;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+import static com.andrewclam.popularmovie.data.api.TMDBApiContract.TMDBContract.BASE_TMDB_REQUEST_URL;
 
 public class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHolderPresenter {
 
@@ -33,12 +37,19 @@ public class MainPresenter implements MainContract.Presenter, MainContract.ItemV
   @Nullable
   private MainContract.View mView;
 
+  @NonNull
+  private List<Movie> mMovies;
+
   @Inject
   MainPresenter(@NonNull Repository<Movie> movieRepository,
                 @NonNull BaseSchedulerProvider schedulerProvider) {
-    mMovieRepository = movieRepository;
+    mMovieRepository = new ServiceApiDecorator<>(movieRepository)
+        .setApiService(this::provideApiService)
+        .setApiKey(() -> "somekey");
+
     mSchedulerProvider = schedulerProvider;
     mCompositeDisposable = new CompositeDisposable();
+    mMovies = new ArrayList<>(0);
   }
 
   @Override
@@ -54,39 +65,41 @@ public class MainPresenter implements MainContract.Presenter, MainContract.ItemV
 
   @Override
   public void loadItems() {
-
     mMovieRepository.refresh();
 
-    Disposable disposable =
-        new ServiceApiDataSourceDecorator<>(mMovieRepository)
-            .setApiRequestUri(this::getInstanceApiRequestUri)
-            .getItems()
-            .flatMap(Flowable::fromIterable)
-            .toList()
-            .subscribeOn(mSchedulerProvider.io())
-            .observeOn(mSchedulerProvider.ui())
-            .subscribe(
-                this::handleOnNext
-            );
+    Disposable disposable = mMovieRepository
+        .getItems()
+        .flatMap(Flowable::fromIterable)
+        .toList()
+        .subscribeOn(mSchedulerProvider.io())
+        .observeOn(mSchedulerProvider.ui())
+        .subscribe(
+            this::handleOnNext
+        );
+
     mCompositeDisposable.add(disposable);
   }
 
-  /**
-   * Determines the uri to use for querying the service api
-   * this method can vary in runtime and change uri base on user selection
-   * @return runtime-generated uri
-   */
-  private Uri getInstanceApiRequestUri(){
-    return TMDBApiContract.TMDBContract.DiscoverMovie.getRequestUriWithParams("",null);
+  @NonNull
+  private TMDBApiService provideApiService() {
+    Retrofit retrofit = new Retrofit.Builder()
+        .baseUrl(BASE_TMDB_REQUEST_URL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build();
+    return retrofit.create(TMDBApiService.class);
   }
 
   private void handleOnNext(@NonNull List<Movie> movies) {
-    // TODO handle presenting the list of movies
-  }
+    // refresh in-memory list
+    mMovies.clear();
+    if (!movies.isEmpty()){
+      // has content
+      mMovies.addAll(movies);
+    }
 
-  @Override
-  public void checkNetworkState() {
-
+    if (mView != null && mView.isActive()) {
+      mView.onDataSetChanged();
+    }
   }
 
   @Override
@@ -125,7 +138,9 @@ public class MainPresenter implements MainContract.Presenter, MainContract.ItemV
 
   @Override
   public void onAdapterBindViewHolder(MainContract.ItemViewHolder holder, int position) {
-
+    if (position < 0){
+      return; // invalid position
+    }
   }
 
   @Override

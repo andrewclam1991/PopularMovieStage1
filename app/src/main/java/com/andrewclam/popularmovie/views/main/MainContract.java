@@ -50,12 +50,6 @@ public interface MainContract {
     void loadItems();
 
     /**
-     * Allows the View to communicate with the framework view
-     * to check if the network is available
-     */
-    void checkNetworkState();
-
-    /**
      * Enum that defines the filter types
      */
     enum FilterType{

@@ -22,7 +22,7 @@ import io.reactivex.Single;
  * DELETE operations are finalized and simply return completed.
  * @param <E> type of {@link Entity}
  */
-@Singleton
+@Deprecated
 abstract class RemoteDataSource<E extends Entity> implements DataSource<E> {
 
   @Override
@@ -30,7 +30,6 @@ abstract class RemoteDataSource<E extends Entity> implements DataSource<E> {
     // No implementation, repository handles data refresh
   }
 
-  @Inject
   RemoteDataSource(){}
 
   @Override
