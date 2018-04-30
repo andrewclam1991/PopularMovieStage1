@@ -1,6 +1,7 @@
 package com.andrewclam.popularmovie.views.main;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,13 +19,12 @@ import android.widget.Toast;
 import com.andrewclam.popularmovie.R;
 import com.andrewclam.popularmovie.di.annotations.ActivityScoped;
 import com.andrewclam.popularmovie.util.LayoutManagerUtil;
+import com.andrewclam.popularmovie.views.detail.DetailActivity;
 
 import javax.inject.Inject;
 
+import dagger.android.support.DaggerAppCompatActivity;
 import dagger.android.support.DaggerFragment;
-
-import static com.andrewclam.popularmovie.util.NetworkUtil.TMDB_PATH_POPULAR;
-import static com.andrewclam.popularmovie.util.NetworkUtil.TMDB_PATH_TOP_RATED;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,6 +40,8 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
 
   @Nullable
   private RecyclerView mItemsRv;
+
+  @Nullable
   private RecyclerView.LayoutManager mLayoutManager;
 
   @Override
@@ -54,15 +56,15 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
     super.onResume();
   }
 
+  @Inject
   public MainFragment() {
-    // Required empty public constructor
+    // Required empty public constructor*
   }
 
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
     // Inflate the layout for this fragment
-
     return inflater.inflate(R.layout.fragment_main, container, false);
   }
 
@@ -75,7 +77,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
     mItemsRv.setAdapter(mRvAdapter);
     mItemsRv.setLayoutManager(mLayoutManager);
 
-    // Allow fragement to participate in creating menu options
+    // Allow fragment to participate in creating menu options
     setHasOptionsMenu(true);
     setRetainInstance(true);
 
@@ -83,8 +85,37 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
   }
 
   @Override
+  public void onSaveInstanceState(@NonNull Bundle outState) {
+    // Save Presenter states
+    outState.putString(MainContract.Presenter.FILTER_TYPE_KEY,
+        mPresenter.getCurrentFilterType().toString());
+    outState.putString(MainContract.Presenter.SORT_ORDER_KEY,
+        mPresenter.getCurrentSortOrder().toString());
+    outState.putString(MainContract.Presenter.SORT_TYPE_KEY,
+        mPresenter.getCurrentSortType().toString());
+    super.onSaveInstanceState(outState);
+  }
+
+  @Override
+  public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+    // See if savedInstanceState exists and where we retained user's query selection
+    if (savedInstanceState != null) {
+      // Restore Presenter states
+      String filterType = savedInstanceState.getString(MainContract.Presenter.FILTER_TYPE_KEY);
+      mPresenter.setFilterType(MainContract.Presenter.FilterType.valueOf(filterType));
+
+      String sortOrder = savedInstanceState.getString(MainContract.Presenter.SORT_ORDER_KEY);
+      mPresenter.setSortOrder(MainContract.Presenter.SortOrder.valueOf(sortOrder));
+
+      String sortType = savedInstanceState.getString(MainContract.Presenter.SORT_TYPE_KEY);
+      mPresenter.setSortType(MainContract.Presenter.SortType.valueOf(sortType));
+    }
+    super.onViewStateRestored(savedInstanceState);
+  }
+
+  @Override
   public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-    inflater.inflate(R.menu.menu_main,menu);
+    inflater.inflate(R.menu.menu_main, menu);
     super.onCreateOptionsMenu(menu, inflater);
   }
 
@@ -107,24 +138,25 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
       default:
         return super.onOptionsItemSelected(item);
     }
-
   }
 
   @Override
-  public void onSaveInstanceState(@NonNull Bundle outState) {
-    mLayoutManager.onSaveInstanceState(); // TODO persist and restore the layout state
-    super.onSaveInstanceState(outState);
+  public void showDetailUi(@NonNull String id, @NonNull Class<? extends DaggerAppCompatActivity> clazz) {
+    Intent intent = new Intent(getActivity(), clazz);
+    intent.putExtra(DetailActivity.ARG_DETAIL_ACT_ITEM_ID, id);
+    intent.setAction(Intent.ACTION_VIEW);
+    startActivity(intent);
   }
 
   @Override
   public void showLoadingMoviesError() {
-    Toast.makeText(getContext(),getString(R.string.error_msg_unable_to_fetch),Toast.LENGTH_LONG)
+    Toast.makeText(getContext(), getString(R.string.error_msg_unable_to_fetch), Toast.LENGTH_LONG)
         .show();
   }
 
   @Override
   public void onDataSetChanged() {
-    if (mRvAdapter != null){
+    if (mRvAdapter != null) {
       mRvAdapter.notifyDataSetChanged();
     }
   }

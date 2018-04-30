@@ -16,11 +16,11 @@ import dagger.android.DaggerApplication;
  */
 public class MyApplication extends DaggerApplication {
 
-    @NonNull
-    @Override
-    protected AndroidInjector<? extends DaggerApplication> applicationInjector() {
-        AppComponent appComponent = DaggerAppComponent.builder().application(this).build();
-        appComponent.inject(this);
-        return appComponent;
-    }
+  @NonNull
+  @Override
+  protected AndroidInjector<? extends DaggerApplication> applicationInjector() {
+    AppComponent appComponent = DaggerAppComponent.builder().application(this).build();
+    appComponent.inject(this);
+    return appComponent;
+  }
 }

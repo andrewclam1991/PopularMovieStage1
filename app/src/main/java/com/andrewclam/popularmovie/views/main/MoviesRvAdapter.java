@@ -14,14 +14,13 @@ import com.squareup.picasso.Picasso;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-@Singleton
 class MoviesRvAdapter extends RecyclerView.Adapter<MoviesRvAdapter.MovieItemViewHolder> {
 
   @NonNull
-  private final MainContract.ItemViewHolderPresenter<MovieItemViewHolder> mPresenter;
+  private final MainContract.ItemViewHolderPresenter<MainContract.ItemViewHolder> mPresenter;
 
   @Inject
-  MoviesRvAdapter(@NonNull MainContract.ItemViewHolderPresenter<MovieItemViewHolder> presenter){
+  MoviesRvAdapter(@NonNull MainContract.ItemViewHolderPresenter<MainContract.ItemViewHolder> presenter){
     mPresenter = presenter;
   }
 

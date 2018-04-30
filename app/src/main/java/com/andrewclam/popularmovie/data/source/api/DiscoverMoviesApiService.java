@@ -28,11 +28,9 @@ import static com.andrewclam.popularmovie.data.source.api.TMDBApiServiceContract
  * Concrete implementation of a {@link ApiServiceDecorator <>} that is responsible
  * for providing the implementation to a list of {@link Movie} from the service api
  */
-@Singleton
 public class DiscoverMoviesApiService extends ApiServiceDecorator<Movie> {
 
-  @Inject
-  DiscoverMoviesApiService(@NonNull DataSource<Movie> repository) {
+  public DiscoverMoviesApiService(@NonNull DataSource<Movie> repository) {
     super(repository);
   }
 

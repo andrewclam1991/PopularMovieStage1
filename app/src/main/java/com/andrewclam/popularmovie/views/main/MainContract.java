@@ -1,11 +1,14 @@
 package com.andrewclam.popularmovie.views.main;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.andrewclam.popularmovie.BasePresenter;
 import com.andrewclam.popularmovie.BaseView;
 import com.andrewclam.popularmovie.data.model.Entity;
+
+import dagger.android.support.DaggerAppCompatActivity;
 
 /**
  * Interface contract that defines number of {@link View}s' and its
@@ -29,6 +32,11 @@ interface MainContract {
      */
     void onDataSetChanged();
 
+    /**
+     * Allow the View to handle launching item detail ui screen(s)
+     * @param id unique id that identifies the item
+     */
+    void showDetailUi(@NonNull String id, @NonNull Class<? extends DaggerAppCompatActivity> clazz);
   }
 
   /**
@@ -120,7 +128,7 @@ interface MainContract {
     SortOrder getCurrentSortOrder();
 
     // Constants
-    String FILTER_ORDER_KEY = "FILTER_ORDER_KEY";
+    String FILTER_TYPE_KEY = "FILTER_TYPE_KEY";
     String SORT_TYPE_KEY = "SORT_TYPE_KEY";
     String SORT_ORDER_KEY = "SORT_ORDER_KEY";
   }
