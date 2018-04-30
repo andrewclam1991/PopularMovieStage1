@@ -10,4 +10,4 @@
 /gradle.properties
 /app/build
 app/libs/
-keystore.properties
+/keystore.properties
