@@ -1,20 +1,32 @@
-package com.andrewclam.popularmovie.data.api;
+package com.andrewclam.popularmovie.data.source.api;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringDef;
 
+import com.andrewclam.popularmovie.data.model.Movie;
 import com.google.common.base.Strings;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
+
+import static com.andrewclam.popularmovie.data.source.api.TMDBServiceContract.TMDBContract.Paths.PATH_DISCOVER;
+import static com.andrewclam.popularmovie.data.source.api.TMDBServiceContract.TMDBContract.Paths.PATH_MOVIE;
+import static com.andrewclam.popularmovie.data.source.api.TMDBServiceContract.TMDBContract.QUERY_API_KEY;
 
 /**
  * Defines a set of constants against the supported TMDB APIs
  * - {@link TMDBContract} Defines the contract constants against the TMDB Movies API
  * - {@link TMDBImageContract} Defines the contract constants against the Image database of TMDB
  */
-public final class TMDBApiContract {
+public final class TMDBServiceContract {
 
   /**
    * Contract against the TMDB Movies API
@@ -46,7 +58,47 @@ public final class TMDBApiContract {
 
     // Query parameters
     static final String QUERY_API_KEY = "api_key";
+
   }
+
+  /**
+   * API Service interface for discovering {@link Movie}
+   * example request:
+   * https://api.themoviedb.org/3/discover/movie?api_key=<<YOUR_API_KEY>>&sort_by=popularity.desc
+   */
+  public interface DiscoverMoviesService {
+    /**
+     * Gets a default list of popular {@link Movie}s
+     * @param apiKey TMDB developer api key
+     * @return list of {@link Movie}s
+     */
+    @GET(PATH_DISCOVER + "/" + PATH_MOVIE)
+    @NonNull
+    Call<List<Movie>> getItems(@Query(QUERY_API_KEY) String apiKey);
+
+    /**
+     * Gets a list of {@link Movie}s base on the supplied query parameters and their arguments.
+     * @param apiKey TMDB developer api key
+     * @return list of {@link Movie}s
+     */
+    @GET(PATH_DISCOVER + "/" + PATH_MOVIE)
+    @NonNull
+    Call<List<Movie>> getItems(@Query(QUERY_API_KEY) String apiKey,
+                               @QueryMap Map<String, String> options);
+  }
+
+
+  // TODO design movie reviews service api
+  public interface MovieReviewsSerivce{
+
+  }
+
+  // TODO design movie related videos service api
+  public interface MovieRelatedVideosService{
+
+  }
+
+
 
   /**
    * {@link DiscoverMoviesParam}
@@ -93,7 +145,7 @@ public final class TMDBApiContract {
     }
 
     private static final String SCHEME = "https";
-    private static final String AUTHORITY = "https://image.tmdb.org/";
+    private static final String AUTHORITY = "image.tmdb.org";
     private static final Uri BASE_TMDB_IMAGE_REQUEST_URI = new Uri.Builder()
         .scheme(SCHEME)
         .authority(AUTHORITY)
@@ -111,16 +163,15 @@ public final class TMDBApiContract {
      * @return a String url
      * @throws IllegalArgumentException when {@code posterPath} is not supplied
      */
+    @NonNull
     public static Uri getMoviePosterImageUri(@NonNull String posterPath)
         throws IllegalArgumentException {
       if (Strings.isNullOrEmpty(posterPath)) {
         throw new IllegalArgumentException("posterPath can't be empty or null");
       }
 
-      Uri.Builder builder = new Uri.Builder();
-      builder.scheme(SCHEME)
-          .authority(AUTHORITY)
-          .appendPath(PATH_T)
+      Uri.Builder builder = BASE_TMDB_IMAGE_REQUEST_URI.buildUpon();
+      builder.appendPath(PATH_T)
           .appendPath(PATH_P)
           .appendPath(PATH_IMAGE_SIZE_W500)
           .appendPath(posterPath);

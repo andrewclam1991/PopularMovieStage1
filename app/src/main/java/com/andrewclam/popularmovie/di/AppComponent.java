@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 
 
 import com.andrewclam.popularmovie.MyApplication;
-import com.andrewclam.popularmovie.data.source.MovieRepositoryModule;
+import com.andrewclam.popularmovie.data.source.api.MovieRepositoryModule;
 import com.andrewclam.popularmovie.di.modules.ActivityBindingModule;
 import com.andrewclam.popularmovie.di.modules.ApplicationModule;
 import com.andrewclam.popularmovie.di.modules.ContentResolverModule;
