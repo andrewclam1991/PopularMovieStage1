@@ -51,22 +51,22 @@ public abstract class MovieRepositoryModule {
         .setApiService(()->apiService)
         .setApiKey(()->apiKey);
   }
-
-  @NonNull
-  @ApiKey
-  static String provideApiKey(@NonNull Context context){
-    return context.getString(R.string.tmdb_api_key);
-  }
-
+  
   @NonNull
   @Singleton
-  private static TMDBApiService<?> provideApiService(){
+  static TMDBApiService<?> provideApiService(){
     Retrofit retrofit = new Retrofit.Builder()
         .baseUrl(BASE_TMDB_REQUEST_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .build();
 
     return retrofit.create(TMDBApiService.class);
+  }
+
+  @NonNull
+  @ApiKey
+  static String provideApiKey(@NonNull Context context){
+    return context.getString(R.string.tmdb_api_key);
   }
 
 }

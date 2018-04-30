@@ -15,8 +15,14 @@ import dagger.Module;
  */
 @Module
 public abstract class MainModule {
-    @NonNull
-    @ActivityScoped
-    @Binds
-    abstract MainContract.Presenter injectMainPresenter(@NonNull MainPresenter presenter);
+  @NonNull
+  @ActivityScoped
+  @Binds
+  abstract MainContract.Presenter injectMainPresenter(@NonNull MainPresenter presenter);
+
+  @NonNull
+  @ActivityScoped
+  @Binds
+  abstract MainContract.ItemViewHolderPresenter injectItemViewHolderPresenter
+      (@NonNull MainPresenter presenter);
 }

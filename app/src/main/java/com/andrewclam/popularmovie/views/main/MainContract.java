@@ -37,6 +37,7 @@ public interface MainContract {
    */
   interface ItemViewHolder{
     // Define view holder methods here
+    void loadMoviePoster(@NonNull String posterUrl);
   }
 
   /**
