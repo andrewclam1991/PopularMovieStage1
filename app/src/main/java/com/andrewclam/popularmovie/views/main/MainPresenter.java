@@ -2,6 +2,7 @@ package com.andrewclam.popularmovie.views.main;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.andrewclam.popularmovie.data.model.Movie;
 import com.andrewclam.popularmovie.data.ApiServiceDecorator;
@@ -36,7 +37,7 @@ public class MainPresenter implements MainContract.Presenter, MainContract.ItemV
   @Inject
   MainPresenter(@NonNull ApiServiceDecorator<Movie> movieRepository,
                 @NonNull BaseSchedulerProvider schedulerProvider) {
-    mMovieRepository = new ApiServiceDecorator<>(movieRepository);
+    mMovieRepository = movieRepository;
     mSchedulerProvider = schedulerProvider;
     mCompositeDisposable = new CompositeDisposable();
     mMovies = new ArrayList<>(0);
@@ -65,7 +66,8 @@ public class MainPresenter implements MainContract.Presenter, MainContract.ItemV
         .subscribeOn(mSchedulerProvider.io())
         .observeOn(mSchedulerProvider.ui())
         .subscribe(
-            this::handleOnNext
+            this::handleOnNext,
+            this::handleOnError
         );
 
     mCompositeDisposable.add(disposable);
@@ -84,37 +86,69 @@ public class MainPresenter implements MainContract.Presenter, MainContract.ItemV
     }
   }
 
+  private void handleOnError(@NonNull Throwable throwable){
+    Log.e("MainPresenter", throwable.getLocalizedMessage());
+    if (mView != null && mView.isActive()){
+      mView.showLoadingMoviesError();
+    }
+  }
+
   @Override
   public void setFilterType(@NonNull FilterType type) {
-
+    switch (type){
+      case DEFAULT:
+        break;
+      case FAVORITES:
+        break;
+    }
   }
 
   @Override
   public void setSortType(@NonNull SortType type) {
-
+    switch (type){
+      case DEFAULT:
+        break;
+      case BY_POPULARITY:
+        break;
+      case BY_RATING:
+        break;
+    }
   }
 
   @Override
   public void setSortOrder(@NonNull SortOrder order) {
-
+    switch (order){
+      case DEFAULT:
+        break;
+      case ASC:
+        break;
+      case DESC:
+        break;
+    }
   }
+  @NonNull
+  private SortOrder mCurrentSortOrder = SortOrder.DEFAULT;
+  @NonNull
+  private SortType mCurrentSortType = SortType.DEFAULT;
+  @NonNull
+  private FilterType mCurrentFilterType = FilterType.DEFAULT;
 
   @NonNull
   @Override
   public FilterType getCurrentFilterType() {
-    return null;
+    return mCurrentFilterType;
   }
 
   @NonNull
   @Override
-  public FilterType getCurrentSortType() {
-    return null;
+  public SortType getCurrentSortType() {
+    return mCurrentSortType;
   }
 
   @NonNull
   @Override
   public SortOrder getCurrentSortOrder() {
-    return null;
+    return mCurrentSortOrder;
   }
 
 
@@ -123,15 +157,25 @@ public class MainPresenter implements MainContract.Presenter, MainContract.ItemV
     if (position < 0){
       return; // invalid position
     }
+    Movie movie = mMovies.get(position);
+    String posterPath = movie.getPosterPath();
+    // TODO get the fully qualified poster path
+    holder.loadMoviePoster(posterPath);
   }
 
   @Override
   public void onAdapterItemClicked(int position) {
+    if (position < 0){
+      return; // invalid position
+    }
 
+    Movie movie = mMovies.get(position);
+    String id = movie.getUid();
+    // TODO launch detail activity with the id
   }
 
   @Override
   public int onAdapterRequestItemCount() {
-    return 0;
+    return mMovies.size();
   }
 }

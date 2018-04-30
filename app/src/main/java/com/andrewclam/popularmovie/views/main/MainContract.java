@@ -108,7 +108,7 @@ public interface MainContract {
      * a {@link SortType#DEFAULT} is returned
      */
     @NonNull
-    FilterType getCurrentSortType();
+    SortType getCurrentSortType();
 
     /**
      * Allow client to get the current {@link SortOrder} set by the user,

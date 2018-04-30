@@ -45,13 +45,11 @@ public abstract class MovieRepositoryModule {
   @NonNull
   @Singleton
   static ApiServiceDecorator<Movie> provideWrappedRepository(@NonNull Repository<Movie> movieRepository,
-                                                             @NonNull @ApiKey String apiKey,
-                                                             @NonNull TMDBApiService<Movie> apiService){
-    return new ApiServiceDecorator<>(movieRepository)
-        .setApiService(()->apiService)
-        .setApiKey(()->apiKey);
+                                                             @NonNull TMDBApiService<Movie> apiService,
+                                                             @NonNull @ApiKey String apiKey){
+    return new ApiServiceDecorator<>(movieRepository,apiService,apiKey);
   }
-  
+
   @NonNull
   @Singleton
   static TMDBApiService<?> provideApiService(){
