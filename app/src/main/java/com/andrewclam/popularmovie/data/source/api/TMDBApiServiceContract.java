@@ -17,16 +17,16 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
 
-import static com.andrewclam.popularmovie.data.source.api.TMDBServiceContract.TMDBContract.Paths.PATH_DISCOVER;
-import static com.andrewclam.popularmovie.data.source.api.TMDBServiceContract.TMDBContract.Paths.PATH_MOVIE;
-import static com.andrewclam.popularmovie.data.source.api.TMDBServiceContract.TMDBContract.QUERY_API_KEY;
+import static com.andrewclam.popularmovie.data.source.api.TMDBApiServiceContract.TMDBContract.Paths.PATH_DISCOVER;
+import static com.andrewclam.popularmovie.data.source.api.TMDBApiServiceContract.TMDBContract.Paths.PATH_MOVIE;
+import static com.andrewclam.popularmovie.data.source.api.TMDBApiServiceContract.TMDBContract.QUERY_API_KEY;
 
 /**
  * Defines a set of constants against the supported TMDB APIs
  * - {@link TMDBContract} Defines the contract constants against the TMDB Movies API
  * - {@link TMDBImageContract} Defines the contract constants against the Image database of TMDB
  */
-public final class TMDBServiceContract {
+public final class TMDBApiServiceContract {
 
   /**
    * Contract against the TMDB Movies API

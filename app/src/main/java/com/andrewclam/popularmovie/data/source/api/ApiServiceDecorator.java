@@ -23,7 +23,7 @@ import retrofit2.Response;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public abstract class TMDBServiceDecorator<E extends Entity> implements DataSource<E> {
+public abstract class ApiServiceDecorator<E extends Entity> implements DataSource<E> {
 
   @NonNull
   private final DataSource<E> mRepository;
@@ -43,7 +43,7 @@ public abstract class TMDBServiceDecorator<E extends Entity> implements DataSour
   @VisibleForTesting
   boolean mCacheIsDirty = false;
 
-  TMDBServiceDecorator(@NonNull DataSource<E> repository) {
+  ApiServiceDecorator(@NonNull DataSource<E> repository) {
     checkNotNull(repository,"target repository can't be null!");
     mRepository = repository;
   }
@@ -57,7 +57,7 @@ public abstract class TMDBServiceDecorator<E extends Entity> implements DataSour
    * @return an instance of the wrapper class to maintain api fluency.
    */
   @NonNull
-  public TMDBServiceDecorator<E> setQueryParams(@NonNull OnRequestOptionsCallback callback) {
+  public ApiServiceDecorator<E> setQueryParams(@NonNull OnRequestOptionsCallback callback) {
     mOptions = callback.provideOptions();
     return this;
   }

@@ -4,10 +4,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.andrewclam.popularmovie.data.source.api.DiscoverMoviesService;
-import com.andrewclam.popularmovie.data.source.api.TMDBServiceContract;
+import com.andrewclam.popularmovie.data.source.api.ApiServiceDecorator;
+import com.andrewclam.popularmovie.data.source.api.TMDBApiServiceContract;
 import com.andrewclam.popularmovie.data.model.Movie;
-import com.andrewclam.popularmovie.data.source.api.TMDBServiceDecorator;
 import com.andrewclam.popularmovie.util.schedulers.BaseSchedulerProvider;
 
 import java.util.ArrayList;
@@ -22,7 +21,7 @@ import io.reactivex.disposables.Disposable;
 public class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHolderPresenter {
 
   @NonNull
-  private final TMDBServiceDecorator<Movie> mMovieRepository;
+  private final ApiServiceDecorator<Movie> mMovieRepository;
 
   @NonNull
   private final BaseSchedulerProvider mSchedulerProvider;
@@ -37,7 +36,7 @@ public class MainPresenter implements MainContract.Presenter, MainContract.ItemV
   private final List<Movie> mMovies;
 
   @Inject
-  MainPresenter(@NonNull TMDBServiceDecorator<Movie> movieRepository,
+  MainPresenter(@NonNull ApiServiceDecorator<Movie> movieRepository,
                 @NonNull BaseSchedulerProvider schedulerProvider) {
     mMovieRepository = movieRepository;
     mSchedulerProvider = schedulerProvider;
@@ -161,7 +160,7 @@ public class MainPresenter implements MainContract.Presenter, MainContract.ItemV
     }
     Movie movie = mMovies.get(position);
     String posterPath = movie.getPosterPath();
-    String posterUrl = TMDBServiceContract.TMDBImageContract.getMoviePosterImageUri(posterPath).toString();
+    String posterUrl = TMDBApiServiceContract.TMDBImageContract.getMoviePosterImageUri(posterPath).toString();
     holder.loadMoviePoster(posterUrl);
   }
 

@@ -16,17 +16,17 @@ import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.andrewclam.popularmovie.data.source.api.TMDBServiceContract.TMDBContract.BASE_TMDB_REQUEST_URL;
+import static com.andrewclam.popularmovie.data.source.api.TMDBApiServiceContract.TMDBContract.BASE_TMDB_REQUEST_URL;
 
 /**
- * Concrete implementation of a {@link TMDBServiceDecorator<>} that is responsible
+ * Concrete implementation of a {@link ApiServiceDecorator <>} that is responsible
  * for providing the implementation to a list of {@link Movie} from the service api
  */
 @Singleton
-public class DiscoverMoviesService extends TMDBServiceDecorator<Movie> {
+public class DiscoverMoviesApiService extends ApiServiceDecorator<Movie> {
 
   @Inject
-  public DiscoverMoviesService(@NonNull DataSource<Movie> repository) {
+  public DiscoverMoviesApiService(@NonNull DataSource<Movie> repository) {
     super(repository);
   }
 
@@ -40,8 +40,8 @@ public class DiscoverMoviesService extends TMDBServiceDecorator<Movie> {
         .addConverterFactory(GsonConverterFactory.create())
         .build();
 
-    TMDBServiceContract.DiscoverMoviesService service = retrofit.create(
-        TMDBServiceContract.DiscoverMoviesService.class);
+    TMDBApiServiceContract.DiscoverMoviesService service = retrofit.create(
+        TMDBApiServiceContract.DiscoverMoviesService.class);
 
     return service.getItems(apiKey, options);
   }

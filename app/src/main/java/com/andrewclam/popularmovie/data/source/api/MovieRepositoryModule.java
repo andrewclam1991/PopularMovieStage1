@@ -7,8 +7,6 @@ import com.andrewclam.popularmovie.R;
 import com.andrewclam.popularmovie.data.DataSource;
 import com.andrewclam.popularmovie.data.Repository;
 import com.andrewclam.popularmovie.data.model.Movie;
-import com.andrewclam.popularmovie.data.source.api.DiscoverMoviesService;
-import com.andrewclam.popularmovie.data.source.api.TMDBServiceDecorator;
 import com.andrewclam.popularmovie.data.source.local.MoviesLocalDataSource;
 import com.andrewclam.popularmovie.di.annotations.ApiKey;
 import com.andrewclam.popularmovie.di.annotations.Local;
@@ -40,7 +38,7 @@ public abstract class MovieRepositoryModule {
   @NonNull
   @Singleton
   @Binds
-  abstract TMDBServiceDecorator<Movie> provideApiService(@NonNull DiscoverMoviesService service);
+  abstract ApiServiceDecorator<Movie> provideApiService(@NonNull DiscoverMoviesApiService service);
 
   @NonNull
   @ApiKey
