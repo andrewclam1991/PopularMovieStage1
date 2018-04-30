@@ -15,8 +15,14 @@ import javax.inject.Singleton;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 
 import static com.andrewclam.popularmovie.data.source.api.TMDBApiServiceContract.TMDBContract.BASE_TMDB_REQUEST_URL;
+import static com.andrewclam.popularmovie.data.source.api.TMDBApiServiceContract.TMDBContract.Paths.PATH_DISCOVER;
+import static com.andrewclam.popularmovie.data.source.api.TMDBApiServiceContract.TMDBContract.Paths.PATH_MOVIE;
+import static com.andrewclam.popularmovie.data.source.api.TMDBApiServiceContract.TMDBContract.QUERY_API_KEY;
 
 /**
  * Concrete implementation of a {@link ApiServiceDecorator <>} that is responsible
@@ -26,7 +32,7 @@ import static com.andrewclam.popularmovie.data.source.api.TMDBApiServiceContract
 public class DiscoverMoviesApiService extends ApiServiceDecorator<Movie> {
 
   @Inject
-  public DiscoverMoviesApiService(@NonNull DataSource<Movie> repository) {
+  DiscoverMoviesApiService(@NonNull DataSource<Movie> repository) {
     super(repository);
   }
 
@@ -40,9 +46,35 @@ public class DiscoverMoviesApiService extends ApiServiceDecorator<Movie> {
         .addConverterFactory(GsonConverterFactory.create())
         .build();
 
-    TMDBApiServiceContract.DiscoverMoviesService service = retrofit.create(
-        TMDBApiServiceContract.DiscoverMoviesService.class);
+    DiscoverMoviesService service = retrofit.create(DiscoverMoviesService.class);
 
     return service.getItems(apiKey, options);
   }
+
+  /**
+   * API Service interface for discovering {@link Movie}
+   * example request:
+   * https://api.themoviedb.org/3/discover/movie?api_key=<<YOUR_API_KEY>>&sort_by=popularity.desc
+   */
+  interface DiscoverMoviesService {
+    /**
+     * Gets a default list of popular {@link Movie}s
+     * @param apiKey TMDB developer api key
+     * @return list of {@link Movie}s
+     */
+    @GET(PATH_DISCOVER + "/" + PATH_MOVIE)
+    @NonNull
+    Call<List<Movie>> getItems(@Query(QUERY_API_KEY) String apiKey);
+
+    /**
+     * Gets a list of {@link Movie}s base on the supplied query parameters and their arguments.
+     * @param apiKey TMDB developer api key
+     * @return list of {@link Movie}s
+     */
+    @GET(PATH_DISCOVER + "/" + PATH_MOVIE)
+    @NonNull
+    Call<List<Movie>> getItems(@Query(QUERY_API_KEY) String apiKey,
+                               @QueryMap Map<String, String> options);
+  }
+
 }

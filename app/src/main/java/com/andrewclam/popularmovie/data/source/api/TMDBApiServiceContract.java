@@ -33,7 +33,7 @@ public final class TMDBApiServiceContract {
    * Note: requires a developer service api key, set by {@link #QUERY_API_KEY}
    * see https://www.themoviedb.org/documentation/api
    */
-  public static final class TMDBContract {
+  static final class TMDBContract {
     // Note: Contract class should never be instantiated
     private TMDBContract() {
     }
@@ -42,7 +42,7 @@ public final class TMDBApiServiceContract {
     private static final String SCHEME = "https";
     private static final String AUTHORITY = "api.themoviedb.org";
     private static final String API_VERSION = "3";
-    public static final String BASE_TMDB_REQUEST_URL = new Uri.Builder()
+    static final String BASE_TMDB_REQUEST_URL = new Uri.Builder()
         .scheme(SCHEME)
         .authority(AUTHORITY)
         .appendPath(API_VERSION)
@@ -50,8 +50,8 @@ public final class TMDBApiServiceContract {
 
     // Paths
     public static final class Paths{
-      public static final String PATH_DISCOVER = "discover";
-      public static final String PATH_MOVIE = "movies";
+      static final String PATH_DISCOVER = "discover";
+      static final String PATH_MOVIE = "movies";
       public static final String PATH_VIDEO = "videos";
       public static final String PATH_REVIEWS = "reviews";
     }
@@ -60,33 +60,6 @@ public final class TMDBApiServiceContract {
     static final String QUERY_API_KEY = "api_key";
 
   }
-
-  /**
-   * API Service interface for discovering {@link Movie}
-   * example request:
-   * https://api.themoviedb.org/3/discover/movie?api_key=<<YOUR_API_KEY>>&sort_by=popularity.desc
-   */
-  public interface DiscoverMoviesService {
-    /**
-     * Gets a default list of popular {@link Movie}s
-     * @param apiKey TMDB developer api key
-     * @return list of {@link Movie}s
-     */
-    @GET(PATH_DISCOVER + "/" + PATH_MOVIE)
-    @NonNull
-    Call<List<Movie>> getItems(@Query(QUERY_API_KEY) String apiKey);
-
-    /**
-     * Gets a list of {@link Movie}s base on the supplied query parameters and their arguments.
-     * @param apiKey TMDB developer api key
-     * @return list of {@link Movie}s
-     */
-    @GET(PATH_DISCOVER + "/" + PATH_MOVIE)
-    @NonNull
-    Call<List<Movie>> getItems(@Query(QUERY_API_KEY) String apiKey,
-                               @QueryMap Map<String, String> options);
-  }
-
 
   // TODO design movie reviews service api
   public interface MovieReviewsSerivce{
@@ -97,8 +70,6 @@ public final class TMDBApiServiceContract {
   public interface MovieRelatedVideosService{
 
   }
-
-
 
   /**
    * {@link DiscoverMoviesParam}

@@ -1,4 +1,4 @@
-package com.andrewclam.popularmovie.data.source.api;
+package com.andrewclam.popularmovie.data;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -7,6 +7,8 @@ import com.andrewclam.popularmovie.R;
 import com.andrewclam.popularmovie.data.DataSource;
 import com.andrewclam.popularmovie.data.Repository;
 import com.andrewclam.popularmovie.data.model.Movie;
+import com.andrewclam.popularmovie.data.source.api.ApiServiceDecorator;
+import com.andrewclam.popularmovie.data.source.api.DiscoverMoviesApiService;
 import com.andrewclam.popularmovie.data.source.local.MoviesLocalDataSource;
 import com.andrewclam.popularmovie.di.annotations.ApiKey;
 import com.andrewclam.popularmovie.di.annotations.Local;
