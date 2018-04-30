@@ -2,7 +2,6 @@
 <resources>
     <string name="app_package_name">com.andrewclam.popularmovie</string>
     <string name="app_name">PopularMovie</string>
-    <string name="tmdb_api_key">api_key_here</string>
 
     <string name="title_activity_detail">DetailActivity</string>
 

@@ -10,4 +10,4 @@
 /gradle.properties
 /app/build
 app/libs/
-app/src/main/res/values/api_key.xml
+keystore.properties
