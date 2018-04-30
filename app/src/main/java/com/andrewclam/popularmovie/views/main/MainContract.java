@@ -11,7 +11,7 @@ import com.andrewclam.popularmovie.data.model.Entity;
  * Interface contract that defines number of {@link View}s' and its
  * {@link Presenter}s' responsibilities
  */
-public interface MainContract {
+interface MainContract {
 
   /**
    * Interface that defines the View class responsibilities

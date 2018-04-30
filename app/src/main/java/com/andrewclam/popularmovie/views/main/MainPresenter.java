@@ -18,7 +18,7 @@ import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-public class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHolderPresenter {
+class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHolderPresenter {
 
   @NonNull
   private final ApiServiceDecorator<Movie> mMovieRepository;

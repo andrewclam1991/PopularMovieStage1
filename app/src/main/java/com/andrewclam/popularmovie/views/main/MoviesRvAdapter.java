@@ -15,7 +15,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class MoviesRvAdapter extends RecyclerView.Adapter<MoviesRvAdapter.MovieItemViewHolder> {
+class MoviesRvAdapter extends RecyclerView.Adapter<MoviesRvAdapter.MovieItemViewHolder> {
 
   @NonNull
   private final MainContract.ItemViewHolderPresenter<MovieItemViewHolder> mPresenter;
