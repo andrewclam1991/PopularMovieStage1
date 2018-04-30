@@ -19,7 +19,6 @@ public interface TMDBApiService<E extends Entity> {
 
   /**
    * https://api.themoviedb.org/3/discover/movie?api_key=<<YOUR_API_KEY>>&sort_by=popularity.desc
-   *
    * @param apiKey
    * @return
    */
@@ -28,7 +27,6 @@ public interface TMDBApiService<E extends Entity> {
 
   /**
    * https://api.themoviedb.org/3/discover/movie?api_key=<<YOUR_API_KEY>>&sort_by=popularity.desc
-   *
    * @param apiKey
    * @return
    */

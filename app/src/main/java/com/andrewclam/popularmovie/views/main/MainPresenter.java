@@ -3,11 +3,8 @@ package com.andrewclam.popularmovie.views.main;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.andrewclam.popularmovie.data.DataSource;
-import com.andrewclam.popularmovie.data.Repository;
-import com.andrewclam.popularmovie.data.api.TMDBApiService;
 import com.andrewclam.popularmovie.data.model.Movie;
-import com.andrewclam.popularmovie.data.ServiceApiDecorator;
+import com.andrewclam.popularmovie.data.ApiServiceDecorator;
 import com.andrewclam.popularmovie.util.schedulers.BaseSchedulerProvider;
 
 import java.util.ArrayList;
@@ -18,15 +15,11 @@ import javax.inject.Inject;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
-import static com.andrewclam.popularmovie.data.api.TMDBApiContract.TMDBContract.BASE_TMDB_REQUEST_URL;
 
 public class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHolderPresenter {
 
   @NonNull
-  private final DataSource<Movie> mMovieRepository;
+  private final ApiServiceDecorator<Movie> mMovieRepository;
 
   @NonNull
   private final BaseSchedulerProvider mSchedulerProvider;
@@ -38,15 +31,12 @@ public class MainPresenter implements MainContract.Presenter, MainContract.ItemV
   private MainContract.View mView;
 
   @NonNull
-  private List<Movie> mMovies;
+  private final List<Movie> mMovies;
 
   @Inject
-  MainPresenter(@NonNull Repository<Movie> movieRepository,
+  MainPresenter(@NonNull ApiServiceDecorator<Movie> movieRepository,
                 @NonNull BaseSchedulerProvider schedulerProvider) {
-    mMovieRepository = new ServiceApiDecorator<>(movieRepository)
-        .setApiService(this::provideApiService)
-        .setApiKey(() -> "somekey");
-
+    mMovieRepository = new ApiServiceDecorator<>(movieRepository);
     mSchedulerProvider = schedulerProvider;
     mCompositeDisposable = new CompositeDisposable();
     mMovies = new ArrayList<>(0);
@@ -68,6 +58,7 @@ public class MainPresenter implements MainContract.Presenter, MainContract.ItemV
     mMovieRepository.refresh();
 
     Disposable disposable = mMovieRepository
+        .setQueryParams(()->null)
         .getItems()
         .flatMap(Flowable::fromIterable)
         .toList()
@@ -80,20 +71,11 @@ public class MainPresenter implements MainContract.Presenter, MainContract.ItemV
     mCompositeDisposable.add(disposable);
   }
 
-  @NonNull
-  private TMDBApiService provideApiService() {
-    Retrofit retrofit = new Retrofit.Builder()
-        .baseUrl(BASE_TMDB_REQUEST_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build();
-    return retrofit.create(TMDBApiService.class);
-  }
-
   private void handleOnNext(@NonNull List<Movie> movies) {
     // refresh in-memory list
     mMovies.clear();
     if (!movies.isEmpty()){
-      // has content
+      // has new content
       mMovies.addAll(movies);
     }
 

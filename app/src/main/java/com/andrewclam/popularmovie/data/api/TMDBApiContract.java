@@ -83,7 +83,6 @@ public final class TMDBApiContract {
     public @interface Type {}
   }
 
-
   /**
    * Contract against the TMDB Image API
    * see https://www.themoviedb.org/documentation/api
