@@ -96,6 +96,7 @@ public class DetailActivity extends AppCompatActivity {
   private boolean mFavStatus;
   private Context mContext;
 
+
   // RecyclerView for Related Videos
   private RecyclerView mRelatedVideosRv;
   private RelatedVideosAdapter mRelatedVideosAdapter;
