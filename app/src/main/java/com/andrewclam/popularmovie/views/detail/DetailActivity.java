@@ -75,7 +75,7 @@ import static com.andrewclam.popularmovie.data.db.AppDbContract.buildMovieUriWit
  * DetailActivity is used to show user each movie entry in detail when a thumbnail is clicked in
  * MainActivity, detail includes the title, poster, rating and overview etc.
  */
-
+// TODO refactor detail activity
 public class DetailActivity extends AppCompatActivity {
   // Log Tag
   private static final String TAG = DetailActivity.class.getSimpleName();
