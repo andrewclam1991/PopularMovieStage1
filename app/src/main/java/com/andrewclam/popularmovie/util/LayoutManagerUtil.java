@@ -20,18 +20,18 @@ import android.content.res.Configuration;
  */
 
 public final class LayoutManagerUtil {
-    public static int getSpanSize(Context context) {
-        // Set the desired thumbnail width (in dp)
-        final int THUMBNAIL_WIDTH_DP = 135;
+  public static int getSpanSize(Context context) {
+    // Set the desired thumbnail width (in dp)
+    final int THUMBNAIL_WIDTH_DP = 135;
 
-        // Get the current screen's width
-        Configuration config = context.getResources().getConfiguration();
-        int currentWidth = config.screenWidthDp;
+    // Get the current screen's width
+    Configuration config = context.getResources().getConfiguration();
+    int currentWidth = config.screenWidthDp;
 
-        // Log width
-        // Log.i("LayoutManagerUtil: ", "Device's currentWidth is: " + currentWidth);
+    // Log width
+    // Log.i("LayoutManagerUtil: ", "Device's currentWidth is: " + currentWidth);
 
-        // Divide the currentWidth by the thumbnail dp width, to get an int number of movie entry that would fit;
-        return currentWidth / THUMBNAIL_WIDTH_DP;
-    }
+    // Divide the currentWidth by the thumbnail dp width, to get an int number of movie entry that would fit;
+    return currentWidth / THUMBNAIL_WIDTH_DP;
+  }
 }

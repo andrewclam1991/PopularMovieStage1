@@ -16,11 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
+@Singleton
 class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHolderPresenter {
 
   @NonNull
@@ -36,7 +38,7 @@ class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHold
   private MainContract.View mView;
 
   @NonNull
-  private final List<Movie> mMovies;
+  private List<Movie> mMovies;
 
   @Inject
   MainPresenter(@NonNull DiscoverMoviesApiService movieRepository,
@@ -78,20 +80,14 @@ class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHold
   }
 
   private void handleOnNext(@NonNull List<Movie> movies) {
-    // refresh in-memory list
-    mMovies.clear();
-    if (!movies.isEmpty()){
-      // has new content
-      mMovies.addAll(movies);
-    }
-
+    mMovies = movies;
     if (mView != null && mView.isActive()) {
       mView.onDataSetChanged();
     }
   }
 
   private void handleOnError(@NonNull Throwable throwable){
-    Log.e("MainPresenter", throwable.getLocalizedMessage());
+    Log.e("PopularMovies", throwable.getLocalizedMessage());
     if (mView != null && mView.isActive()){
       mView.showLoadingMoviesError();
     }
@@ -163,7 +159,8 @@ class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHold
     }
     Movie movie = mMovies.get(position);
     String posterPath = movie.getPosterPath();
-    String posterUrl = TMDBApiServiceContract.TMDBImageContract.getMoviePosterImageUri(posterPath).toString();
+    String posterUrl = TMDBApiServiceContract.TMDBImageContract
+        .getMoviePosterImageUri(posterPath).toString();
     holder.loadMoviePoster(posterUrl);
   }
 
@@ -175,8 +172,10 @@ class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHold
 
     Movie movie = mMovies.get(position);
     String id = movie.getUid();
-    // TODO launch detail activity with the id
-    mView.showDetailUi(id,MainActivity.class);
+
+    if (mView != null && mView.isActive()) {
+      mView.showDetailUi(id, MainActivity.class);
+    }
   }
 
   @Override

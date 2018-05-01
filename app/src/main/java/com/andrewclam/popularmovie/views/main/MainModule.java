@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 import com.andrewclam.popularmovie.di.annotations.ActivityScoped;
 import com.andrewclam.popularmovie.di.annotations.FragmentScoped;
 
+import javax.inject.Singleton;
+
 import dagger.Binds;
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;

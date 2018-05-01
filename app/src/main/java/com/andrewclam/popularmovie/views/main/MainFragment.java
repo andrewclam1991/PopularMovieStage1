@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -156,6 +157,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
 
   @Override
   public void onDataSetChanged() {
+    Log.d("PopularMovies","onDataSetChanged() called");
     if (mRvAdapter != null) {
       mRvAdapter.notifyDataSetChanged();
     }
