@@ -10,6 +10,7 @@ import com.andrewclam.popularmovie.data.model.Entity;
 import com.andrewclam.popularmovie.data.model.ApiResponse;
 import com.andrewclam.popularmovie.di.annotations.ApiKey;
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 
 import java.util.List;
 import java.util.Map;
@@ -29,10 +30,6 @@ public abstract class ApiServiceDecorator<E extends Entity> implements DataSourc
 
   @NonNull
   private final DataSource<E> mRepository;
-
-  @Inject
-  @ApiKey
-  String mApiKey;
 
   @Nullable
   private Map<String, String> mOptions;
@@ -98,32 +95,37 @@ public abstract class ApiServiceDecorator<E extends Entity> implements DataSourc
    * @return an observable list of items
    */
   private Flowable<List<E>> getItemsFromServiceApi() {
-    return Flowable.create(emitter -> provideApiServiceCall(mApiKey, mOptions)
-        .enqueue(new Callback<ApiResponse<E>>() {
-          @Override
-          public void onResponse(@NonNull Call<ApiResponse<E>> call,
-                                 @NonNull Response<ApiResponse<E>> response) {
-            ApiResponse<E> apiResponse = response.body();
-            if (apiResponse == null){
-              emitter.onError(new NetworkErrorException("Response body returns empty"));
-            }else {
-              List<E> items = apiResponse.getResults();
-              emitter.onNext(items);
-              emitter.onComplete();
-            }
-          }
 
-          @Override
-          public void onFailure(@NonNull Call<ApiResponse<E>> call, @NonNull Throwable t) {
-            emitter.onError(t);
-          }
-        }), BackpressureStrategy.BUFFER);
+    return Flowable.create(emitter -> {
+      provideApiServiceCall(mOptions)
+          .enqueue(new Callback<ApiResponse<E>>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse<E>> call,
+                                   @NonNull Response<ApiResponse<E>> response) {
+              String logmsg = response.raw().toString();
+
+              ApiResponse<E> apiResponse = response.body();
+              if (apiResponse == null) {
+                emitter.onError(new NetworkErrorException("Response body returns empty, call: " + logmsg));
+              } else {
+                List<E> items = apiResponse.getResults();
+                emitter.onNext(items);
+                emitter.onComplete();
+              }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse<E>> call, @NonNull Throwable t) {
+              emitter.onError(t);
+            }
+          });
+
+    }, BackpressureStrategy.BUFFER);
 
   }
 
   @NonNull
-  public abstract Call<ApiResponse<E>> provideApiServiceCall(@NonNull String apiKey,
-                                                             @Nullable Map<String, String> options);
+  public abstract Call<ApiResponse<E>> provideApiServiceCall(@Nullable Map<String, String> options);
 
   // Unmodified behaviors
   @Override

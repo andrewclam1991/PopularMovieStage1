@@ -2,13 +2,18 @@ package com.andrewclam.popularmovie.data.source.api;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.andrewclam.popularmovie.data.DataSource;
 import com.andrewclam.popularmovie.data.model.Movie;
 import com.andrewclam.popularmovie.data.model.ApiResponse;
+import com.andrewclam.popularmovie.di.annotations.ApiKey;
+import com.google.common.base.Strings;
 
 import java.util.List;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -28,14 +33,21 @@ import static com.andrewclam.popularmovie.data.source.api.TMDBApiServiceContract
  */
 public class DiscoverMoviesApiService extends ApiServiceDecorator<Movie> {
 
+  @Inject
+  @ApiKey
+  String mApiKey;
+
   public DiscoverMoviesApiService(@NonNull DataSource<Movie> repository) {
     super(repository);
   }
 
   @NonNull
   @Override
-  public final Call<ApiResponse<Movie>> provideApiServiceCall(@NonNull String apiKey,
-                                                              @Nullable Map<String, String> options) {
+  public final Call<ApiResponse<Movie>> provideApiServiceCall(@Nullable Map<String, String> options) {
+    if (Strings.isNullOrEmpty(mApiKey)){
+      throw new IllegalArgumentException("mApiKey can't be null or empty");
+    }
+
     // Create an service instance of the api service using retrofit
     Retrofit retrofit = new Retrofit.Builder()
         .baseUrl(BASE_TMDB_REQUEST_URL+"/")
@@ -45,9 +57,9 @@ public class DiscoverMoviesApiService extends ApiServiceDecorator<Movie> {
     DiscoverMoviesService service = retrofit.create(DiscoverMoviesService.class);
 
     if (options != null){
-      return service.getItems(apiKey, options);
+      return service.getItems(mApiKey, options);
     }else{
-      return service.getItems(apiKey);
+      return service.getItems(mApiKey);
     }
   }
 
@@ -65,12 +77,12 @@ public class DiscoverMoviesApiService extends ApiServiceDecorator<Movie> {
      */
     @GET(PATH_DISCOVER + "/" + PATH_MOVIE)
     @NonNull
-    Call<ApiResponse<Movie>> getItems(@Query(QUERY_API_KEY) String apiKey,
-                               @QueryMap Map<String, String> options);
+    Call<ApiResponse<Movie>> getItems(@Query(QUERY_API_KEY) @NonNull String apiKey,
+                                      @QueryMap @NonNull Map<String, String> options);
 
 
     @GET(PATH_DISCOVER + "/" + PATH_MOVIE)
-    Call<ApiResponse<Movie>> getItems(@Query(QUERY_API_KEY) String apiKey);
+    Call<ApiResponse<Movie>> getItems(@Query(QUERY_API_KEY) @NonNull String apiKey);
   }
 
 }

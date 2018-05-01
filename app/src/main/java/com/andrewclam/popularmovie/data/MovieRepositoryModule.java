@@ -18,6 +18,7 @@ import javax.inject.Singleton;
 
 import dagger.Binds;
 import dagger.Module;
+import dagger.Provides;
 
 /**
  * This is used by Dagger to inject the required arguments into the {@link Repository<Movie>}.
@@ -38,6 +39,7 @@ public abstract class MovieRepositoryModule {
   abstract DataSource<Movie> providesRemoteDataSource(@NonNull MoviesLocalDataSource dataSource);
 
   @NonNull
+  @Provides
   @ApiKey
   static String provideApiKey(@NonNull Context context) {
     return context.getString(R.string.tmdb_api_key);
