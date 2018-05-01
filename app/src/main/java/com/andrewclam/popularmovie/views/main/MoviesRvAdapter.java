@@ -14,6 +14,13 @@ import com.squareup.picasso.Picasso;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+/**
+ * Concrete implementation of a {@link RecyclerView.Adapter<RecyclerView.ViewHolder>}. Within the
+ * context of MVP architecture pattern, this class is implemented as a "dumb" View class
+ * where it delegates actual data binding responsibility of each {@link MainContract.ItemViewHolder}
+ * to its owning {@link MainContract.ItemViewHolderPresenter<>}. This class only holds reference
+ * to framework View components, and contains no data.
+ */
 class MoviesRvAdapter extends RecyclerView.Adapter<MoviesRvAdapter.MovieItemViewHolder> {
 
   @NonNull
@@ -52,8 +59,13 @@ class MoviesRvAdapter extends RecyclerView.Adapter<MoviesRvAdapter.MovieItemView
   }
 
   /**
-   * RecyclerView's individual item view holder, responsible for showing
-   * data into views.
+   * Concrete implementation of a {@link RecyclerView.ViewHolder}, responsible for
+   * setting up View fields and handling data setting methods calls defined in the
+   * {@link MainContract.ItemViewHolder}.
+   *
+   * Note: Within a MVP pattern, this implementation of a {@link MainContract.ItemViewHolder}
+   * is treated as a "dumb" View class where it handles View responsibilities lazily, and as
+   * instructed by its Presenter class {@link MainContract.ItemViewHolderPresenter<>}.
    */
   class MovieItemViewHolder extends RecyclerView.ViewHolder implements MainContract.ItemViewHolder{
 

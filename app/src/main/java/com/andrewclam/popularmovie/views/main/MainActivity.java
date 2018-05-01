@@ -30,8 +30,8 @@ import dagger.Lazy;
 import dagger.android.support.DaggerAppCompatActivity;
 
 /**
- * Entry point of the PopularMovie application, responsible for showing a user a list of
- * current popular movies from TMDB.
+ * Entry point of the PopularMovie application, responsible hosting the {@link MainFragment}
+ * for showing a user a list of current popular movies from TMDB.
  */
 public class MainActivity extends DaggerAppCompatActivity{
 

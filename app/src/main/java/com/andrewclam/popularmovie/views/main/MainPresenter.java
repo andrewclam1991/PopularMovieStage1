@@ -22,7 +22,10 @@ import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-@Singleton
+/**
+ * Implementation of a {@link MainContract.Presenter} responsible for
+ * interfacing {@link MainContract.View} with the underlying Model layer
+ */
 class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHolderPresenter {
 
   @NonNull
@@ -41,7 +44,7 @@ class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHold
   private List<Movie> mMovies;
 
   @Inject
-  MainPresenter(@NonNull DiscoverMoviesApiService movieRepository,
+  MainPresenter(@NonNull ApiServiceDecorator<Movie> movieRepository,
                 @NonNull BaseSchedulerProvider schedulerProvider) {
     mMovieRepository = movieRepository;
     mSchedulerProvider = schedulerProvider;
@@ -174,7 +177,7 @@ class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHold
     String id = movie.getUid();
 
     if (mView != null && mView.isActive()) {
-      mView.showDetailUi(id, MainActivity.class);
+      mView.showDetailUi(id, DetailActivity.class);
     }
   }
 

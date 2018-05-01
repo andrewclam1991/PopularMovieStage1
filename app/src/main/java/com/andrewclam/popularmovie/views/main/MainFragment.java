@@ -28,7 +28,13 @@ import dagger.android.support.DaggerAppCompatActivity;
 import dagger.android.support.DaggerFragment;
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link Fragment} and a {@link MainContract.View} implementation responsible for
+ * handling lifecycle callbacks and delegating user interaction logic to its
+ * {@link MainContract.Presenter}. This class holds only references to View classes and an
+ * instance of {@link MainContract.Presenter}.
+ *
+ * Note: {@link MainContract.Presenter} is injected and with its lifecycle managed by Dagger
+ * as defined in the {@link MainModule}
  */
 @ActivityScoped
 public class MainFragment extends DaggerFragment implements MainContract.View {
@@ -151,8 +157,8 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
 
   @Override
   public void showLoadingMoviesError() {
-    Toast.makeText(getContext(), getString(R.string.error_msg_unable_to_fetch), Toast.LENGTH_LONG)
-        .show();
+    Toast.makeText(getContext(), getString(R.string.error_msg_unable_to_fetch),
+        Toast.LENGTH_LONG).show();
   }
 
   @Override

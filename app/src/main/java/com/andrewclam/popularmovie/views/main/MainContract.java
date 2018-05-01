@@ -159,7 +159,6 @@ interface MainContract {
      * @return the current count of items
      */
     int onAdapterRequestItemCount();
-
   }
 
 }

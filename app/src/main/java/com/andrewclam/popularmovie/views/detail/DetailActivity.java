@@ -66,6 +66,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
+import dagger.android.support.DaggerAppCompatActivity;
+
 import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.COLUMN_FAVORITE;
 import static com.andrewclam.popularmovie.data.db.AppDbContract.buildMovieUriWithId;
 
@@ -76,7 +78,7 @@ import static com.andrewclam.popularmovie.data.db.AppDbContract.buildMovieUriWit
  * MainActivity, detail includes the title, poster, rating and overview etc.
  */
 // TODO refactor detail activity
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends DaggerAppCompatActivity {
   // Log Tag
   private static final String TAG = DetailActivity.class.getSimpleName();
 
@@ -170,7 +172,6 @@ public class DetailActivity extends AppCompatActivity {
 
   @Override
   public void onSaveInstanceState(Bundle savedInstanceState) {
-
     // Always call the superclass so it can save the view hierarchy state
     super.onSaveInstanceState(savedInstanceState);
   }
@@ -199,7 +200,8 @@ public class DetailActivity extends AppCompatActivity {
           shareTrailer(title, mShareTrailerUrl.toString());
         } else {
           // No trailer to share
-          Snackbar.make(rootScrollView, getString(R.string.error_no_trailer_to_share), Snackbar.LENGTH_SHORT).show();
+          Snackbar.make(rootScrollView, getString(R.string.error_no_trailer_to_share),
+              Snackbar.LENGTH_SHORT).show();
         }
         return true;
       default:
