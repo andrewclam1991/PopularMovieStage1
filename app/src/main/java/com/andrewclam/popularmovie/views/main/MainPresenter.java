@@ -39,9 +39,9 @@ class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHold
   private final List<Movie> mMovies;
 
   @Inject
-  MainPresenter(@NonNull Repository<Movie> movieRepository,
+  MainPresenter(@NonNull DiscoverMoviesApiService movieRepository,
                 @NonNull BaseSchedulerProvider schedulerProvider) {
-    mMovieRepository = new DiscoverMoviesApiService(movieRepository);
+    mMovieRepository = movieRepository;
     mSchedulerProvider = schedulerProvider;
     mCompositeDisposable = new CompositeDisposable();
     mMovies = new ArrayList<>(0);

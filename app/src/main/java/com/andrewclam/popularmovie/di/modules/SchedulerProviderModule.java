@@ -10,8 +10,8 @@ import dagger.Provides;
 @Module
 abstract public class SchedulerProviderModule {
 
-    @Provides
-    static BaseSchedulerProvider provideSchedulerProvider() {
-        return SchedulerProvider.getInstance();
-    }
+  @Provides
+  static BaseSchedulerProvider provideSchedulerProvider() {
+    return SchedulerProvider.getInstance();
+  }
 }

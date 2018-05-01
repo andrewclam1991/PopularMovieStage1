@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.andrewclam.popularmovie.data.DataSource;
+import com.andrewclam.popularmovie.data.Repository;
 import com.andrewclam.popularmovie.data.model.Movie;
 import com.andrewclam.popularmovie.data.model.ApiResponse;
 import com.andrewclam.popularmovie.di.annotations.ApiKey;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -31,14 +33,16 @@ import static com.andrewclam.popularmovie.data.source.api.TMDBApiServiceContract
  * Concrete implementation of a {@link ApiServiceDecorator <>} that is responsible
  * for providing the implementation to a list of {@link Movie} from the service api
  */
+@Singleton
 public class DiscoverMoviesApiService extends ApiServiceDecorator<Movie> {
 
-  @Inject
-  @ApiKey
-  String mApiKey;
+  private final String mApiKey;
 
-  public DiscoverMoviesApiService(@NonNull DataSource<Movie> repository) {
+  @Inject
+  public DiscoverMoviesApiService(@NonNull Repository<Movie> repository,
+                                  @NonNull @ApiKey String apiKey) {
     super(repository);
+    mApiKey = apiKey;
   }
 
   @NonNull

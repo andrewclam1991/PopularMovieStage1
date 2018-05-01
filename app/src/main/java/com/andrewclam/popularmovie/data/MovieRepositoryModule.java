@@ -39,10 +39,14 @@ public abstract class MovieRepositoryModule {
   abstract DataSource<Movie> providesRemoteDataSource(@NonNull MoviesLocalDataSource dataSource);
 
   @NonNull
+  @Singleton
+  @Binds
+  abstract ApiServiceDecorator<Movie> provideWrappedRepository(@NonNull DiscoverMoviesApiService apiService);
+
   @Provides
+  @NonNull
   @ApiKey
   static String provideApiKey(@NonNull Context context) {
     return context.getString(R.string.tmdb_api_key);
   }
-
 }

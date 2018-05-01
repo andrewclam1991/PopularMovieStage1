@@ -51,7 +51,7 @@ public final class TMDBApiServiceContract {
     // Paths
     public static final class Paths{
       static final String PATH_DISCOVER = "discover";
-      static final String PATH_MOVIE = "movies";
+      static final String PATH_MOVIE = "movie";
       public static final String PATH_VIDEO = "videos";
       public static final String PATH_REVIEWS = "reviews";
     }
