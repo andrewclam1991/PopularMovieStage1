@@ -65,6 +65,7 @@ public class Movie extends Entity{
   }
 
   public String getPosterPath() {
+    posterPath = posterPath.replace("/","");
     return posterPath;
   }
 
@@ -80,7 +81,7 @@ public class Movie extends Entity{
    * @param posterPath the fully qualified path to the poster, including the file extension
    */
   public void setPosterPath(String posterPath) {
-    this.posterPath = posterPath.replace("/","");
+    this.posterPath = posterPath;
   }
 
   public boolean isAdult() {

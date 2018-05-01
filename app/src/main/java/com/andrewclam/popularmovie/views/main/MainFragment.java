@@ -157,7 +157,6 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
 
   @Override
   public void onDataSetChanged() {
-    Log.d("PopularMovies","onDataSetChanged() called");
     if (mRvAdapter != null) {
       mRvAdapter.notifyDataSetChanged();
     }
