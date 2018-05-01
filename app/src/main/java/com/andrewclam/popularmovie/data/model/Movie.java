@@ -1,37 +1,57 @@
-/*
- * Copyright <2017> <ANDREW LAM>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
 
 package com.andrewclam.popularmovie.data.model;
 
-import org.parceler.Parcel;
+import com.google.gson.annotations.SerializedName;
+
 
 /**
  * Model class use to store movie metadata.
  */
-@Parcel(Parcel.Serialization.BEAN)
 public class Movie extends Entity{
 
-  private long movieId;
-  private String title;
-  private String releaseDate;
+  @SerializedName("poster_path")
   private String posterPath;
-  private double voteAverage;
-  private long voteCount;
-  private double popularity;
+
+  @SerializedName("adult")
+  private boolean adult;
+
+  @SerializedName("overview")
   private String overview;
-  private boolean setFavorite;
+
+  @SerializedName("release_date")
+  private String releaseDate;
+
+  @SerializedName("id")
+  private long movieId;
+
+  @SerializedName("original_title")
+  private String originalTitle;
+
+  @SerializedName("original_language")
+  private String originalLanguage;
+
+  @SerializedName("title")
+  private String title;
+
+  @SerializedName("backdrop_path")
+  private String backdropPath;
+
+  @SerializedName("popularity")
+  private double popularity;
+
+  @SerializedName("vote_count")
+  private long voteCount;
+
+  @SerializedName("video")
+  private boolean video;
+
+  @SerializedName("vote_average")
+  private double voteAverage;
+
+  private boolean isFavorite;
 
   /* Public No-Arg constructor */
-  public Movie() {
-
-  }
+  public Movie() {}
 
   public long getMovieId() {
     return movieId;
@@ -42,14 +62,6 @@ public class Movie extends Entity{
     this.movieId = id;
   }
 
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
   public String getPosterPath() {
     return posterPath;
   }
@@ -58,20 +70,12 @@ public class Movie extends Entity{
     this.posterPath = posterPath;
   }
 
-  public double getVoteAverage() {
-    return voteAverage;
+  public boolean isAdult() {
+    return adult;
   }
 
-  public void setVoteAverage(double voteAverage) {
-    this.voteAverage = voteAverage;
-  }
-
-  public long getVoteCount() {
-    return voteCount;
-  }
-
-  public void setVoteCount(long voteCount) {
-    this.voteCount = voteCount;
+  public void setAdult(boolean adult) {
+    this.adult = adult;
   }
 
   public String getOverview() {
@@ -90,6 +94,38 @@ public class Movie extends Entity{
     this.releaseDate = releaseDate;
   }
 
+  public String getOriginalTitle() {
+    return originalTitle;
+  }
+
+  public void setOriginalTitle(String originalTitle) {
+    this.originalTitle = originalTitle;
+  }
+
+  public String getOriginalLanguage() {
+    return originalLanguage;
+  }
+
+  public void setOriginalLanguage(String originalLanguage) {
+    this.originalLanguage = originalLanguage;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public String getBackdropPath() {
+    return backdropPath;
+  }
+
+  public void setBackdropPath(String backdropPath) {
+    this.backdropPath = backdropPath;
+  }
+
   public double getPopularity() {
     return popularity;
   }
@@ -98,12 +134,36 @@ public class Movie extends Entity{
     this.popularity = popularity;
   }
 
-  public boolean isSetFavorite() {
-    return setFavorite;
+  public long getVoteCount() {
+    return voteCount;
   }
 
-  public void setFavorite(boolean setFavorite) {
-    this.setFavorite = setFavorite;
+  public void setVoteCount(long voteCount) {
+    this.voteCount = voteCount;
+  }
+
+  public boolean isVideo() {
+    return video;
+  }
+
+  public void setVideo(boolean video) {
+    this.video = video;
+  }
+
+  public double getVoteAverage() {
+    return voteAverage;
+  }
+
+  public void setVoteAverage(double voteAverage) {
+    this.voteAverage = voteAverage;
+  }
+
+  public boolean isFavorite() {
+    return isFavorite;
+  }
+
+  public void setFavorite(boolean favorite) {
+    isFavorite = favorite;
   }
 }
 

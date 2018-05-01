@@ -46,7 +46,7 @@ public class MoviesLocalDataSource extends LocalDataSource<Movie> {
     values.put(AppDbContract.MovieEntry.COLUMN_VOTE_COUNT, item.getVoteCount());
     values.put(AppDbContract.MovieEntry.COLUMN_POPULARITY, item.getPopularity());
     values.put(AppDbContract.MovieEntry.COLUMN_OVERVIEW, item.getOverview());
-    values.put(AppDbContract.MovieEntry.COLUMN_FAVORITE, item.isSetFavorite()?
+    values.put(AppDbContract.MovieEntry.COLUMN_FAVORITE, item.isFavorite()?
         ARG_MOVIE_FAVORITE_TRUE : ARG_MOVIE_FAVORITE_FALSE);
     values.put(AppDbContract.MovieEntry.COLUMN_NAME_DELETE_FLAG, item.isSetDelete() ? 1 : 0);
     return values;
@@ -63,7 +63,7 @@ public class MoviesLocalDataSource extends LocalDataSource<Movie> {
     long voteCount = c.getInt(c.getColumnIndexOrThrow(AppDbContract.MovieEntry.COLUMN_VOTE_COUNT));
     double popularity = c.getDouble(c.getColumnIndexOrThrow(AppDbContract.MovieEntry.COLUMN_POPULARITY));
     String overview = c.getString(c.getColumnIndexOrThrow(AppDbContract.MovieEntry.COLUMN_OVERVIEW));
-    boolean setFavorite = c.getInt(c.getColumnIndexOrThrow(AppDbContract.MovieEntry.COLUMN_FAVORITE))
+    boolean isFavorite = c.getInt(c.getColumnIndexOrThrow(AppDbContract.MovieEntry.COLUMN_FAVORITE))
         == ARG_MOVIE_FAVORITE_TRUE;
     boolean setDelete = c.getInt(c.getColumnIndexOrThrow(AppDbContract.MovieEntry.COLUMN_NAME_DELETE_FLAG)) == 1;
 
@@ -76,7 +76,7 @@ public class MoviesLocalDataSource extends LocalDataSource<Movie> {
     item.setVoteCount(voteCount);
     item.setPopularity(popularity);
     item.setOverview(overview);
-    item.setFavorite(setFavorite);
+    item.setFavorite(isFavorite);
     item.setDelete(setDelete);
     return item;
   }

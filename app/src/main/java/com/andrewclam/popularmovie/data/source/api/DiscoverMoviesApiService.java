@@ -5,12 +5,10 @@ import android.support.annotation.Nullable;
 
 import com.andrewclam.popularmovie.data.DataSource;
 import com.andrewclam.popularmovie.data.model.Movie;
+import com.andrewclam.popularmovie.data.model.ApiResponse;
 
 import java.util.List;
 import java.util.Map;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -36,17 +34,21 @@ public class DiscoverMoviesApiService extends ApiServiceDecorator<Movie> {
 
   @NonNull
   @Override
-  public final Call<List<Movie>> provideApiServiceCall(@NonNull String apiKey,
-                                                 @Nullable Map<String, String> options) {
+  public final Call<ApiResponse<Movie>> provideApiServiceCall(@NonNull String apiKey,
+                                                              @Nullable Map<String, String> options) {
     // Create an service instance of the api service using retrofit
     Retrofit retrofit = new Retrofit.Builder()
-        .baseUrl(BASE_TMDB_REQUEST_URL)
+        .baseUrl(BASE_TMDB_REQUEST_URL+"/")
         .addConverterFactory(GsonConverterFactory.create())
         .build();
 
     DiscoverMoviesService service = retrofit.create(DiscoverMoviesService.class);
 
-    return service.getItems(apiKey, options);
+    if (options != null){
+      return service.getItems(apiKey, options);
+    }else{
+      return service.getItems(apiKey);
+    }
   }
 
   /**
@@ -55,14 +57,6 @@ public class DiscoverMoviesApiService extends ApiServiceDecorator<Movie> {
    * https://api.themoviedb.org/3/discover/movie?api_key=<<YOUR_API_KEY>>&sort_by=popularity.desc
    */
   interface DiscoverMoviesService {
-    /**
-     * Gets a default list of popular {@link Movie}s
-     * @param apiKey TMDB developer api key
-     * @return list of {@link Movie}s
-     */
-    @GET(PATH_DISCOVER + "/" + PATH_MOVIE)
-    @NonNull
-    Call<List<Movie>> getItems(@Query(QUERY_API_KEY) String apiKey);
 
     /**
      * Gets a list of {@link Movie}s base on the supplied query parameters and their arguments.
@@ -71,8 +65,12 @@ public class DiscoverMoviesApiService extends ApiServiceDecorator<Movie> {
      */
     @GET(PATH_DISCOVER + "/" + PATH_MOVIE)
     @NonNull
-    Call<List<Movie>> getItems(@Query(QUERY_API_KEY) String apiKey,
+    Call<ApiResponse<Movie>> getItems(@Query(QUERY_API_KEY) String apiKey,
                                @QueryMap Map<String, String> options);
+
+
+    @GET(PATH_DISCOVER + "/" + PATH_MOVIE)
+    Call<ApiResponse<Movie>> getItems(@Query(QUERY_API_KEY) String apiKey);
   }
 
 }
