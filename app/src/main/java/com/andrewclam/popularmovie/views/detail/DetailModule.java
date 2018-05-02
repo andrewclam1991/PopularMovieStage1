@@ -1,4 +1,4 @@
-package com.andrewclam.popularmovie.views.main;
+package com.andrewclam.popularmovie.views.detail;
 
 
 import android.support.annotation.NonNull;
@@ -12,23 +12,17 @@ import dagger.android.ContributesAndroidInjector;
 
 /**
  * This is a Dagger module. We use this to pass in the View dependency to the
- * {@link MainPresenter}.
+ * {@link DetailPresenter}.
  */
 @Module
-public abstract class MainModule {
+public abstract class DetailModule {
   @NonNull
   @ActivityScoped
   @Binds
-  abstract MainContract.Presenter providePresenter(@NonNull MainPresenter presenter);
-
-  @NonNull
-  @ActivityScoped
-  @Binds
-  abstract MainContract.ItemViewHolderPresenter<MainContract.ItemViewHolder> provideItemViewHolderPresenter
-      (@NonNull MainPresenter presenter);
+  abstract DetailContract.Presenter providePresenter(@NonNull DetailPresenter presenter);
 
   @NonNull
   @FragmentScoped
   @ContributesAndroidInjector
-  abstract MainFragment provideFragment();
+  abstract DetailFragment provideFragment();
 }

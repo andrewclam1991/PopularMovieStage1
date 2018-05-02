@@ -6,16 +6,12 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
 import com.andrewclam.popularmovie.data.DataSource;
-import com.andrewclam.popularmovie.data.model.Entity;
 import com.andrewclam.popularmovie.data.model.ApiResponse;
-import com.andrewclam.popularmovie.di.annotations.ApiKey;
+import com.andrewclam.popularmovie.data.model.Entity;
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 
 import java.util.List;
 import java.util.Map;
-
-import javax.inject.Inject;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Completable;
@@ -33,12 +29,7 @@ public abstract class ApiServiceDecorator<E extends Entity> implements DataSourc
 
   @Nullable
   private Map<String, String> mOptions;
-  /**
-   * Marks the cache as invalid, to force an update the next time data is requested. This variable
-   * has package local visibility so it can be accessed from tests.
-   * Note: default set flag to false, so at init (with mCachedItems empty),
-   * repository will always try local-first
-   */
+
   @VisibleForTesting
   boolean mCacheIsDirty = false;
 
@@ -106,7 +97,8 @@ public abstract class ApiServiceDecorator<E extends Entity> implements DataSourc
 
               ApiResponse<E> apiResponse = response.body();
               if (apiResponse == null) {
-                emitter.onError(new NetworkErrorException("Response body returns empty, call: " + logmsg));
+                emitter.onError(new NetworkErrorException(
+                    "Response body returns empty, call: " + logmsg));
               } else {
                 List<E> items = apiResponse.getResults();
                 emitter.onNext(items);
@@ -119,7 +111,6 @@ public abstract class ApiServiceDecorator<E extends Entity> implements DataSourc
               emitter.onError(t);
             }
           });
-
     }, BackpressureStrategy.BUFFER);
 
   }

@@ -18,6 +18,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import dagger.Lazy;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -42,6 +43,7 @@ class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHold
 
   @NonNull
   private List<Movie> mMovies;
+
 
   @Inject
   MainPresenter(@NonNull ApiServiceDecorator<Movie> movieRepository,

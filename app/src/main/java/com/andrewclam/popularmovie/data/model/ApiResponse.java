@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 // This class contains all fetched movies and extra information
-public class ApiResponse<E extends Entity>{
+public class ApiResponse<E extends Entity> {
   @SerializedName("page")
   private int page;
 
@@ -37,12 +37,15 @@ public class ApiResponse<E extends Entity>{
   public int getTotalResults() {
     return totalResults;
   }
+
   public void setTotalResults(int totalResults) {
     this.totalResults = totalResults;
   }
+
   public int getTotalPages() {
     return totalPages;
   }
+
   public void setTotalPages(int totalPages) {
     this.totalPages = totalPages;
   }

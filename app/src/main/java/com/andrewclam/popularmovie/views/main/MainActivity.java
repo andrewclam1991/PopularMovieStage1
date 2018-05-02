@@ -18,7 +18,6 @@
 package com.andrewclam.popularmovie.views.main;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 
 import com.andrewclam.popularmovie.R;
@@ -44,7 +43,6 @@ public class MainActivity extends DaggerAppCompatActivity{
     setContentView(R.layout.activity_main);
     Toolbar toolbar = findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
-
 
     MainFragment fragment = (MainFragment) getSupportFragmentManager()
         .findFragmentById(R.id.fragment_container);
