@@ -1,4 +1,4 @@
-package com.andrewclam.popularmovie.data.source.local;
+package com.andrewclam.popularmovie.data.source;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -17,22 +17,22 @@ import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.ARG_M
 import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.CONTENT_URI_MOVIES;
 
 /**
- * {@link MoviesLocalDataSource}
+ * {@link DataSourceLocalMovies}
  * <p>
  * This class is only responsible for providing the CONTENT_URI_MOVIES and
  * implementing the from() and mapToItem(), its super class take care of the rest of
- * CRUD methods details. {@link LocalDataSource<>}
+ * CRUD methods details. {@link DataSourceLocal <>}
  * <p>
  * from() object mapping to ContentValues for saving item to local storage
  * mapToItem() parsing from a Cursor object to an item for retrieving an item from local storage.
  */
 
 @Singleton
-public class MoviesLocalDataSource extends LocalDataSource<Movie> {
+class DataSourceLocalMovies extends DataSourceLocal<Movie> {
 
   @Inject
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  MoviesLocalDataSource() {}
+  DataSourceLocalMovies() {}
 
   @VisibleForTesting
   @NonNull
@@ -66,7 +66,6 @@ public class MoviesLocalDataSource extends LocalDataSource<Movie> {
     boolean isFavorite = c.getInt(c.getColumnIndexOrThrow(AppDbContract.MovieEntry.COLUMN_FAVORITE))
         == ARG_MOVIE_FAVORITE_TRUE;
     boolean setDelete = c.getInt(c.getColumnIndexOrThrow(AppDbContract.MovieEntry.COLUMN_NAME_DELETE_FLAG)) == 1;
-
 
     Movie item = new Movie();
     item.setMovieId(id);

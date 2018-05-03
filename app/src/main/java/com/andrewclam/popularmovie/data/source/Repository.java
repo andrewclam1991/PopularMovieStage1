@@ -1,12 +1,11 @@
-package com.andrewclam.popularmovie.data;
+package com.andrewclam.popularmovie.data.source;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
+import com.andrewclam.popularmovie.data.DataSource;
 import com.andrewclam.popularmovie.data.model.Entity;
-import com.andrewclam.popularmovie.di.annotations.Local;
-import com.andrewclam.popularmovie.di.annotations.Remote;
 import com.google.common.base.Optional;
 
 import java.util.LinkedHashMap;
@@ -38,7 +37,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * retrieval during usage.
  */
 @Singleton
-public class Repository<E extends Entity> implements DataSource<E> {
+class Repository<E extends Entity> implements DataSource<E> {
 
   @NonNull
   private final DataSource<E> mRemoteDataSource;
@@ -87,6 +86,7 @@ public class Repository<E extends Entity> implements DataSource<E> {
    * Gets properties from cache, local data source (SQLite) or remote data source, whichever is
    * available first.
    */
+  @NonNull
   @Override
   public Flowable<List<E>> getItems() {
     // Respond immediately with cache if available and not dirty
@@ -101,14 +101,14 @@ public class Repository<E extends Entity> implements DataSource<E> {
     // if remote empty, return no data.
     // if remote has data, add each item to local and cache, mark cache as clean return data.
 
-    Flowable<List<E>> remoteItems = getAndSaveRemoteItems();
+    Flowable<List<E>> remoteItems = saveRemoteItems(mRemoteDataSource.getItems());
 
     if (mCacheIsDirty) {
       // refresh local data with remote
       return remoteItems;
     } else {
       // query local and remote data sources, emit the first result
-      Flowable<List<E>> localItems = getAndCacheLocalItems();
+      Flowable<List<E>> localItems = cacheLocalItems(mLocalDataSource.getItems());
       return Flowable.concat(localItems, remoteItems)
           .filter(items -> !items.isEmpty())
           .firstOrError()
@@ -117,26 +117,43 @@ public class Repository<E extends Entity> implements DataSource<E> {
   }
 
   @NonNull
-  private Flowable<List<E>> getAndCacheLocalItems() {
-    return mLocalDataSource.getItems()
-        .flatMap(items -> Flowable.fromIterable(items)
-            .doOnNext(this::saveItemToCache)
-            .toList()
-            .toFlowable()
-        )
-        .takeWhile(items -> !items.isEmpty());// this completes the stream when the list becomes empty
+  @Override
+  public Flowable<List<E>> getItems(@NonNull Map<String, String> options) {
+    // Repository starts with clean cache (mCacheIsDirty = false);
+    // Queries local first
+    // if local empty, try remote,
+    // if local has data, add each item to cache, return data.
+    // if remote empty, return no data.
+    // if remote has data, add each item to local and cache, mark cache as clean return data.
+
+    Flowable<List<E>> localItems = cacheLocalItems(mLocalDataSource.getItems(options));
+    Flowable<List<E>> remoteItems = saveRemoteItems(mRemoteDataSource.getItems(options));
+
+    return Flowable.concat(localItems, remoteItems)
+        .filter(items -> !items.isEmpty())
+        .firstOrError()
+        .toFlowable();
   }
 
   @NonNull
-  private Flowable<List<E>> getAndSaveRemoteItems() {
-    return mRemoteDataSource.getItems()
-        .flatMap(items -> Flowable.fromIterable(items)
-            .doOnNext(item -> mLocalDataSource.add(item).andThen(saveItemToCache(item)))
-            .toList()
-            .toFlowable()
-        ).doOnComplete(() -> mCacheIsDirty = false);
+  private Flowable<List<E>> cacheLocalItems(@NonNull Flowable<List<E>> localItems) {
+    return localItems.flatMap(items -> Flowable.fromIterable(items)
+        .doOnNext(this::saveItemToCache)
+        .toList()
+        .toFlowable()
+    ).takeWhile(items -> !items.isEmpty());// this completes the stream when the list becomes empty
   }
 
+  @NonNull
+  private Flowable<List<E>> saveRemoteItems(@NonNull Flowable<List<E>> remoteItems) {
+    return remoteItems.flatMap(items -> Flowable.fromIterable(items)
+        .doOnNext(item -> mLocalDataSource.add(item).andThen(saveItemToCache(item)))
+        .toList()
+        .toFlowable()
+    ).doOnComplete(() -> mCacheIsDirty = false);
+  }
+
+  @NonNull
   @Override
   public Flowable<Optional<E>> getItem(@NonNull final String itemId) {
     checkNotNull(itemId);
@@ -169,7 +186,7 @@ public class Repository<E extends Entity> implements DataSource<E> {
             E item = itemOptional.get();
             return saveItemToCache(item)
                 .andThen(Flowable.just(itemOptional));
-          }else{
+          } else {
             return Flowable.just(Optional.absent());
           }
         });
@@ -184,18 +201,20 @@ public class Repository<E extends Entity> implements DataSource<E> {
             return mLocalDataSource.add(item)
                 .andThen(saveItemToCache(item))
                 .andThen(Flowable.just(itemOptional));
-          }else{
+          } else {
             return Flowable.just(Optional.absent());
           }
         });
   }
 
+  @NonNull
   @Override
   public Completable add(@NonNull E item) {
     mCachedItems.put(item.getUid(), checkNotNull(item));
     return mLocalDataSource.add(item).andThen(mRemoteDataSource.add(item));
   }
 
+  @NonNull
   @Override
   public Completable addAll(@NonNull List<E> items) {
     for (E item : items) {
@@ -204,12 +223,14 @@ public class Repository<E extends Entity> implements DataSource<E> {
     return mLocalDataSource.addAll(items).andThen(mRemoteDataSource.addAll(items));
   }
 
+  @NonNull
   @Override
   public Completable update(@NonNull E item) {
     mCachedItems.put(item.getUid(), item);
     return mLocalDataSource.update(item).andThen(mRemoteDataSource.update(item));
   }
 
+  @NonNull
   @Override
   public Completable remove(@NonNull String entityId) {
     if (!mCachedItems.isEmpty() && mCachedItems.containsKey(entityId)) {
@@ -218,6 +239,7 @@ public class Repository<E extends Entity> implements DataSource<E> {
     return mLocalDataSource.remove(entityId).andThen(mRemoteDataSource.remove(entityId));
   }
 
+  @NonNull
   @Override
   public Completable removeAll() {
     mCachedItems.clear();

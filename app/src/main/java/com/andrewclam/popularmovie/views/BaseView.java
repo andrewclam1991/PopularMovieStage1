@@ -1,4 +1,4 @@
-package com.andrewclam.popularmovie;
+package com.andrewclam.popularmovie.views;
 
 /**
  * Base interface to all View classes

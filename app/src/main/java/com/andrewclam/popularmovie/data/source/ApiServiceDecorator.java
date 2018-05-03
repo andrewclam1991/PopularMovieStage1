@@ -1,4 +1,4 @@
-package com.andrewclam.popularmovie.data.source.api;
+package com.andrewclam.popularmovie.data.source;
 
 import android.accounts.NetworkErrorException;
 import android.support.annotation.NonNull;
@@ -22,6 +22,7 @@ import retrofit2.Response;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+@Deprecated
 public abstract class ApiServiceDecorator<E extends Entity> implements DataSource<E> {
 
   @NonNull
@@ -54,7 +55,7 @@ public abstract class ApiServiceDecorator<E extends Entity> implements DataSourc
 
   /**
    * Functional interface for client to provide the optional query parameters (options)
-   * with a {@link Map<String,String>}, where the key is the query parameter and the value
+   * with a {@link Map<>}, where the key is the query parameter and the value
    * is the argument.
    */
   public interface OnRequestOptionsCallback {
@@ -63,6 +64,7 @@ public abstract class ApiServiceDecorator<E extends Entity> implements DataSourc
   }
 
   // Decorated behaviors
+  @NonNull
   @Override
   public final Flowable<List<E>> getItems() {
     // when cache is dirty, use "getItems(uri)" behavior
@@ -119,34 +121,45 @@ public abstract class ApiServiceDecorator<E extends Entity> implements DataSourc
   public abstract Call<ApiResponse<E>> provideApiServiceCall(@Nullable Map<String, String> options);
 
   // Unmodified behaviors
+  @NonNull
   @Override
   public final Flowable<Optional<E>> getItem(@NonNull String entityId) {
     return mRepository.getItem(entityId);
   }
 
+  @NonNull
   @Override
   public final Completable add(@NonNull E item) {
     return mRepository.add(item);
   }
 
+  @NonNull
   @Override
   public final Completable addAll(@NonNull List<E> items) {
     return mRepository.addAll(items);
   }
 
+  @NonNull
   @Override
   public final Completable update(@NonNull E item) {
     return mRepository.update(item);
   }
 
+  @NonNull
   @Override
   public final Completable remove(@NonNull String entityId) {
     return mRepository.remove(entityId);
   }
 
+  @NonNull
   @Override
   public final Completable removeAll() {
     return mRepository.removeAll();
   }
 
+  @NonNull
+  @Override
+  public Flowable<List<E>> getItems(@NonNull Map<String, String> options) {
+    return mRepository.getItems(options);
+  }
 }

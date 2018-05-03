@@ -1,4 +1,4 @@
-package com.andrewclam.popularmovie.data.source.local;
+package com.andrewclam.popularmovie.data.source;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -17,6 +17,7 @@ import com.squareup.sqlbrite3.BriteContentResolver;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -28,10 +29,10 @@ import io.reactivex.functions.Function;
 import static com.andrewclam.popularmovie.data.db.AppDbContract.PATH_UID;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public abstract class LocalDataSource<E extends Entity> implements DataSource<E> {
+abstract class DataSourceLocal<E extends Entity> implements DataSource<E> {
 
   // LOG TAG
-  private static final String LOG_TAG = LocalDataSource.class.getSimpleName();
+  private static final String LOG_TAG = DataSourceLocal.class.getSimpleName();
 
   @Override
   public void refresh() {
@@ -51,11 +52,19 @@ public abstract class LocalDataSource<E extends Entity> implements DataSource<E>
   private final Function<Cursor, E> mMapperFunction;
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  LocalDataSource() {
+  DataSourceLocal() {
     mContentUri = setContentUri();
     mMapperFunction = this::mapToItem;
   }
 
+  // TODO implement local data query base on options
+  @NonNull
+  @Override
+  public Flowable<List<E>> getItems(@NonNull Map<String, String> options) {
+    return getItems();
+  }
+
+  @NonNull
   @Override
   public Flowable<List<E>> getItems() {
     checkNotNull(mBriteContentResolver, "mBriteContentResolver cannot be null!");
@@ -69,6 +78,7 @@ public abstract class LocalDataSource<E extends Entity> implements DataSource<E>
         .toFlowable(BackpressureStrategy.BUFFER);
   }
 
+  @NonNull
   @Override
   public Flowable<Optional<E>> getItem(@NonNull String entityId) {
     checkNotNull(entityId, "item id can't be null for getDocumentUri()");
@@ -90,6 +100,7 @@ public abstract class LocalDataSource<E extends Entity> implements DataSource<E>
         .toFlowable(BackpressureStrategy.BUFFER);
   }
 
+  @NonNull
   @Override
   public Completable add(@NonNull E item) {
     return Completable.create(emitter -> {
@@ -97,33 +108,35 @@ public abstract class LocalDataSource<E extends Entity> implements DataSource<E>
       if (uri != null) {
         if (BuildConfig.DEBUG) Log.d(LOG_TAG, "Save item success.");
         emitter.onComplete();
-      }else{
+      } else {
         if (BuildConfig.DEBUG) Log.e(LOG_TAG, "Save item failure.");
         emitter.onError(new IOException());
       }
     });
   }
 
+  @NonNull
   @Override
   public Completable addAll(@NonNull List<E> items) {
     return Completable.create(emitter -> {
       List<ContentValues> cvList = new ArrayList<>();
-      for (E item : items){
+      for (E item : items) {
         ContentValues cv = from(item);
         cvList.add(cv);
       }
-      ContentValues[] cvArray = (ContentValues[])cvList.toArray();
-      int numInserted = mContentResolver.bulkInsert(mContentUri,cvArray);
-      if (numInserted > 0){
+      ContentValues[] cvArray = (ContentValues[]) cvList.toArray();
+      int numInserted = mContentResolver.bulkInsert(mContentUri, cvArray);
+      if (numInserted > 0) {
         if (BuildConfig.DEBUG) Log.d(LOG_TAG, "Bulk insert item success.");
         emitter.onComplete();
-      }else{
+      } else {
         if (BuildConfig.DEBUG) Log.d(LOG_TAG, "Bulk insert items failed.");
         emitter.onError(new IOException());
       }
     });
   }
 
+  @NonNull
   @Override
   public Completable update(@NonNull E item) {
     return Completable.create(emitter -> {
@@ -142,6 +155,7 @@ public abstract class LocalDataSource<E extends Entity> implements DataSource<E>
     });
   }
 
+  @NonNull
   @Override
   public Completable remove(@NonNull String entityId) {
     return Completable.create(emitter -> {
@@ -158,12 +172,13 @@ public abstract class LocalDataSource<E extends Entity> implements DataSource<E>
     });
   }
 
+  @NonNull
   @Override
   public Completable removeAll() {
     return Completable.create(emitter -> {
       int rowDeleted = mContentResolver.delete(mContentUri, null, null);
       if (rowDeleted > 0) {
-        if (BuildConfig.DEBUG) Log.d(LOG_TAG, "Delete all items success. deleted: "+rowDeleted);
+        if (BuildConfig.DEBUG) Log.d(LOG_TAG, "Delete all items success. deleted: " + rowDeleted);
         emitter.onComplete();
       } else {
         if (BuildConfig.DEBUG) Log.e(LOG_TAG, "Delete all items failure.");
@@ -175,6 +190,7 @@ public abstract class LocalDataSource<E extends Entity> implements DataSource<E>
   /**
    * abstract method that sub-class must implement to correctly map
    * the content values from an item
+   *
    * @param item item that is to be parsed into {@link ContentValues} for
    *             persistence
    */
@@ -196,6 +212,7 @@ public abstract class LocalDataSource<E extends Entity> implements DataSource<E>
   /**
    * abstract method that sub-class must implement to provide the
    * correct contentUri
+   *
    * @return sub-class supplied content uri
    */
   @VisibleForTesting

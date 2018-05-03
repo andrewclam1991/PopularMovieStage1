@@ -1,32 +1,20 @@
-package com.andrewclam.popularmovie.data.source.api;
+package com.andrewclam.popularmovie.data.source;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringDef;
 
-import com.andrewclam.popularmovie.data.model.Movie;
 import com.google.common.base.Strings;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.List;
-import java.util.Map;
-
-import retrofit2.Call;
-import retrofit2.http.GET;
-import retrofit2.http.Query;
-import retrofit2.http.QueryMap;
-
-import static com.andrewclam.popularmovie.data.source.api.TMDBApiServiceContract.TMDBContract.Paths.PATH_DISCOVER;
-import static com.andrewclam.popularmovie.data.source.api.TMDBApiServiceContract.TMDBContract.Paths.PATH_MOVIE;
-import static com.andrewclam.popularmovie.data.source.api.TMDBApiServiceContract.TMDBContract.QUERY_API_KEY;
 
 /**
  * Defines a set of constants against the supported TMDB APIs
  * - {@link TMDBContract} Defines the contract constants against the TMDB Movies API
  * - {@link TMDBImageContract} Defines the contract constants against the Image database of TMDB
  */
-public final class TMDBApiServiceContract {
+public final class ApiServiceContract {
 
   /**
    * Contract against the TMDB Movies API

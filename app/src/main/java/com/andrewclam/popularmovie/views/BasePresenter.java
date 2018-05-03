@@ -1,4 +1,4 @@
-package com.andrewclam.popularmovie;
+package com.andrewclam.popularmovie.views;
 
 import android.support.annotation.NonNull;
 

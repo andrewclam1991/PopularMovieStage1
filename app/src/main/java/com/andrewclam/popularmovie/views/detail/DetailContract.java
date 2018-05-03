@@ -1,7 +1,7 @@
 package com.andrewclam.popularmovie.views.detail;
 
-import com.andrewclam.popularmovie.BasePresenter;
-import com.andrewclam.popularmovie.BaseView;
+import com.andrewclam.popularmovie.views.BasePresenter;
+import com.andrewclam.popularmovie.views.BaseView;
 import com.andrewclam.popularmovie.data.model.Movie;
 
 /**

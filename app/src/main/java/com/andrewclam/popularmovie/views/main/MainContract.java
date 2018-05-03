@@ -1,11 +1,9 @@
 package com.andrewclam.popularmovie.views.main;
 
-import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
-import com.andrewclam.popularmovie.BasePresenter;
-import com.andrewclam.popularmovie.BaseView;
+import com.andrewclam.popularmovie.views.BasePresenter;
+import com.andrewclam.popularmovie.views.BaseView;
 import com.andrewclam.popularmovie.data.model.Entity;
 
 import dagger.android.support.DaggerAppCompatActivity;

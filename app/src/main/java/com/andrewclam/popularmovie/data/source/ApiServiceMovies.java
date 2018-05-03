@@ -1,17 +1,12 @@
-package com.andrewclam.popularmovie.data.source.api;
+package com.andrewclam.popularmovie.data.source;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
-import com.andrewclam.popularmovie.data.DataSource;
-import com.andrewclam.popularmovie.data.Repository;
-import com.andrewclam.popularmovie.data.model.Movie;
 import com.andrewclam.popularmovie.data.model.ApiResponse;
-import com.andrewclam.popularmovie.di.annotations.ApiKey;
+import com.andrewclam.popularmovie.data.model.Movie;
 import com.google.common.base.Strings;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -24,23 +19,24 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
 
-import static com.andrewclam.popularmovie.data.source.api.TMDBApiServiceContract.TMDBContract.BASE_TMDB_REQUEST_URL;
-import static com.andrewclam.popularmovie.data.source.api.TMDBApiServiceContract.TMDBContract.Paths.PATH_DISCOVER;
-import static com.andrewclam.popularmovie.data.source.api.TMDBApiServiceContract.TMDBContract.Paths.PATH_MOVIE;
-import static com.andrewclam.popularmovie.data.source.api.TMDBApiServiceContract.TMDBContract.QUERY_API_KEY;
+import static com.andrewclam.popularmovie.data.source.ApiServiceContract.TMDBContract.BASE_TMDB_REQUEST_URL;
+import static com.andrewclam.popularmovie.data.source.ApiServiceContract.TMDBContract.Paths.PATH_DISCOVER;
+import static com.andrewclam.popularmovie.data.source.ApiServiceContract.TMDBContract.Paths.PATH_MOVIE;
+import static com.andrewclam.popularmovie.data.source.ApiServiceContract.TMDBContract.QUERY_API_KEY;
 
 /**
  * Concrete implementation of a {@link ApiServiceDecorator <>} that is responsible
  * for providing the implementation to a list of {@link Movie} from the service api
  */
+@Deprecated
 @Singleton
-public class DiscoverMoviesApiService extends ApiServiceDecorator<Movie> {
+public class ApiServiceMovies extends ApiServiceDecorator<Movie> {
 
   private final String mApiKey;
 
   @Inject
-  public DiscoverMoviesApiService(@NonNull Repository<Movie> repository,
-                                  @NonNull @ApiKey String apiKey) {
+  public ApiServiceMovies(@NonNull Repository<Movie> repository,
+                          @NonNull @ApiKey String apiKey) {
     super(repository);
     mApiKey = apiKey;
   }
@@ -83,7 +79,6 @@ public class DiscoverMoviesApiService extends ApiServiceDecorator<Movie> {
     @NonNull
     Call<ApiResponse<Movie>> getItems(@Query(QUERY_API_KEY) @NonNull String apiKey,
                                       @QueryMap @NonNull Map<String, String> options);
-
 
     @GET(PATH_DISCOVER + "/" + PATH_MOVIE)
     Call<ApiResponse<Movie>> getItems(@Query(QUERY_API_KEY) @NonNull String apiKey);

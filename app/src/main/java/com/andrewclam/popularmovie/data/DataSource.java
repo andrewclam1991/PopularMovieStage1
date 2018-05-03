@@ -6,6 +6,7 @@ import com.andrewclam.popularmovie.data.model.Entity;
 import com.google.common.base.Optional;
 
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
@@ -25,13 +26,23 @@ public interface DataSource<E extends Entity> {
    * interface to get a collection of items of the type from the model layer
    * @return observable stream that returns a list of items
    */
+  @NonNull
   Flowable<List<E>> getItems();
+
+  /**
+   * interface to get a collection of items of the type from the model layer
+   * base on the supplied {@code options}
+   * @return observable stream that returns a list of items
+   */
+  @NonNull
+  Flowable<List<E>> getItems(@NonNull Map<String, String> options);
 
   /**
    * interface to get item data from the model layer
    * @param entityId unique id of the {@link Entity}
    * @return observable stream that returns a {@link Optional} item, may not exist
    */
+  @NonNull
   Flowable<Optional<E>> getItem(@NonNull String entityId);
 
   /**
@@ -39,6 +50,7 @@ public interface DataSource<E extends Entity> {
    * @param item the item data to be inserted
    * @return a completable that emits when the item was saved or in case of error.
    */
+  @NonNull
   Completable add(@NonNull E item);
 
   /**
@@ -46,6 +58,7 @@ public interface DataSource<E extends Entity> {
    * @param items the collection of items to be inserted
    * @return a completable that emits when all the items were saved or in case of error.
    */
+  @NonNull
   Completable addAll(@NonNull List<E> items);
 
   /**
@@ -53,6 +66,7 @@ public interface DataSource<E extends Entity> {
    * @param item the item data to be updated
    * @return a completable that emits when the item was updated or in case of error.
    */
+  @NonNull
   Completable update(@NonNull E item);
 
   /**
@@ -60,12 +74,14 @@ public interface DataSource<E extends Entity> {
    * @param entityId unique id of the {@link Entity} that is to be removed
    * @return a completable that emits when the item was removed or in case of error.
    */
+  @NonNull
   Completable remove(@NonNull String entityId);
 
   /**
    * Interface to remove all items of the type from the model layer
    * @return a completable that emits when all the items were removed or in case of error.
    */
+  @NonNull
   Completable removeAll();
 
 }

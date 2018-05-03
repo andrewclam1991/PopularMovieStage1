@@ -4,11 +4,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.andrewclam.popularmovie.data.Repository;
-import com.andrewclam.popularmovie.data.source.api.ApiServiceDecorator;
-import com.andrewclam.popularmovie.data.source.api.DiscoverMoviesApiService;
-import com.andrewclam.popularmovie.data.source.api.TMDBApiServiceContract;
 import com.andrewclam.popularmovie.data.model.Movie;
+import com.andrewclam.popularmovie.data.source.ApiServiceContract;
+import com.andrewclam.popularmovie.data.DataSource;
+import com.andrewclam.popularmovie.data.source.Repo;
 import com.andrewclam.popularmovie.util.schedulers.BaseSchedulerProvider;
 import com.andrewclam.popularmovie.views.detail.DetailActivity;
 
@@ -16,9 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
-import dagger.Lazy;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -30,7 +27,7 @@ import io.reactivex.disposables.Disposable;
 class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHolderPresenter {
 
   @NonNull
-  private final ApiServiceDecorator<Movie> mMovieRepository;
+  private final DataSource<Movie> mMovieRepository;
 
   @NonNull
   private final BaseSchedulerProvider mSchedulerProvider;
@@ -46,7 +43,7 @@ class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHold
 
 
   @Inject
-  MainPresenter(@NonNull ApiServiceDecorator<Movie> movieRepository,
+  MainPresenter(@NonNull @Repo DataSource<Movie> movieRepository,
                 @NonNull BaseSchedulerProvider schedulerProvider) {
     mMovieRepository = movieRepository;
     mSchedulerProvider = schedulerProvider;
@@ -70,7 +67,6 @@ class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHold
     mMovieRepository.refresh();
 
     Disposable disposable = mMovieRepository
-        .setQueryParams(()->null)
         .getItems()
         .flatMap(Flowable::fromIterable)
         .toList()
@@ -164,7 +160,7 @@ class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHold
     }
     Movie movie = mMovies.get(position);
     String posterPath = movie.getPosterPath();
-    String posterUrl = TMDBApiServiceContract.TMDBImageContract
+    String posterUrl = ApiServiceContract.TMDBImageContract
         .getMoviePosterImageUri(posterPath).toString();
     holder.loadMoviePoster(posterUrl);
   }
