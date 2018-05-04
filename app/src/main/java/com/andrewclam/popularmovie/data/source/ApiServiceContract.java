@@ -123,7 +123,7 @@ public final class ApiServiceContract {
      * @throws IllegalArgumentException when {@code posterPath} is not supplied
      */
     @NonNull
-    public static Uri getMoviePosterImageUri(@NonNull String posterPath)
+    public static String getMoviePosterImageUrl(@NonNull String posterPath)
         throws IllegalArgumentException {
       if (Strings.isNullOrEmpty(posterPath)) {
         throw new IllegalArgumentException("posterPath can't be empty or null");
@@ -135,7 +135,7 @@ public final class ApiServiceContract {
           .appendPath(PATH_IMAGE_SIZE_W500)
           .appendPath(posterPath);
 
-      return builder.build();
+      return builder.build().toString();
 
     }
 

@@ -58,8 +58,6 @@ import com.andrewclam.popularmovie.data.model.RelatedVideo;
 import com.andrewclam.popularmovie.util.NetworkUtil;
 import com.squareup.picasso.Picasso;
 
-import org.parceler.Parcels;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -122,7 +120,7 @@ public class DetailActivity extends DaggerAppCompatActivity {
 
     if (getIntent() != null && getIntent().hasExtra("1")) {
       // Unwrap the parcel to retrieve the entry object
-      final Movie entry = Parcels.unwrap(getIntent().getParcelableExtra("1"));
+      final Movie entry = new Movie();
 
       if (entry != null) {
         // Init context

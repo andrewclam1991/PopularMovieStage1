@@ -26,7 +26,7 @@ public abstract class RepositoryModuleMovies {
   @Singleton
   @Binds
   @Remote
-  abstract DataSource<Movie> providesRemoteDataSource(@NonNull DataSourceLocalMovies dataSource);
+  abstract DataSource<Movie> providesRemoteDataSource(@NonNull DataSourceRemoteMovies dataSource);
 
   @NonNull
   @Singleton

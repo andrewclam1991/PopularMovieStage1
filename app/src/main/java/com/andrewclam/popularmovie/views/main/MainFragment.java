@@ -77,16 +77,15 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
 
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    mItemsRv = view.findViewById(R.id.items_rv);
     // Init layout manager
     int spanSize = LayoutManagerUtil.getSpanSize(getContext());
     mLayoutManager = new GridLayoutManager(getContext(), spanSize);
-    mItemsRv = view.findViewById(R.id.items_rv);
-    mItemsRv.setAdapter(mRvAdapter);
     mItemsRv.setLayoutManager(mLayoutManager);
+    mItemsRv.setAdapter(mRvAdapter);
 
     // Allow fragment to participate in creating menu options
     setHasOptionsMenu(true);
-    setRetainInstance(true);
 
     super.onViewCreated(view, savedInstanceState);
   }

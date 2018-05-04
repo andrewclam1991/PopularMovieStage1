@@ -16,32 +16,29 @@ import io.reactivex.Flowable;
  * Implementation of {@link DataSource <Entity>} that exposes methods to access a remote data source
  * Note: This implementation is a GET-only RESTful service api consumer, therefore POST, PUT and
  * DELETE operations are finalized and simply return completed.
+ *
  * @param <E> type of {@link Entity}
  */
 abstract class DataSourceRemote<E extends Entity> implements DataSource<E> {
 
+  DataSourceRemote() {}
+
   @Override
-  public void refresh() {
+  public final void refresh() {
     // No implementation, repository handles data refresh
   }
 
-  DataSourceRemote(){}
+  @NonNull
+  @Override
+  public abstract Flowable<List<E>> getItems(@NonNull Map<String, String> options);
 
   @NonNull
   @Override
-  public Flowable<List<E>> getItems(@NonNull Map<String, String> options) {
-    return Flowable.empty();
-  }
+  public abstract Flowable<List<E>> getItems();
 
   @NonNull
   @Override
-  public Flowable<List<E>> getItems() {
-    return Flowable.empty();
-  }
-
-  @NonNull
-  @Override
-  public Flowable<Optional<E>> getItem(@NonNull String entityId) {
+  public final Flowable<Optional<E>> getItem(@NonNull String entityId) {
     return Flowable.empty();
   }
 

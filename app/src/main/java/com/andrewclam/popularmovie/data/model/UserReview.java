@@ -10,14 +10,11 @@
 
 package com.andrewclam.popularmovie.data.model;
 
-import org.parceler.Parcel;
-
 /**
  * Model Class to store a particular movies' associated user review, includes the unique id,
  * author and the review content
  */
 
-@Parcel(Parcel.Serialization.BEAN)
 public class UserReview extends Entity{
 
   private String userReviewId;

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -24,6 +25,7 @@ import io.reactivex.disposables.Disposable;
  * Implementation of a {@link MainContract.Presenter} responsible for
  * interfacing {@link MainContract.View} with the underlying Model layer
  */
+@Singleton
 class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHolderPresenter {
 
   @NonNull
@@ -40,7 +42,6 @@ class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHold
 
   @NonNull
   private List<Movie> mMovies;
-
 
   @Inject
   MainPresenter(@NonNull @Repo DataSource<Movie> movieRepository,
@@ -66,8 +67,7 @@ class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHold
   public void loadItems() {
     mMovieRepository.refresh();
 
-    Disposable disposable = mMovieRepository
-        .getItems()
+    Disposable disposable = mMovieRepository.getItems()
         .flatMap(Flowable::fromIterable)
         .toList()
         .subscribeOn(mSchedulerProvider.io())
@@ -88,7 +88,7 @@ class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHold
   }
 
   private void handleOnError(@NonNull Throwable throwable){
-    Log.e("PopularMovies", throwable.getLocalizedMessage());
+    Log.e("Pop", throwable.getLocalizedMessage());
     if (mView != null && mView.isActive()){
       mView.showLoadingMoviesError();
     }
@@ -127,6 +127,7 @@ class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHold
         break;
     }
   }
+
   @NonNull
   private SortOrder mCurrentSortOrder = SortOrder.DEFAULT;
   @NonNull
@@ -152,7 +153,6 @@ class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHold
     return mCurrentSortOrder;
   }
 
-
   @Override
   public void onAdapterBindViewHolder(MainContract.ItemViewHolder holder, int position) {
     if (position < 0){
@@ -160,23 +160,18 @@ class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHold
     }
     Movie movie = mMovies.get(position);
     String posterPath = movie.getPosterPath();
-    String posterUrl = ApiServiceContract.TMDBImageContract
-        .getMoviePosterImageUri(posterPath).toString();
+    String posterUrl = ApiServiceContract.TMDBImageContract.getMoviePosterImageUrl(posterPath);
     holder.loadMoviePoster(posterUrl);
   }
 
   @Override
   public void onAdapterItemClicked(int position) {
-    if (position < 0){
+    if (mView == null || !mView.isActive() || position < 0){
       return; // invalid position
     }
-
     Movie movie = mMovies.get(position);
     String id = movie.getUid();
-
-    if (mView != null && mView.isActive()) {
-      mView.showDetailUi(id, DetailActivity.class);
-    }
+    mView.showDetailUi(id, DetailActivity.class);
   }
 
   @Override

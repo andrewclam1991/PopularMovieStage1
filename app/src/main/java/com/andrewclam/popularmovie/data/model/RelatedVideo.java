@@ -10,15 +10,12 @@
 
 package com.andrewclam.popularmovie.data.model;
 
-import org.parceler.Parcel;
-
 import java.net.URL;
 
 /**
  * Model class to store a particular movies' associated video data.
  */
 
-@Parcel(Parcel.Serialization.BEAN)
 public class RelatedVideo extends Entity{
 
   private String relatedVideoId;

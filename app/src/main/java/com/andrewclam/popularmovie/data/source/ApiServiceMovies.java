@@ -14,6 +14,7 @@ import javax.inject.Singleton;
 
 import retrofit2.Call;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
@@ -50,8 +51,9 @@ public class ApiServiceMovies extends ApiServiceDecorator<Movie> {
 
     // Create an service instance of the api service using retrofit
     Retrofit retrofit = new Retrofit.Builder()
-        .baseUrl(BASE_TMDB_REQUEST_URL+"/")
+        .baseUrl(BASE_TMDB_REQUEST_URL.concat("/")) // *Retrofit requires a base url to end with "/"
         .addConverterFactory(GsonConverterFactory.create())
+        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .build();
 
     DiscoverMoviesService service = retrofit.create(DiscoverMoviesService.class);
@@ -83,5 +85,7 @@ public class ApiServiceMovies extends ApiServiceDecorator<Movie> {
     @GET(PATH_DISCOVER + "/" + PATH_MOVIE)
     Call<ApiResponse<Movie>> getItems(@Query(QUERY_API_KEY) @NonNull String apiKey);
   }
+
+
 
 }
