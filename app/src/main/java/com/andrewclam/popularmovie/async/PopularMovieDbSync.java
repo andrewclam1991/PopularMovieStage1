@@ -68,7 +68,6 @@ public class PopularMovieDbSync {
       int voteCountColIndex = dataCursor.getColumnIndex(AppDbContract.MovieEntry.COLUMN_VOTE_COUNT);
       int popularityColIndex = dataCursor.getColumnIndex(AppDbContract.MovieEntry.COLUMN_POPULARITY);
       int overviewColIndex = dataCursor.getColumnIndex(AppDbContract.MovieEntry.COLUMN_OVERVIEW);
-      int favColIndex = dataCursor.getColumnIndex(AppDbContract.MovieEntry.COLUMN_FAVORITE);
 
       // Set each field to the entry
       entry.setMovieId(dataCursor.getLong(idColIndex));
@@ -78,7 +77,6 @@ public class PopularMovieDbSync {
       entry.setVoteAverage(dataCursor.getDouble(voteAvgColIndex));
       entry.setVoteCount(dataCursor.getLong(voteCountColIndex));
       entry.setPopularity(dataCursor.getDouble(popularityColIndex));
-      entry.setFavorite(dataCursor.getInt(favColIndex) == 1);
       entry.setOverview(dataCursor.getString(overviewColIndex));
 
       // Add the populated entry into the entry list

@@ -52,6 +52,9 @@ android {
     }
     flavorDimensions "mode"
     productFlavors{
+        refactor {
+            applicationIdSuffix = ".refactor"
+        }
         dev{
             dimension "mode"
             resValue "string","tmdb_api_key", keystoreProperties['TMDB_API_KEY']
@@ -59,6 +62,14 @@ android {
         prod{
             dimension "mode"
             resValue "string","tmdb_api_key", keystoreProperties['TMDB_API_KEY']
+        }
+    }
+
+    // Remove mockRelease as it's not needed.
+    android.variantFilter { variant ->
+        if (variant.buildType.name.equals('release')
+                && variant.getFlavors().get(0).name.equals('refactor')) {
+            variant.setIgnore(true)
         }
     }
 

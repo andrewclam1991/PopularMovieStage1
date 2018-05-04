@@ -93,14 +93,6 @@ public final class AppDbContract {
     public static final String COLUMN_VOTE_COUNT = "vote_count";
     public static final String COLUMN_OVERVIEW = "overview";
     public static final String COLUMN_POPULARITY = "popularity";
-    @Deprecated
-    public static final String COLUMN_FAVORITE = "is_favorite";
-
-    /* Valid values for boolean COLUMN_FAVORITE*/
-    @Deprecated
-    public static final int ARG_FAVORITE_IS_TRUE = 1;
-    @Deprecated
-    public static final int ARG_FAVORITE_IS_FALSE = 0;
   }
 
   /**

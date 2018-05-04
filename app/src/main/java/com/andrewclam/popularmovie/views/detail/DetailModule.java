@@ -8,6 +8,7 @@ import com.andrewclam.popularmovie.di.annotations.FragmentScoped;
 
 import dagger.Binds;
 import dagger.Module;
+import dagger.Provides;
 import dagger.android.ContributesAndroidInjector;
 
 /**
@@ -20,6 +21,13 @@ public abstract class DetailModule {
   @ActivityScoped
   @Binds
   abstract DetailContract.Presenter providePresenter(@NonNull DetailPresenter presenter);
+
+  @Provides
+  @NonNull
+  @ActivityScoped
+  static Integer provideMovieId(@NonNull DetailActivity activity){
+    return 0;
+  }
 
   @NonNull
   @FragmentScoped
