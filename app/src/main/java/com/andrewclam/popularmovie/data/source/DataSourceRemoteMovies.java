@@ -39,11 +39,6 @@ class DataSourceRemoteMovies extends DataSourceRemote<Movie> {
     @NonNull
     @GET(PATH_DISCOVER + "/" + PATH_MOVIE)
     Flowable<MovieResponse<Movie>> getItems(@Query(QUERY_API_KEY) @NonNull String apiKey);
-
-    @NonNull
-    @GET(PATH_DISCOVER + "/" + PATH_MOVIE)
-    Flowable<MovieResponse<Movie>> getItem(@Query(QUERY_API_KEY) @NonNull String apiKey,
-                                           @Query("id") @NonNull String itemId);
   }
 
   @NonNull
@@ -68,10 +63,10 @@ class DataSourceRemoteMovies extends DataSourceRemote<Movie> {
         .flatMap(movieResponse -> Flowable.just(movieResponse.getResults()));
   }
 
+  // TODO implement get item by id from remote api
   @NonNull
   @Override
   public Flowable<Optional<Movie>> getItem(@NonNull String entityId) {
-    return mApiService.getItem(super.mApiKey,entityId)
-        .flatMap(movieResponse -> Flowable.just(Optional.of(movieResponse.getResults().get(0))));
+    return Flowable.empty();
   }
 }

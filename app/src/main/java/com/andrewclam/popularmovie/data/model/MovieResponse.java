@@ -9,7 +9,6 @@ import java.util.List;
  * @param <E>
  */
 public class MovieResponse<E extends Entity> {
-
   @SerializedName("page")
   private int page;
 

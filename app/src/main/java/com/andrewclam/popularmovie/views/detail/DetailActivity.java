@@ -79,7 +79,7 @@ public class DetailActivity extends DaggerAppCompatActivity {
   // Log Tag
   private static final String TAG = DetailActivity.class.getSimpleName();
 
-  // Constants
+  // QueryConstants
   public static final String ARG_DETAIL_ACT_ITEM_ID = "ITEM_DETAIL_ID";
 
   // UI views

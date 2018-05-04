@@ -17,17 +17,16 @@ import retrofit2.Retrofit;
  */
 @Module
 public abstract class RepositoryModuleMovies {
+
   @Binds
   @NonNull
   @Singleton
-
   @Repo
   abstract DataSource<Movie> providesRepository(@NonNull Repository<Movie> repository);
 
   @Binds
   @NonNull
   @Singleton
-
   @Local
   abstract DataSource<Movie> providesLocalDataSource(@NonNull DataSourceLocalMovies dataSource);
 

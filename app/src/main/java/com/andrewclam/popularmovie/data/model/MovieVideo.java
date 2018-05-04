@@ -10,18 +10,28 @@
 
 package com.andrewclam.popularmovie.data.model;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Model class to store a particular movies' associated video data from TMDB
- * Example request:
- * https://api.themoviedb.org/3/movie/{movie_id}/videos?api_key=<<api_key>>&language=en-US
- */
+import java.util.List;
 
-public class MovieVideo extends Entity{
+import io.reactivex.Flowable;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
+
+import static com.andrewclam.popularmovie.data.model.MovieVideo.QueryConstants.ARG_MOVIE_ID;
+import static com.andrewclam.popularmovie.data.modelapi.BaseContract.Paths.PATH_MOVIE;
+import static com.andrewclam.popularmovie.data.modelapi.BaseContract.QUERY_API_KEY;
+
+/**
+ * Model class to store a particular movies' associated video data
+ */
+public final class MovieVideo extends Entity {
 
   @SerializedName("id")
-  private String relatedVideoId;
+  private String movieVideoId;
 
   @SerializedName("key")
   private String key;
@@ -38,12 +48,12 @@ public class MovieVideo extends Entity{
   @SerializedName("type")
   private String type;
 
-  public String getRelatedVideoId() {
-    return relatedVideoId;
+  public String getMovieVideoId() {
+    return movieVideoId;
   }
 
-  public void setRelatedVideoId(String relatedVideoId) {
-    this.relatedVideoId = relatedVideoId;
+  public void setMovieVideoId(String movieVideoId) {
+    this.movieVideoId = movieVideoId;
   }
 
   public String getKey() {
@@ -86,4 +96,66 @@ public class MovieVideo extends Entity{
     this.type = type;
   }
 
+  /**
+   * Model class to store the serialized response data and holds a
+   * list of returned {@link MovieVideo}s.
+   * <p>
+   * Example request:
+   * https://api.themoviedb.org/3/movie/{movie_id}/videos?api_key=<<api_key>>&language=en-US
+   */
+  public class Response {
+    @SerializedName("id")
+    private int movieVideoResponseId;
+
+    @SerializedName("results")
+    private List<MovieVideo> results;
+
+    public int getMovieVideoResponseId() {
+      return movieVideoResponseId;
+    }
+
+    public void setMovieVideoResponseId(int movieVideoResponseId) {
+      this.movieVideoResponseId = movieVideoResponseId;
+    }
+
+    public List<MovieVideo> getResults() {
+      return results;
+    }
+
+    public void setResults(List<MovieVideo> results) {
+      this.results = results;
+    }
+  }
+
+  /**
+   * QueryConstants for the {@link MovieVideo} api
+   */
+  public static final class QueryConstants {
+    // path arg
+    public final static String ARG_MOVIE_ID = "movie-id";
+
+    // query keys
+    public final static String QUERY_KEY_LANGUAGE = "language";
+  }
+
+  /**
+   * Retrofit interface for generating an {@link MovieVideo} api client
+   */
+  public interface ServiceApi {
+    /**
+     * Query service api using the provided arguments and gets a json {@link MovieVideo.Response},
+     * which contains a list of {@link MovieVideo}.
+     *
+     * @param apiKey  developer api key
+     * @param movieId the unique id of the {@link Movie} to query a list of its {@link MovieVideo}s
+     * @return an observable that when subscribed to, will return a {@link MovieVideo.Response}
+     * if the call was successful.
+     */
+    @NonNull
+    @GET(PATH_MOVIE + "/" + "{" + ARG_MOVIE_ID + "}")
+    Flowable<MovieVideo.Response> getMovieVideos(@Query(QUERY_API_KEY) @NonNull String apiKey,
+                                                 @Path(ARG_MOVIE_ID) int movieId);
+  }
+
 }
+

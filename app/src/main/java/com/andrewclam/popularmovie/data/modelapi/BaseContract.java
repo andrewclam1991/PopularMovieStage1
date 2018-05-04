@@ -25,8 +25,8 @@ public final class BaseContract {
   public static final class Paths {
     public static final String PATH_DISCOVER = "discover";
     public static final String PATH_MOVIE = "movie";
-    protected static final String PATH_VIDEO = "videos";
-    protected static final String PATH_REVIEWS = "reviews";
+    public static final String PATH_VIDEO = "videos";
+    public static final String PATH_REVIEWS = "reviews";
   }
 
   // Query parameters

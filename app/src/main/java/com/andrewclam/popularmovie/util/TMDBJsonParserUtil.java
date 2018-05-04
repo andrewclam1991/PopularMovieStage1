@@ -193,7 +193,7 @@ public final class TMDBJsonParserUtil {
         String type = result.getString(TMDB_VIDEO_TYPE);
 
         /* Store each element into the data model class */
-        entry.setRelatedVideoId(movieId);
+        entry.setMovieVideoId(movieId);
         entry.setKey(providerKey);
         entry.setName(name);
         entry.setSite(providerSite);

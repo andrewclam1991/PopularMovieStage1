@@ -46,7 +46,7 @@ public class NetworkUtil {
   public static final String TMDB_PATH_POPULAR = "popular";
   public static final String TMDB_PATH_TOP_RATED = "top_rated";
 
-  /* Instance Vars and Constants */
+  /* Instance Vars and QueryConstants */
   // Log tag
   private static final String TAG = NetworkUtil.class.getSimpleName();
 
@@ -168,7 +168,7 @@ public class NetworkUtil {
     // Convert the movieId to String and check
     final String movieIdStr = String.valueOf(movieId);
     if (movieIdStr == null || movieIdStr.isEmpty()) {
-      throw new IllegalArgumentException("PATH_MOVIE_ID can't be empty or null for buildVideoKeyUrl()");
+      throw new IllegalArgumentException("ARG_MOVIE_ID can't be empty or null for buildVideoKeyUrl()");
     }
 
     if (apiKey.isEmpty()) {
@@ -178,7 +178,7 @@ public class NetworkUtil {
     // Use the Uri.parse() to build the Uri according to the template
     // the resulting uri is used to generate the URL that we will use to query the TMDB server
     // example uri: https://api.themoviedb.org/3/movie/211672/videos?api_key=[key]
-    // uri structure :  [BASE_URL] / [PATH_MOVIE] / [PATH_MOVIE_ID] / [PATH_VIDEO] [?Query = Parameter]
+    // uri structure :  [BASE_URL] / [PATH_MOVIE] / [ARG_MOVIE_ID] / [PATH_VIDEO] [?Query = Parameter]
 
     Uri.Builder builder = Uri.parse(TMDB_PATH_BASE_URL).buildUpon()
         .appendPath(TMDB_PATH_MOVIE)
@@ -285,7 +285,7 @@ public class NetworkUtil {
     // Use the Uri.parse() to build the Uri according to the template
     // the resulting uri is used to generate the URL that we will use to query the TMDB server
     // example uri: https://api.themoviedb.org/3/movie/211672/reviews?api_key=[key]
-    // uri structure :  [BASE_URL] / [PATH_MOVIE] / [PATH_MOVIE_ID] / [PATH_REVIEWS] [?Query = Parameter]
+    // uri structure :  [BASE_URL] / [PATH_MOVIE] / [ARG_MOVIE_ID] / [PATH_REVIEWS] [?Query = Parameter]
 
     Uri.Builder builder = Uri.parse(TMDB_PATH_BASE_URL).buildUpon()
         .appendPath(TMDB_PATH_MOVIE)

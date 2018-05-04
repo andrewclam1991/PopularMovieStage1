@@ -17,7 +17,7 @@ import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.ARG_F
 import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.CONTENT_URI_MOVIES;
 
 /**
- * {@link DataSourceLocalMovies}
+ * {@link DataSourceLocalMovieVideos}
  * <p>
  * This class is only responsible for providing the CONTENT_URI_MOVIES and
  * implementing the from() and mapToItem(), its super class take care of the rest of
@@ -28,11 +28,11 @@ import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.CONTE
  */
 
 @Singleton
-class DataSourceLocalMovies extends DataSourceLocal<Movie> {
+class DataSourceLocalMovieVideos extends DataSourceLocal<Movie> {
 
   @Inject
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  DataSourceLocalMovies() {}
+  DataSourceLocalMovieVideos() {}
 
   @VisibleForTesting
   @NonNull
