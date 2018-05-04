@@ -30,6 +30,14 @@ import static com.andrewclam.popularmovie.data.modelapi.BaseContract.QUERY_API_K
  */
 public final class MovieVideo extends Entity {
 
+  /**
+   * Unique id that identifies the {@link Movie} in TMDB
+   */
+  private long movieId;
+
+  /**
+   * Unique id that identifies the particular {@link MovieVideo} in TMDB
+   */
   @SerializedName("id")
   private String movieVideoId;
 
@@ -47,6 +55,14 @@ public final class MovieVideo extends Entity {
 
   @SerializedName("type")
   private String type;
+
+  public long getMovieId() {
+    return movieId;
+  }
+
+  public void setMovieId(long movieId) {
+    this.movieId = movieId;
+  }
 
   public String getMovieVideoId() {
     return movieVideoId;

@@ -21,6 +21,7 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 
 import com.andrewclam.popularmovie.data.model.Movie;
+import com.andrewclam.popularmovie.data.model.MovieReview;
 import com.andrewclam.popularmovie.data.model.MovieVideo;
 
 import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.CONTENT_URI_MOVIES;
@@ -55,11 +56,12 @@ public final class AppDbContract {
    *
    * is a valid path for looking at movie data
    */
-  public static final String PATH_MOVIES = "movies";
-  public static final String PATH_FAVORITES = "favorites";
-
   public static final String PATH_UID = "uid";
 
+  public static final String PATH_MOVIES = "movies";
+  public static final String PATH_VIDEOS = "videos";
+  public static final String PATH_REVIEWS = "reviews";
+  public static final String PATH_FAVORITES = "favorites";
 
   /**
    * Convenience method that provides a {@link Uri} that points to a specific
@@ -74,11 +76,13 @@ public final class AppDbContract {
   }
 
   /**
-   * {@link Movie}'s each row entry constants
+   *  Defines constants for each {@link Movie}'s row
+   * {@see https://developers.themoviedb.org/3/discover/movie-discover}
    */
   public static final class MovieEntry extends MaintainableColumn implements BaseColumns {
-    public static final Uri CONTENT_URI_MOVIES =
-        BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOVIES).build();
+    public static final Uri CONTENT_URI_MOVIES = BASE_CONTENT_URI.buildUpon()
+        .appendPath(PATH_MOVIES)
+        .build();
 
     public static final String TABLE_NAME = "movies_table";
     public static final String COLUMN_MOVIE_TMDB_ID = "tmdb_movie_id";
@@ -100,14 +104,18 @@ public final class AppDbContract {
   }
 
   /**
-   * {@link MovieVideo}'s each row entry constants
+   * Defines constants for each {@link MovieVideo}'s row
+   * {@see https://developers.themoviedb.org/3/movies/get-movie-videos}
    */
   public static final class MovieVideoEntry extends MaintainableColumn implements BaseColumns {
-    public static final Uri CONTENT_URI_MOVIES =
-        BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOVIES).build();
+    public static final Uri CONTENT_URI_MOVIE_VIDEOS = BASE_CONTENT_URI.buildUpon()
+        .appendPath(PATH_MOVIES)
+        .appendPath(PATH_VIDEOS)
+        .build();
 
     public static final String TABLE_NAME = "movie_videos_table";
-    public static final String COLUMN_MOVIE_VIDEO_ID = "id";
+    public static final String COLUMN_MOVIE_TMDB_ID = MovieEntry.COLUMN_MOVIE_TMDB_ID;
+    public static final String COLUMN_ID = "id";
     public static final String COLUMN_KEY = "key";
     public static final String COLUMN_NAME = "name";
     public static final String COLUMN_SITE = "site";
@@ -128,11 +136,31 @@ public final class AppDbContract {
   }
 
   /**
+   * Defines constants for each {@link MovieReview}'s row
+   * {@see https://developers.themoviedb.org/3/movies/get-movie-reviews}
+   */
+  public static final class MovieReviewEntry extends MaintainableColumn implements BaseColumns {
+    public static final Uri CONTENT_URI_MOVIE_REVIEWS = BASE_CONTENT_URI.buildUpon()
+        .appendPath(PATH_MOVIES)
+        .appendPath(PATH_REVIEWS)
+        .build();
+
+    public static final String TABLE_NAME = "movie_videos_table";
+    public static final String COLUMN_MOVIE_TMDB_ID = MovieEntry.COLUMN_MOVIE_TMDB_ID;
+    public static final String COLUMN_ID = "id";
+    public static final String COLUMN_AUTHOR = "author";
+    public static final String COLUMN_CONTENT = "content";
+    public static final String COLUMN_URL = "url";
+  }
+
+  /**
    * TODO Migrate the MovieEntry#COLUMN_FAVORITE to this entry here, and reference the movie by id
    */
   public static final class MovieFavoriteEntry extends MaintainableColumn implements BaseColumns{
-    public static final Uri CONTENT_URI_MOVIE_FAVORITES =
-        BASE_CONTENT_URI.buildUpon().appendPath(PATH_FAVORITES).build();
+    public static final Uri CONTENT_URI_MOVIE_FAVORITES = BASE_CONTENT_URI.buildUpon()
+        .appendPath(PATH_MOVIES)
+        .appendPath(PATH_FAVORITES)
+        .build();
 
     public static final String TABLE_NAME = "favorites_table";
     public static final String COLUMN_MOVIE_TMDB_ID = MovieEntry.COLUMN_MOVIE_TMDB_ID;

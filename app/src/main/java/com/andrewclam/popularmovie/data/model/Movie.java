@@ -5,12 +5,14 @@ import android.net.Uri;
 
 import com.google.gson.annotations.SerializedName;
 
-
 /**
  * Model class use to store movie metadata.
  * see https://developers.themoviedb.org/3/discover/movie-discover
  */
 public class Movie extends Entity{
+
+  @SerializedName("id")
+  private long movieId;
 
   @SerializedName("poster_path")
   private String posterPath;
@@ -23,9 +25,6 @@ public class Movie extends Entity{
 
   @SerializedName("release_date")
   private String releaseDate;
-
-  @SerializedName("id")
-  private long movieId;
 
   @SerializedName("original_title")
   private String originalTitle;
