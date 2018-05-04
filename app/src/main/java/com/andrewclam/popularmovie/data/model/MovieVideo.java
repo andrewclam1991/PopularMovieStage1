@@ -10,26 +10,33 @@
 
 package com.andrewclam.popularmovie.data.model;
 
-import java.net.URL;
+import com.google.gson.annotations.SerializedName;
 
 /**
- * Model class to store a particular movies' associated video data.
+ * Model class to store a particular movies' associated video data from TMDB
+ * Example request:
+ * https://api.themoviedb.org/3/movie/{movie_id}/videos?api_key=<<api_key>>&language=en-US
  */
 
-public class RelatedVideo extends Entity{
+public class MovieVideo extends Entity{
 
+  @SerializedName("id")
   private String relatedVideoId;
+
+  @SerializedName("key")
   private String key;
+
+  @SerializedName("name")
   private String name;
-  private String providerSite;
+
+  @SerializedName("site")
+  private String site;
+
+  @SerializedName("size")
   private int size;
-  private String videoType;
-  private URL videoUrl;
-  private URL thumbnailUrl;
 
-  public RelatedVideo() {
-
-  }
+  @SerializedName("type")
+  private String type;
 
   public String getRelatedVideoId() {
     return relatedVideoId;
@@ -43,7 +50,7 @@ public class RelatedVideo extends Entity{
     return key;
   }
 
-  public void setProviderKey(String key) {
+  public void setKey(String key) {
     this.key = key;
   }
 
@@ -55,12 +62,12 @@ public class RelatedVideo extends Entity{
     this.name = name;
   }
 
-  public String getProviderSite() {
-    return providerSite;
+  public String getSite() {
+    return site;
   }
 
-  public void setProviderSite(String providerSite) {
-    this.providerSite = providerSite;
+  public void setSite(String site) {
+    this.site = site;
   }
 
   public int getSize() {
@@ -71,27 +78,12 @@ public class RelatedVideo extends Entity{
     this.size = size;
   }
 
-  public String getVideoType() {
-    return videoType;
+  public String getType() {
+    return type;
   }
 
-  public void setVideoType(String videoType) {
-    this.videoType = videoType;
+  public void setType(String type) {
+    this.type = type;
   }
 
-  public URL getVideoUrl() {
-    return videoUrl;
-  }
-
-  public void setVideoUrl(URL videoUrl) {
-    this.videoUrl = videoUrl;
-  }
-
-  public URL getThumbnailUrl() {
-    return thumbnailUrl;
-  }
-
-  public void setThumbnailUrl(URL thumbnailUrl) {
-    this.thumbnailUrl = thumbnailUrl;
-  }
 }

@@ -19,7 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.andrewclam.popularmovie.R;
-import com.andrewclam.popularmovie.data.model.RelatedVideo;
+import com.andrewclam.popularmovie.data.model.MovieVideo;
 import com.squareup.picasso.Picasso;
 
 import java.net.URL;
@@ -40,7 +40,7 @@ public class RelatedVideosAdapter extends RecyclerView.Adapter<RelatedVideosAdap
   private final OnMovieEntryClickListener mOnItemClickedListener; // Activity pass this
 
   /*Instance Vars*/
-  private ArrayList<RelatedVideo> mEntries;
+  private ArrayList<MovieVideo> mEntries;
 
   /*Default Constructor*/
   public RelatedVideosAdapter(OnMovieEntryClickListener mOnItemClickedListener) {
@@ -94,14 +94,15 @@ public class RelatedVideosAdapter extends RecyclerView.Adapter<RelatedVideosAdap
   public void onBindViewHolder(RelatedVideoAdapterViewHolder holder, int position) {
     // This is where we bind data to the ViewHolder
 
-    RelatedVideo relatedVideo = mEntries.get(position);
+    MovieVideo movieVideo = mEntries.get(position);
 
     // Get the thumbnail info from the entry item at the adapter position
-    URL thumbnailUrl = relatedVideo.getThumbnailUrl();
+    URL thumbnailUrl = null;
+//    URL thumbnailUrl = movieVideo.getThumbnailUrl();
     holder.loadVideoThumbnail(thumbnailUrl);
 
     // Set the video name title
-    String nameTitle = relatedVideo.getName();
+    String nameTitle = movieVideo.getName();
     holder.mTitle.setText(nameTitle);
 
   }
@@ -123,7 +124,7 @@ public class RelatedVideosAdapter extends RecyclerView.Adapter<RelatedVideosAdap
    *
    * @param mEntries the new dataset that we want to update the adapter with
    */
-  public void setRelatedVideoData(ArrayList<RelatedVideo> mEntries) {
+  public void setRelatedVideoData(ArrayList<MovieVideo> mEntries) {
     this.mEntries = mEntries;
     notifyDataSetChanged();
   }
@@ -133,7 +134,7 @@ public class RelatedVideosAdapter extends RecyclerView.Adapter<RelatedVideosAdap
    * Handle on itemClick event in each itemView inside the RecyclerView
    */
   public interface OnMovieEntryClickListener {
-    void onItemClicked(RelatedVideo entry);
+    void onItemClicked(MovieVideo entry);
   }
 
   /**
@@ -162,7 +163,7 @@ public class RelatedVideosAdapter extends RecyclerView.Adapter<RelatedVideosAdap
         int adapterPosition = getAdapterPosition();
 
         // 2) Find the corresponding clicked entry in the entries
-        RelatedVideo entry = mEntries.get(adapterPosition);
+        MovieVideo entry = mEntries.get(adapterPosition);
 
         // 3) Use onClickHandler to notify the activity of a onClick event
         // pass in the retrieved object

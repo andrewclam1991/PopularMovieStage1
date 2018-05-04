@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Model class use to store movie metadata.
+ * see https://developers.themoviedb.org/3/discover/movie-discover
  */
 public class Movie extends Entity{
 
@@ -52,9 +53,6 @@ public class Movie extends Entity{
 
   private boolean isFavorite;
 
-  /* Public No-Arg constructor */
-  public Movie() {}
-
   public long getMovieId() {
     return movieId;
   }
@@ -70,7 +68,7 @@ public class Movie extends Entity{
   }
 
   /**
-   * Sets the  path to the poster, including the file extension. Builds the image URL
+   * Sets the path to the poster, including the file extension. Builds the image URL
    * To build an image URL, you will need 3 pieces of data. The base_url, size and file_path.
    * Simply combine them all and you will have a fully qualified URL. Here’s an example URL:
    * https://image.tmdb.org/t/p/w500/8uO0gUM8aNqYLs1OsTBQiXu0fEv.jpg

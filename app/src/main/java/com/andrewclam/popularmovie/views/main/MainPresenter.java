@@ -4,9 +4,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.andrewclam.popularmovie.data.model.Movie;
-import com.andrewclam.popularmovie.data.source.ApiServiceContract;
 import com.andrewclam.popularmovie.data.DataSource;
+import com.andrewclam.popularmovie.data.model.Movie;
 import com.andrewclam.popularmovie.data.source.Repo;
 import com.andrewclam.popularmovie.util.schedulers.BaseSchedulerProvider;
 import com.andrewclam.popularmovie.views.detail.DetailActivity;
@@ -20,6 +19,8 @@ import javax.inject.Singleton;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+
+import static com.andrewclam.popularmovie.data.modelapi.MovieImageContract.getImageUrl;
 
 /**
  * Implementation of a {@link MainContract.Presenter} responsible for
@@ -161,7 +162,7 @@ class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHold
     }
     Movie movie = mMovies.get(position);
     String posterPath = movie.getPosterPath();
-    String posterUrl = ApiServiceContract.TMDBImageContract.getMoviePosterImageUrl(posterPath);
+    String posterUrl = getImageUrl(posterPath);
     holder.loadMoviePoster(posterUrl);
   }
 

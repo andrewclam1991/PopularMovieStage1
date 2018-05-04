@@ -3,7 +3,7 @@ package com.andrewclam.popularmovie.data.source;
 import android.support.annotation.NonNull;
 
 import com.andrewclam.popularmovie.data.DataSource;
-import com.andrewclam.popularmovie.data.model.ApiResponse;
+import com.andrewclam.popularmovie.data.model.MovieResponse;
 import com.andrewclam.popularmovie.data.model.Entity;
 import com.google.common.base.Optional;
 
@@ -36,36 +36,36 @@ abstract class DataSourceRemote<E extends Entity> implements DataSource<E> {
   }
 
   @NonNull
-  abstract Flowable<ApiResponse<E>> getApiResponse(@NonNull @ApiKey String apiKey);
+  abstract Flowable<MovieResponse<E>> getApiResponse(@NonNull @ApiKey String apiKey);
 
   @NonNull
-  abstract Flowable<ApiResponse<E>> getApiResponse(@NonNull @ApiKey String apiKey,
-                                                   @NonNull Map<String, String> options);
+  abstract Flowable<MovieResponse<E>> getApiResponse(@NonNull @ApiKey String apiKey,
+                                                     @NonNull Map<String, String> options);
 
   @NonNull
-  abstract Flowable<ApiResponse<E>> getApiResponse(@NonNull @ApiKey String apiKey,
-                                                   @NonNull String itemId);
+  abstract Flowable<MovieResponse<E>> getApiResponse(@NonNull @ApiKey String apiKey,
+                                                     @NonNull String itemId);
 
   @NonNull
   @Override
   public final Flowable<List<E>> getItems(@NonNull Map<String, String> options){
     return getApiResponse(mApiKey,options)
-        .flatMap(apiResponse -> Flowable.just(apiResponse.getResults()));
+        .flatMap(movieResponse -> Flowable.just(movieResponse.getResults()));
   }
 
   @NonNull
   @Override
   public final Flowable<List<E>> getItems() {
     return getApiResponse(mApiKey)
-        .flatMap(apiResponse -> Flowable.just(apiResponse.getResults()));
+        .flatMap(movieResponse -> Flowable.just(movieResponse.getResults()));
   }
 
   @NonNull
   @Override
   public final Flowable<Optional<E>> getItem(@NonNull String entityId) {
     return getApiResponse(mApiKey,entityId)
-        .flatMap(apiResponse -> {
-          Optional<E> opEntity = Optional.of(apiResponse.getResults().get(0));
+        .flatMap(movieResponse -> {
+          Optional<E> opEntity = Optional.of(movieResponse.getResults().get(0));
           return Flowable.just(opEntity);
         });
   }

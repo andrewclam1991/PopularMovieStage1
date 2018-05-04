@@ -13,8 +13,8 @@ package com.andrewclam.popularmovie.util;
 import android.util.Log;
 
 import com.andrewclam.popularmovie.data.model.Movie;
-import com.andrewclam.popularmovie.data.model.RelatedVideo;
-import com.andrewclam.popularmovie.data.model.UserReview;
+import com.andrewclam.popularmovie.data.model.MovieReview;
+import com.andrewclam.popularmovie.data.model.MovieVideo;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -129,13 +129,13 @@ public final class TMDBJsonParserUtil {
   }
 
   /**
-   * This method parses JSON from a web response and returns an ArrayList of RelatedVideo objects
+   * This method parses JSON from a web response and returns an ArrayList of MovieVideo objects
    *
    * @param jsonResponse JSON response from server
    * @return an ArrayList of Movie's video resources objects, each containing a movie's related video's information
    * @throws JSONException If JSON data cannot be properly parsed
    */
-  public static ArrayList<RelatedVideo> getRelatedVideoFromJson(String jsonResponse) throws JSONException {
+  public static ArrayList<MovieVideo> getRelatedVideoFromJson(String jsonResponse) throws JSONException {
     // Test if the response is null, return null if it is
     if (jsonResponse == null) {
       Log.w(TAG, "Nothing to parse because jsonResponse is undefined");
@@ -167,7 +167,7 @@ public final class TMDBJsonParserUtil {
 
     // Initialize an arrayList to store associated video info objects.
     // This data will back the recycler view adapter.
-    ArrayList<RelatedVideo> entries = new ArrayList<>();
+    ArrayList<MovieVideo> entries = new ArrayList<>();
 
     // Create a new JSON object out of the jsonResponse
     JSONObject resultJSON = new JSONObject(jsonResponse);
@@ -182,7 +182,7 @@ public final class TMDBJsonParserUtil {
 
       if (result != null) {
         /* Create an instance of the model class to store the retrieved elements */
-        RelatedVideo entry = new RelatedVideo();
+        MovieVideo entry = new MovieVideo();
 
         /* Retrieve each element from the result JSONObject */
         String movieId = result.getString(TMDB_VIDEO_ID);
@@ -194,11 +194,11 @@ public final class TMDBJsonParserUtil {
 
         /* Store each element into the data model class */
         entry.setRelatedVideoId(movieId);
-        entry.setProviderKey(providerKey);
+        entry.setKey(providerKey);
         entry.setName(name);
-        entry.setProviderSite(providerSite);
+        entry.setSite(providerSite);
         entry.setSize(size);
-        entry.setVideoType(type);
+        entry.setType(type);
 
         /************************
          * VIDEO URL GENERATION *
@@ -206,7 +206,7 @@ public final class TMDBJsonParserUtil {
         // Use networkUtility to build the provider video url and set the url in the
         // entry object
         URL videoURL = NetworkUtil.buildProviderVideoUrl(providerKey);
-        entry.setVideoUrl(videoURL);
+//        entry.setVideoUrl(videoURL);
 
         /**********************************
          * VIDEO THUMBNAIL URL GENERATION *
@@ -214,7 +214,7 @@ public final class TMDBJsonParserUtil {
         // Use networkUtility to build the provider video's thumbnail url and set the url in the
         // entry object
         URL thumbnailUrl = NetworkUtil.buildProviderVideoThumbnailUrl(providerKey);
-        entry.setThumbnailUrl(thumbnailUrl);
+//        entry.setThumbnailUrl(thumbnailUrl);
 
         /* Add the entry object to the list */
         entries.add(entry);
@@ -230,14 +230,14 @@ public final class TMDBJsonParserUtil {
 
 
   /**
-   * This method parses JSON from a web response and returns an ArrayList of UserReview objects
+   * This method parses JSON from a web response and returns an ArrayList of MovieReview objects
    *
    * @param jsonResponse JSON response from server
    * @return an ArrayList of Movie's user review objects, each containing a movie's user review
    * on TMDB
    * @throws JSONException If JSON data cannot be properly parsed
    */
-  public static ArrayList<UserReview> getUserReviewsFromJson(String jsonResponse) throws JSONException {
+  public static ArrayList<MovieReview> getUserReviewsFromJson(String jsonResponse) throws JSONException {
     // Test if the response is null, return null if it is
     if (jsonResponse == null) {
       Log.w(TAG, "Nothing to parse because jsonResponse is undefined");
@@ -262,7 +262,7 @@ public final class TMDBJsonParserUtil {
     final String TMDB_REVIEW_URL = "url";
 
     // Initialize an arrayList to store movie objects. This data will back the recycler view adapter.
-    ArrayList<UserReview> entries = new ArrayList<>();
+    ArrayList<MovieReview> entries = new ArrayList<>();
 
     // Create a new JSON object out of the jsonResponse
     JSONObject resultJSON = new JSONObject(jsonResponse);
@@ -277,7 +277,7 @@ public final class TMDBJsonParserUtil {
 
       if (result != null) {
         /* Create an instance of the model class to store the retrieved elements */
-        UserReview entry = new UserReview();
+        MovieReview entry = new MovieReview();
 
         /* Retrieve each element from the result JSONObject */
         String id = result.getString(TMDB_REVIEW_ID);
@@ -296,7 +296,7 @@ public final class TMDBJsonParserUtil {
         entry.setUserReviewId(id);
         entry.setAuthor(author);
         entry.setContent(content);
-        entry.setReviewUrl(urlStr);
+        entry.setUrl(urlStr);
 
         /********************
          * CREATE A SNIPPET *
@@ -307,11 +307,11 @@ public final class TMDBJsonParserUtil {
           // create shorten version of the full review (snippet) and store it
           StringBuilder contentSnippet = new StringBuilder(content);
           contentSnippet = contentSnippet.delete(100, contentSnippet.length()).append(" ... ");
-          entry.setContentSnippet(contentSnippet.toString());
+//          entry.setContentSnippet(contentSnippet.toString());
 
         } else {
           // Use full content for the snippet
-          entry.setContentSnippet(content);
+//          entry.setContentSnippet(content);
         }
 
         /* Add the entry object to the list */

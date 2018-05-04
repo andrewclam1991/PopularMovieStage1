@@ -13,7 +13,7 @@ package com.andrewclam.popularmovie.async;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.andrewclam.popularmovie.data.model.RelatedVideo;
+import com.andrewclam.popularmovie.data.model.MovieVideo;
 import com.andrewclam.popularmovie.util.NetworkUtil;
 import com.andrewclam.popularmovie.util.TMDBJsonParserUtil;
 
@@ -30,7 +30,7 @@ import java.util.ArrayList;
  * An implementation of the AsyncTask class to do network IO on a separate thread.
  */
 
-public class FetchRelatedVideoAsyncTask extends AsyncTask<Void, Void, ArrayList<RelatedVideo>> {
+public class FetchRelatedVideoAsyncTask extends AsyncTask<Void, Void, ArrayList<MovieVideo>> {
     /*Debug Tag*/
     private static final String TAG = FetchRelatedVideoAsyncTask.class.getSimpleName();
 
@@ -97,9 +97,9 @@ public class FetchRelatedVideoAsyncTask extends AsyncTask<Void, Void, ArrayList<
     }
 
     @Override
-    protected ArrayList<RelatedVideo> doInBackground(Void... voids) {
+    protected ArrayList<MovieVideo> doInBackground(Void... voids) {
         // Init a arrayList to store the parsed movie video info entries
-        ArrayList<RelatedVideo> entries;
+        ArrayList<MovieVideo> entries;
 
         try {
             // Get the url required by the network util
@@ -132,7 +132,7 @@ public class FetchRelatedVideoAsyncTask extends AsyncTask<Void, Void, ArrayList<
     }
 
     @Override
-    protected void onPostExecute(ArrayList<RelatedVideo> entries) {
+    protected void onPostExecute(ArrayList<MovieVideo> entries) {
         super.onPostExecute(entries);
         if (mListener != null) mListener.onComplete(entries);
     }
@@ -142,6 +142,6 @@ public class FetchRelatedVideoAsyncTask extends AsyncTask<Void, Void, ArrayList<
      * in preExecute and postExecute.
      */
     public interface OnFetchVideoInfoCompleteListener {
-        void onComplete(ArrayList<RelatedVideo> entries);
+        void onComplete(ArrayList<MovieVideo> entries);
     }
 }

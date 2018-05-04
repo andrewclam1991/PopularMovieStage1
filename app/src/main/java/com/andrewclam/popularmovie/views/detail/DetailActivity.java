@@ -54,7 +54,7 @@ import com.andrewclam.popularmovie.async.FetchRelatedVideoAsyncTask;
 import com.andrewclam.popularmovie.async.FetchUserReviewAsyncTask;
 import com.andrewclam.popularmovie.data.db.AppDbContract;
 import com.andrewclam.popularmovie.data.model.Movie;
-import com.andrewclam.popularmovie.data.model.RelatedVideo;
+import com.andrewclam.popularmovie.data.model.MovieVideo;
 import com.andrewclam.popularmovie.util.NetworkUtil;
 import com.squareup.picasso.Picasso;
 
@@ -214,7 +214,8 @@ public class DetailActivity extends DaggerAppCompatActivity {
     mRelatedVideosRv = findViewById(R.id.related_video_rv);
     mRelatedVideosAdapter = new RelatedVideosAdapter(entry -> {
       // Get the video url from the entry object
-      URL videoUrl = entry.getVideoUrl();
+//      URL videoUrl = entry.getVideoUrl();
+      URL videoUrl = null;
       // launch an implicit intent to handle the video url
 
       // Build the intent
@@ -256,7 +257,7 @@ public class DetailActivity extends DaggerAppCompatActivity {
     mUserReviewsAdapter = new UserReviewsAdapter(entry -> {
       // Do something when user clicks the review (??)
       // Direct user to read more with the url link
-      String reviewUrlStr = entry.getReviewUrl();
+      String reviewUrlStr = entry.getUrl();
       // launch an implicit intent to handle the video url
 
       // Build the intent
@@ -434,7 +435,7 @@ public class DetailActivity extends DaggerAppCompatActivity {
 
   /**
    * loadRelatedVideos uses the particular movie id to query the TMDB for its list of
-   * related videos, and upon completion returns an arrayList of RelatedVideo objects
+   * related videos, and upon completion returns an arrayList of MovieVideo objects
    * to populate the related video recycler view.
    *
    * @param movieId the particular movie's unique id on TMDB
@@ -556,22 +557,23 @@ public class DetailActivity extends DaggerAppCompatActivity {
    * @param videoType the parameter videoType that we want to match.
    * @return the URL of the first video that is a trailer
    */
-  private URL getFirstMatchingVideoTypeUrl(@NonNull ArrayList<RelatedVideo> entries, @NonNull final String videoType) {
-    // For each entry in the entries of the RelatedVideo, find the first entry that
+  private URL getFirstMatchingVideoTypeUrl(@NonNull ArrayList<MovieVideo> entries, @NonNull final String videoType) {
+    // For each entry in the entries of the MovieVideo, find the first entry that
     // is of the type trailer, and then return the url of such entry.
 
     /** (!) JAVA 8 implementation - Android N or later */
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
       // Use Predicate to test the entry against the criteria, return its video url
       // Use lambda express to use the Predicate interface, use predicate for testing
-      Predicate<RelatedVideo> videoTypePredicate = video -> video.getVideoType().equals(videoType);
+      Predicate<MovieVideo> videoTypePredicate = video -> video.getType().equals(videoType);
 
       // Find the first element that fits the predicate criteria, return it, or else return null
-      RelatedVideo firstVideo = entries.stream().filter(videoTypePredicate).findFirst().orElse(null);
+      MovieVideo firstVideo = entries.stream().filter(videoTypePredicate).findFirst().orElse(null);
 
       if (firstVideo != null) {
         // the filter returned the first occurrence, return its URL.
-        return firstVideo.getVideoUrl();
+        return null;
+//        return firstVideo.getVideoUrl();
       } else {
         // filter returned no result, return null
         return null;
@@ -580,9 +582,10 @@ public class DetailActivity extends DaggerAppCompatActivity {
 
     /** Default Implementation */
     // For each entry in the arrayList, do that test, return the first entry's url if it matches
-    for (RelatedVideo entry : entries) {
-      if (entry.getVideoType().equals(videoType)) {
-        return entry.getVideoUrl();
+    for (MovieVideo entry : entries) {
+      if (entry.getType().equals(videoType)) {
+        return null;
+//        return entry.getVideoUrl();
       }
     }
 

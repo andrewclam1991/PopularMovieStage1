@@ -19,7 +19,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.andrewclam.popularmovie.R;
-import com.andrewclam.popularmovie.data.model.UserReview;
+import com.andrewclam.popularmovie.data.model.MovieReview;
 
 import java.util.ArrayList;
 
@@ -38,7 +38,7 @@ public class UserReviewsAdapter extends RecyclerView.Adapter<UserReviewsAdapter.
     private final OnUserReviewClickedListener mOnItemClickedListener; // Activity pass this
 
     /*Instance Vars*/
-    private ArrayList<UserReview> mEntries;
+    private ArrayList<MovieReview> mEntries;
 
     /*Default Constructor*/
     public UserReviewsAdapter(OnUserReviewClickedListener mOnItemClickedListener) {
@@ -91,12 +91,12 @@ public class UserReviewsAdapter extends RecyclerView.Adapter<UserReviewsAdapter.
     @Override
     public void onBindViewHolder(final UserReviewAdapterViewHolder holder, int position) {
         // This is where we bind data to the ViewHolder
-        UserReview userReview = mEntries.get(position);
+        MovieReview movieReview = mEntries.get(position);
 
         // Get the posterPath info from the entry item at the adapter position
-        String author = userReview.getAuthor();
-        String content = userReview.getContent();
-        String contentSnippet = userReview.getContentSnippet();
+        String author = movieReview.getAuthor();
+        String content = movieReview.getContent();
+        String contentSnippet = content;
 
         // Call holder to bind the data
         holder.mAuthorTv.setText(author);
@@ -130,7 +130,7 @@ public class UserReviewsAdapter extends RecyclerView.Adapter<UserReviewsAdapter.
      *
      * @param mEntries the new dataset that we want to update the adapter with
      */
-    public void setUserReviewData(ArrayList<UserReview> mEntries) {
+    public void setUserReviewData(ArrayList<MovieReview> mEntries) {
         this.mEntries = mEntries;
         notifyDataSetChanged();
     }
@@ -140,7 +140,7 @@ public class UserReviewsAdapter extends RecyclerView.Adapter<UserReviewsAdapter.
      * Handle on itemClick event in each itemView inside the RecyclerView
      */
     public interface OnUserReviewClickedListener {
-        void onItemClicked(UserReview entry);
+        void onItemClicked(MovieReview entry);
     }
 
     /**
@@ -172,7 +172,7 @@ public class UserReviewsAdapter extends RecyclerView.Adapter<UserReviewsAdapter.
                 int adapterPosition = getAdapterPosition();
 
                 // 2) Find the corresponding clicked entry in the entries
-                UserReview entry = mEntries.get(adapterPosition);
+                MovieReview entry = mEntries.get(adapterPosition);
 
                 // 3) Use onClickHandler to notify the activity of a onClick event
                 // pass in the retrieved object

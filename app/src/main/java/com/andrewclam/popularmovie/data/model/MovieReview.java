@@ -10,20 +10,26 @@
 
 package com.andrewclam.popularmovie.data.model;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Model Class to store a particular movies' associated user review, includes the unique id,
  * author and the review content
  */
 
-public class UserReview extends Entity{
+public class MovieReview extends Entity{
 
+  @SerializedName("id")
   private String userReviewId;
-  private String author;
-  private String content;
-  private String reviewUrl;
-  private String contentSnippet;
 
-  public UserReview() {}
+  @SerializedName("author")
+  private String author;
+
+  @SerializedName("content")
+  private String content;
+
+  @SerializedName("url")
+  private String url;
 
   public String getUserReviewId() {
     return userReviewId;
@@ -49,19 +55,12 @@ public class UserReview extends Entity{
     this.content = content;
   }
 
-  public String getReviewUrl() {
-    return reviewUrl;
+  public String getUrl() {
+    return url;
   }
 
-  public void setReviewUrl(String reviewUrl) {
-    this.reviewUrl = reviewUrl;
+  public void setUrl(String url) {
+    this.url = url;
   }
 
-  public String getContentSnippet() {
-    return contentSnippet;
-  }
-
-  public void setContentSnippet(String contentSnippet) {
-    this.contentSnippet = contentSnippet;
-  }
 }

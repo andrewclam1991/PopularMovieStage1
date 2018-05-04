@@ -4,8 +4,11 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-// This class contains all fetched movies and extra information
-public class ApiResponse<E extends Entity> {
+/**
+ * Model class to store the serialized response data from a {@link Movie} query.
+ * @param <E>
+ */
+public class MovieResponse<E extends Entity> {
   @SerializedName("page")
   private int page;
 
