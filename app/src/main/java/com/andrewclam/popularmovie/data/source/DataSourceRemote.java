@@ -28,7 +28,7 @@ abstract class DataSourceRemote<E extends Entity> implements DataSource<E> {
   @ApiKey
   String mApiKey;
 
-  DataSourceRemote() {}
+  DataSourceRemote() { }
 
   @Override
   public final void refresh() {
@@ -36,39 +36,16 @@ abstract class DataSourceRemote<E extends Entity> implements DataSource<E> {
   }
 
   @NonNull
-  abstract Flowable<MovieResponse<E>> getApiResponse(@NonNull @ApiKey String apiKey);
-
-  @NonNull
-  abstract Flowable<MovieResponse<E>> getApiResponse(@NonNull @ApiKey String apiKey,
-                                                     @NonNull Map<String, String> options);
-
-  @NonNull
-  abstract Flowable<MovieResponse<E>> getApiResponse(@NonNull @ApiKey String apiKey,
-                                                     @NonNull String itemId);
+  @Override
+  public abstract Flowable<List<E>> getItems(@NonNull Map<String, String> options);
 
   @NonNull
   @Override
-  public final Flowable<List<E>> getItems(@NonNull Map<String, String> options){
-    return getApiResponse(mApiKey,options)
-        .flatMap(movieResponse -> Flowable.just(movieResponse.getResults()));
-  }
+  public abstract Flowable<List<E>> getItems();
 
   @NonNull
   @Override
-  public final Flowable<List<E>> getItems() {
-    return getApiResponse(mApiKey)
-        .flatMap(movieResponse -> Flowable.just(movieResponse.getResults()));
-  }
-
-  @NonNull
-  @Override
-  public final Flowable<Optional<E>> getItem(@NonNull String entityId) {
-    return getApiResponse(mApiKey,entityId)
-        .flatMap(movieResponse -> {
-          Optional<E> opEntity = Optional.of(movieResponse.getResults().get(0));
-          return Flowable.just(opEntity);
-        });
-  }
+  public abstract Flowable<Optional<E>> getItem(@NonNull String entityId);
 
   @NonNull
   @Override

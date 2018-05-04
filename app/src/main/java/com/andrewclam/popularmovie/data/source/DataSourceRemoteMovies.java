@@ -4,7 +4,9 @@ import android.support.annotation.NonNull;
 
 import com.andrewclam.popularmovie.data.model.MovieResponse;
 import com.andrewclam.popularmovie.data.model.Movie;
+import com.google.common.base.Optional;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -48,26 +50,28 @@ class DataSourceRemoteMovies extends DataSourceRemote<Movie> {
   private final ApiServiceMovies mApiService;
 
   @Inject
-  DataSourceRemoteMovies(@NonNull Retrofit retrofit) {
-    mApiService = retrofit.create(ApiServiceMovies.class);
+  DataSourceRemoteMovies(@NonNull ApiServiceMovies apiService) {
+    mApiService = apiService;
   }
 
   @NonNull
   @Override
-  Flowable<MovieResponse<Movie>> getApiResponse(@NonNull String apiKey) {
-    return mApiService.getItems(apiKey);
+  public Flowable<List<Movie>> getItems(@NonNull Map<String, String> options) {
+    return mApiService.getItems(super.mApiKey,options)
+        .flatMap(movieResponse -> Flowable.just(movieResponse.getResults()));
   }
 
   @NonNull
   @Override
-  Flowable<MovieResponse<Movie>> getApiResponse(@NonNull String apiKey,
-                                                @NonNull Map<String, String> options) {
-    return mApiService.getItems(apiKey,options);
+  public Flowable<List<Movie>> getItems() {
+    return mApiService.getItems(super.mApiKey)
+        .flatMap(movieResponse -> Flowable.just(movieResponse.getResults()));
   }
 
   @NonNull
   @Override
-  Flowable<MovieResponse<Movie>> getApiResponse(@NonNull String apiKey, @NonNull String itemId) {
-    return mApiService.getItem(apiKey,itemId);
+  public Flowable<Optional<Movie>> getItem(@NonNull String entityId) {
+    return mApiService.getItem(super.mApiKey,entityId)
+        .flatMap(movieResponse -> Flowable.just(Optional.of(movieResponse.getResults().get(0))));
   }
 }

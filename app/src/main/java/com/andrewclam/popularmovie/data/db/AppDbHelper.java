@@ -34,7 +34,7 @@ public class AppDbHelper extends SQLiteOpenHelper {
    * This is the name of our database. Database names should be descriptive and end with the
    * .db extension.
    */
-  public static final String DATABASE_NAME = "movie_listing.db";
+  private static final String DATABASE_NAME = "movie_listing.db";
 
   /*
    * If you change the database schema, you must increment the database version or the onUpgrade
@@ -42,7 +42,7 @@ public class AppDbHelper extends SQLiteOpenHelper {
    */
   private static final int DATABASE_VERSION = 1;
 
-  public AppDbHelper(Context context) {
+  AppDbHelper(Context context) {
     super(context, DATABASE_NAME, null, DATABASE_VERSION);
   }
 
@@ -75,23 +75,23 @@ public class AppDbHelper extends SQLiteOpenHelper {
              * TMDB.
              */
 
-            MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            AppDbContract.MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 
             AppDbContract.MovieEntry.COLUMN_MOVIE_TMDB_ID + " INTEGER NOT NULL, " +
 
-            MovieEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
+            AppDbContract.MovieEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
 
-            MovieEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, " +
+            AppDbContract.MovieEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, " +
 
-            MovieEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL, " +
+            AppDbContract.MovieEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL, " +
 
             AppDbContract.MovieEntry.COLUMN_VOTE_AVERAGE + " REAL NOT NULL, " +
 
             AppDbContract.MovieEntry.COLUMN_VOTE_COUNT + " INTEGER NOT NULL, " +
 
-            MovieEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
+            AppDbContract.MovieEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
 
-            MovieEntry.COLUMN_POPULARITY + " REAL NOT NULL, " +
+            AppDbContract.MovieEntry.COLUMN_POPULARITY + " REAL NOT NULL, " +
 
             // Favorite should contain boolean, but SQLite doesn't have this data type
             // instead, use INTEGER 1 to represent true, and 0 as false, default to false (0)

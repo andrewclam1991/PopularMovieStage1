@@ -47,6 +47,6 @@ ext {
     runnerVersion = '1.0.0'
     rulesVersion = '1.0.0'
     mockitoVersion = '1.10.19'
-    espressoVersion = '3.0.1'
+    espressoVersion = '3.0.2'
     robolectricVersion = '3.8'
 }

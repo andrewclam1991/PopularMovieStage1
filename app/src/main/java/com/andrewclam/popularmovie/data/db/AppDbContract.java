@@ -30,6 +30,7 @@ import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.CONTE
  */
 public final class AppDbContract {
 
+  private AppDbContract(){}
   /*
    * The "Content authority" is a name for the entire content provider, similar to the
    * relationship between a domain name and its website. A convenient string to use for the
