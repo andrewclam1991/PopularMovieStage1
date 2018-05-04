@@ -61,6 +61,7 @@ class MainPresenter implements MainContract.Presenter, MainContract.ItemViewHold
   @Override
   public void dropView() {
     mView = null;
+    mCompositeDisposable.clear();
   }
 
   @Override

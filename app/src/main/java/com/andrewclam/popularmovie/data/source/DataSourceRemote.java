@@ -3,11 +3,14 @@ package com.andrewclam.popularmovie.data.source;
 import android.support.annotation.NonNull;
 
 import com.andrewclam.popularmovie.data.DataSource;
+import com.andrewclam.popularmovie.data.model.ApiResponse;
 import com.andrewclam.popularmovie.data.model.Entity;
 import com.google.common.base.Optional;
 
 import java.util.List;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
@@ -21,6 +24,10 @@ import io.reactivex.Flowable;
  */
 abstract class DataSourceRemote<E extends Entity> implements DataSource<E> {
 
+  @Inject
+  @ApiKey
+  String mApiKey;
+
   DataSourceRemote() {}
 
   @Override
@@ -29,17 +36,38 @@ abstract class DataSourceRemote<E extends Entity> implements DataSource<E> {
   }
 
   @NonNull
-  @Override
-  public abstract Flowable<List<E>> getItems(@NonNull Map<String, String> options);
+  abstract Flowable<ApiResponse<E>> getApiResponse(@NonNull @ApiKey String apiKey);
+
+  @NonNull
+  abstract Flowable<ApiResponse<E>> getApiResponse(@NonNull @ApiKey String apiKey,
+                                                   @NonNull Map<String, String> options);
+
+  @NonNull
+  abstract Flowable<ApiResponse<E>> getApiResponse(@NonNull @ApiKey String apiKey,
+                                                   @NonNull String itemId);
 
   @NonNull
   @Override
-  public abstract Flowable<List<E>> getItems();
+  public final Flowable<List<E>> getItems(@NonNull Map<String, String> options){
+    return getApiResponse(mApiKey,options)
+        .flatMap(apiResponse -> Flowable.just(apiResponse.getResults()));
+  }
+
+  @NonNull
+  @Override
+  public final Flowable<List<E>> getItems() {
+    return getApiResponse(mApiKey)
+        .flatMap(apiResponse -> Flowable.just(apiResponse.getResults()));
+  }
 
   @NonNull
   @Override
   public final Flowable<Optional<E>> getItem(@NonNull String entityId) {
-    return Flowable.empty();
+    return getApiResponse(mApiKey,entityId)
+        .flatMap(apiResponse -> {
+          Optional<E> opEntity = Optional.of(apiResponse.getResults().get(0));
+          return Flowable.just(opEntity);
+        });
   }
 
   @NonNull
