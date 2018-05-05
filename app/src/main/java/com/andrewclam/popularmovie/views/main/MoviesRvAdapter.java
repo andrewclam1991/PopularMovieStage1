@@ -12,22 +12,21 @@ import com.andrewclam.popularmovie.R;
 import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 /**
  * Concrete implementation of a {@link RecyclerView.Adapter<RecyclerView.ViewHolder>}. Within the
  * context of MVP architecture pattern, this class is implemented as a "dumb" View class
  * where it delegates actual data binding responsibility of each {@link MainContract.ItemViewHolder}
- * to its owning {@link MainContract.ItemViewHolderPresenter<>}. This class only holds reference
+ * to its owning {@link MainContract.MovieItemPresenter <>}. This class only holds reference
  * to framework View components, and contains no data.
  */
 class MoviesRvAdapter extends RecyclerView.Adapter<MoviesRvAdapter.MovieItemViewHolder> {
 
   @NonNull
-  private final MainContract.ItemViewHolderPresenter<MainContract.ItemViewHolder> mPresenter;
+  private final MainContract.MovieItemPresenter<MainContract.ItemViewHolder> mPresenter;
 
   @Inject
-  MoviesRvAdapter(@NonNull MainContract.ItemViewHolderPresenter<MainContract.ItemViewHolder> presenter){
+  MoviesRvAdapter(@NonNull MainContract.MovieItemPresenter<MainContract.ItemViewHolder> presenter){
     mPresenter = presenter;
   }
 
@@ -65,7 +64,7 @@ class MoviesRvAdapter extends RecyclerView.Adapter<MoviesRvAdapter.MovieItemView
    *
    * Note: Within a MVP pattern, this implementation of a {@link MainContract.ItemViewHolder}
    * is treated as a "dumb" View class where it handles View responsibilities lazily, and as
-   * instructed by its Presenter class {@link MainContract.ItemViewHolderPresenter<>}.
+   * instructed by its Presenter class {@link MainContract.MovieItemPresenter <>}.
    */
   class MovieItemViewHolder extends RecyclerView.ViewHolder implements MainContract.ItemViewHolder{
 

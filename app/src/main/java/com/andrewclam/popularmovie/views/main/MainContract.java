@@ -39,7 +39,7 @@ interface MainContract {
 
   /**
    * Interface that defines the ViewHolder class responsibilities
-   * allows communication with a client {@link ItemViewHolderPresenter<ItemViewHolder>}
+   * allows communication with a client {@link MovieItemPresenter <ItemViewHolder>}
    */
   interface ItemViewHolder{
     // Define view holder methods here
@@ -132,11 +132,11 @@ interface MainContract {
   }
 
   /**
-   * Interface that defines a {@link ItemViewHolderPresenter} responsibilities
+   * Interface that defines a {@link MovieItemPresenter} responsibilities
    * allows communication with a client {@link ItemViewHolder}
    * @param <I>
    */
-  interface ItemViewHolderPresenter<I extends ItemViewHolder>{
+  interface MovieItemPresenter<I extends ItemViewHolder>{
 
     /**
      * Method called when the adapter is ready to populate a {@link ItemViewHolder}

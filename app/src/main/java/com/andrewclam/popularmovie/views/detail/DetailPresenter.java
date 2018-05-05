@@ -6,7 +6,6 @@ import javax.inject.Inject;
 
 public class DetailPresenter implements DetailContract.Presenter {
 
-
   @Inject
   DetailPresenter(){
 
@@ -14,16 +13,6 @@ public class DetailPresenter implements DetailContract.Presenter {
 
   @Override
   public void loadMovie() {
-
-  }
-
-  @Override
-  public void loadMovieVideos() {
-
-  }
-
-  @Override
-  public void loadMovieReviews() {
 
   }
 
@@ -41,4 +30,5 @@ public class DetailPresenter implements DetailContract.Presenter {
   public void dropView() {
 
   }
+
 }

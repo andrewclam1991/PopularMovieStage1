@@ -3,8 +3,6 @@ package com.andrewclam.popularmovie.views.detail;
 import android.support.annotation.NonNull;
 
 import com.andrewclam.popularmovie.data.model.Movie;
-import com.andrewclam.popularmovie.data.model.MovieReview;
-import com.andrewclam.popularmovie.data.model.MovieVideo;
 import com.andrewclam.popularmovie.views.BasePresenter;
 import com.andrewclam.popularmovie.views.BaseView;
 
@@ -37,17 +35,8 @@ interface DetailContract {
      * @param content share content
      */
     void showShareCompat(@NonNull String mimeType, @NonNull String title, @NonNull String content);
-
-    /**
-     * Call to notify View class when the {@link MovieVideo} data set has changed.
-     */
-    void onMovieVideosDataSetChanged();
-
-    /**
-     * Call to notify View class when the {@link MovieReview} data set has changed.
-     */
-    void onMovieReviewsDataSetChanged();
   }
+
 
   /**
    * Interface that defines the Presenter class responsibilities
@@ -58,16 +47,6 @@ interface DetailContract {
      * Call to start loading {@link Movie} detail from the Model layer
      */
     void loadMovie();
-
-    /**
-     * Call to start loading a list of {@link MovieVideo} from the Model layer
-     */
-    void loadMovieVideos();
-
-    /**
-     * Call to start loading a list of {@link MovieReview} from the Model layer
-     */
-    void loadMovieReviews();
 
     /**
      * Call to check the current movie's favorite status in the Model layer
