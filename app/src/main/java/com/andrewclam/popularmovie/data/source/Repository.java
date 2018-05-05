@@ -181,15 +181,9 @@ class Repository<E extends Entity> implements DataSource<E> {
   private Flowable<Optional<E>> getLocalItemById(@NonNull final String itemId) {
     return mLocalDataSource.getItem(itemId)
         .takeWhile(Optional::isPresent)
-        .flatMap(itemOptional -> {
-          if (itemOptional.isPresent()) {
-            E item = itemOptional.get();
-            return saveItemToCache(item)
-                .andThen(Flowable.just(itemOptional));
-          } else {
-            return Flowable.just(Optional.absent());
-          }
-        });
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .flatMap(item -> saveItemToCache(item).andThen(Flowable.just(Optional.of(item))));
   }
 
   @NonNull

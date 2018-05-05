@@ -5,12 +5,16 @@ import com.andrewclam.popularmovie.data.model.Entity;
 import com.google.common.base.Optional;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -21,16 +25,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.subscribers.TestSubscriber;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 /**
  * Unit tests for the implementation of the in-memory {@link Repository<>} with cache
  * using {@link org.mockito.Mockito}
@@ -75,24 +70,34 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   }
 
   /**
-   * Allow test subclass to provide a list of test items of type {@link E}
+   * Requires test subclass to provide a list of test items of type {@link E}
    * @return provides a list of test items
    */
   abstract List<E> provideTestItemsList();
 
   /**
-   * Allow test subclass to provide a test item of type {@link E}
-   * @return a test item
-   */
-  abstract E provideTestItem();
-
-  /**
-   * Allow test subclass to provide the test item's Class
+   * Requires test subclass to provide the test item's Class
    * @return a test item 's Class
    */
   abstract Class<E> provideTestItemClass();
 
-  abstract Map<String,String> provideTestGetItemsOptions();
+  /**
+   * Allow test subclass to provide a test item of type {@link E}
+   * @return supply a test item
+   */
+  private E provideTestItem(){
+    return ITEMS.get(0);
+  }
+
+  /**
+   * Allow test subclass to provide the item options
+   * @return supply options
+   */
+  private Map<String,String> provideTestGetItemsOptions(){
+    Map<String,String> options = new HashMap<>();
+    options.put("key","value");
+    return options;
+  }
 
   /**
    * Tests - Model Create
@@ -109,7 +114,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     mRepository.addAll(ITEMS).subscribe(testObserver);
 
     // Verify addAll(items) is called at the remote data source
-    verify(mRemoteDataSource).addAll(ITEMS);
+    Mockito.verify(mRemoteDataSource).addAll(ITEMS);
 
     // Then observed issue completes without error
     testObserver.assertComplete();
@@ -127,14 +132,14 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     mRepository.add(ITEM).subscribe(testObserver);
 
     // Verify add(item) is called at the remote data source
-    verify(mRemoteDataSource).add(ITEM);
+    Mockito.verify(mRemoteDataSource).add(ITEM);
 
     // Then completable completes without error
     testObserver.assertComplete();
     testObserver.assertNoErrors();
 
     // And that cache is updated
-    assertThat(mRepository.mCachedItems.size(), is(1));
+    Assert.assertThat(mRepository.mCachedItems.size(), is(1));
   }
 
   @Test
@@ -149,7 +154,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     mRepository.addAll(ITEMS).subscribe(testObserver);
 
     // Verify addAll(items) is called at the local data source
-    verify(mLocalDataSource).addAll(ITEMS);
+    Mockito.verify(mLocalDataSource).addAll(ITEMS);
 
     // Then completable completes without error
     testObserver.assertComplete();
@@ -168,7 +173,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     mRepository.add(ITEM).subscribe(testObserver);
 
     // Verify add(item) is called at the local data source
-    verify(mLocalDataSource).add(ITEM);
+    Mockito.verify(mLocalDataSource).add(ITEM);
 
     // Then completable completes without error
     testObserver.assertComplete();
@@ -193,7 +198,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     mRepository.getItem(ITEM.getUid()).subscribe(testSubscriber);
 
     // Then the item is loaded from the local
-    verify(mRemoteDataSource).getItem(eq(ITEM.getUid()));
+    Mockito.verify(mRemoteDataSource).getItem(Matchers.eq(ITEM.getUid()));
     testSubscriber.assertValue(Optional.of(ITEM));
   }
 
@@ -210,7 +215,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     mRepository.getItem(ITEM.getUid()).subscribe(testSubscriber);
 
     // Then the item is loaded from the local
-    verify(mLocalDataSource).getItem(eq(ITEM.getUid()));
+    Mockito.verify(mLocalDataSource).getItem(Matchers.eq(ITEM.getUid()));
     testSubscriber.assertValue(Optional.of(ITEM));
   }
 
@@ -234,8 +239,8 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     mRepository.getItem(ITEM.getUid()).subscribe(testSubscriber);
 
     // Verify that neither the local nor remote's getItem() is called
-    verify(mRemoteDataSource,never()).getItem(ITEM.getUid());
-    verify(mLocalDataSource,never()).getItem(ITEM.getUid());
+    Mockito.verify(mRemoteDataSource, Mockito.never()).getItem(ITEM.getUid());
+    Mockito.verify(mLocalDataSource, Mockito.never()).getItem(ITEM.getUid());
     // Then the item is loaded from the cache
     testSubscriber.assertValue(Optional.of(ITEM));
   }
@@ -255,7 +260,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     mRepository.getItems().subscribe(testSubscriber);
 
     // Then items are loaded from the remote data source
-    verify(mRemoteDataSource).getItems();
+    Mockito.verify(mRemoteDataSource).getItems();
     testSubscriber.assertValue(ITEMS);
   }
 
@@ -272,7 +277,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     mRepository.getItems().subscribe(testSubscriber);
 
     // Then items are loaded from the local data source
-    verify(mLocalDataSource).getItems();
+    Mockito.verify(mLocalDataSource).getItems();
     testSubscriber.assertValue(ITEMS);
   }
 
@@ -291,8 +296,8 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     mRepository.getItems().subscribe(testSubscriber1);
 
     // Verify neither the local nor remote data sources' getItems() was called
-    verify(mLocalDataSource, never()).getItems();
-    verify(mRemoteDataSource, never()).getItems();
+    Mockito.verify(mLocalDataSource, Mockito.never()).getItems();
+    Mockito.verify(mRemoteDataSource, Mockito.never()).getItems();
     // And that the subscriber has received the items
     testSubscriber1.assertValue(ITEMS);
   }
@@ -312,9 +317,9 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     mRepository.getItems().subscribe(testSubscriber);
 
     // Verify the remote getItems() was called
-    verify(mRemoteDataSource).getItems();
+    Mockito.verify(mRemoteDataSource).getItems();
     // And that the local add() was called to save each item from remote
-    verify(mLocalDataSource,times(ITEMS.size())).add(any(ITEM_CLASS));
+    Mockito.verify(mLocalDataSource, Mockito.times(ITEMS.size())).add(any(ITEM_CLASS));
     // And that the subscriber has received the items
     testSubscriber.assertValue(ITEMS);
   }
@@ -334,13 +339,13 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     mRepository.getItem(ITEM.getUid()).subscribe(testSubscriber1);
 
     // Verify the remote was called to get the item
-    verify(mRemoteDataSource).getItem(ITEM.getUid());
+    Mockito.verify(mRemoteDataSource).getItem(ITEM.getUid());
     // And that the local was called to save the item from remote
-    verify(mLocalDataSource).add(ITEM);
+    Mockito.verify(mLocalDataSource).add(ITEM);
     // And the subscriber has received the optional item
     testSubscriber1.assertValue(Optional.of(ITEM));
     // And the cache is not dirty (data up-to-date)
-    assertFalse(mRepository.mCacheIsDirty);
+    Assert.assertFalse(mRepository.mCacheIsDirty);
   }
 
   @Test
@@ -358,13 +363,13 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     mRepository.getItems().subscribe(testSubscriber1);
 
     // Verify items were requested from remote data source
-    verify(mRemoteDataSource).getItems();
+    Mockito.verify(mRemoteDataSource).getItems();
     // And the local data source was called to save each item
-    verify(mLocalDataSource, times(ITEMS.size())).add(any(ITEM_CLASS));
+    Mockito.verify(mLocalDataSource, Mockito.times(ITEMS.size())).add(Matchers.any(ITEM_CLASS));
     // And the subscriber has received the items
     testSubscriber1.assertValue(ITEMS);
     // And the cache is not dirty
-    assertFalse(mRepository.mCacheIsDirty);
+    Assert.assertFalse(mRepository.mCacheIsDirty);
   }
 
   @Test
@@ -398,9 +403,9 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
      */
 
     // Verify that the items were only requested once from remote, once from local:
-    verify(mLocalDataSource).getItems();
-    verify(mRemoteDataSource).getItems();
-    assertFalse(mRepository.mCacheIsDirty);
+    Mockito.verify(mLocalDataSource).getItems();
+    Mockito.verify(mRemoteDataSource).getItems();
+    Assert.assertFalse(mRepository.mCacheIsDirty);
     testSubscriber1.assertValue(ITEMS);
     testSubscriber2.assertValue(ITEMS);
   }
@@ -423,9 +428,9 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     mRepository.getItems().subscribe(testSubscriber2);
 
     // Then tasks were only requested once from remote and local sources
-    verify(mRemoteDataSource).getItems();
-    verify(mLocalDataSource).getItems();
-    assertFalse(mRepository.mCacheIsDirty);
+    Mockito.verify(mRemoteDataSource).getItems();
+    Mockito.verify(mLocalDataSource).getItems();
+    Assert.assertFalse(mRepository.mCacheIsDirty);
     testSubscriber1.assertValue(ITEMS);
     testSubscriber2.assertValue(ITEMS);
   }
@@ -481,8 +486,8 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     mRepository.getItems().subscribe(testSubscriber);
 
     // Verify the tasks from the remote data source are returned, not the local
-    verify(mLocalDataSource, never()).getItems();
-    verify(mRemoteDataSource).getItems();
+    Mockito.verify(mLocalDataSource, Mockito.never()).getItems();
+    Mockito.verify(mRemoteDataSource).getItems();
     testSubscriber.assertValue(ITEMS);
   }
 
@@ -501,7 +506,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     mRepository.getItems(OPTIONS).subscribe(testSubscriber);
 
     // Then items are loaded from the remote data source
-    verify(mRemoteDataSource).getItems(OPTIONS);
+    Mockito.verify(mRemoteDataSource).getItems(OPTIONS);
     testSubscriber.assertValue(ITEMS);
   }
 
@@ -518,7 +523,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     mRepository.getItems(OPTIONS).subscribe(testSubscriber);
 
     // Then items are loaded from the local data source
-    verify(mLocalDataSource).getItems(OPTIONS);
+    Mockito.verify(mLocalDataSource).getItems(OPTIONS);
     testSubscriber.assertValue(ITEMS);
   }
 
@@ -541,8 +546,8 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     mRepository.update(ITEM).subscribe(testObserver);
 
     // Verify that update() is called in local and remote data source
-    verify(mRemoteDataSource).update(ITEM);
-    verify(mLocalDataSource).update(ITEM);
+    Mockito.verify(mRemoteDataSource).update(ITEM);
+    Mockito.verify(mLocalDataSource).update(ITEM);
   }
 
   @Test
@@ -589,9 +594,9 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     mRepository.remove(ITEM.getUid()).subscribe(testObserver1);
 
     // Verify that the data sources were called to remove item
-    verify(mRemoteDataSource).remove(ITEM.getUid());
-    verify(mLocalDataSource).remove(ITEM.getUid());
-    assertThat(mRepository.mCachedItems.size(),is(0));
+    Mockito.verify(mRemoteDataSource).remove(ITEM.getUid());
+    Mockito.verify(mLocalDataSource).remove(ITEM.getUid());
+    Assert.assertThat(mRepository.mCachedItems.size(), is(0));
 
     // and operation completes without error
     testObserver.assertComplete();
@@ -616,9 +621,9 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     mRepository.removeAll().subscribe(testObserver1);
 
     // Verify the data sources were called to remove all items
-    verify(mRemoteDataSource).removeAll();
-    verify(mLocalDataSource).removeAll();
-    assertThat(mRepository.mCachedItems.size(),is(0));
+    Mockito.verify(mRemoteDataSource).removeAll();
+    Mockito.verify(mLocalDataSource).removeAll();
+    Assert.assertThat(mRepository.mCachedItems.size(), is(0));
     // and operation completes without error
     testObserver.assertComplete();
     testObserver.assertNoErrors();
@@ -628,70 +633,70 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   class ArrangeBuilder {
 
     ArrangeBuilder withItemsNotAvailable(DataSource<E> dataSource) {
-      when(dataSource.getItems()).thenReturn(Flowable.just(Collections.emptyList()));
+      Mockito.when(dataSource.getItems()).thenReturn(Flowable.just(Collections.emptyList()));
       return this;
     }
 
     ArrangeBuilder withItemsNotAvailableWithOptions(DataSource<E> dataSource, Map<String,String> options) {
-      when(dataSource.getItems(options)).thenReturn(Flowable.just(Collections.emptyList()));
+      Mockito.when(dataSource.getItems(options)).thenReturn(Flowable.just(Collections.emptyList()));
       return this;
     }
 
     ArrangeBuilder withItemsAvailable(DataSource<E> dataSource, List<E> items) {
       // don't allow the data sources to complete. ??
-      when(dataSource.getItems()).thenReturn(Flowable.just(items).concatWith(Flowable.never()));
+      Mockito.when(dataSource.getItems()).thenReturn(Flowable.just(items).concatWith(Flowable.never()));
       return this;
     }
 
     ArrangeBuilder withItemsAvailableWithOptions(DataSource<E> dataSource, List<E> items, Map<String,String> options) {
-      when(dataSource.getItems(options)).thenReturn(Flowable.just(items).concatWith(Flowable.never()));
+      Mockito.when(dataSource.getItems(options)).thenReturn(Flowable.just(items).concatWith(Flowable.never()));
       return this;
     }
 
     ArrangeBuilder withItemNotAvailable(DataSource<E> dataSource, String id) {
-      when(dataSource.getItem(eq(id))).thenReturn(Flowable.just(Optional.absent()));
+      Mockito.when(dataSource.getItem(Matchers.eq(id))).thenReturn(Flowable.just(Optional.absent()));
       return this;
     }
 
     ArrangeBuilder withItemAvailable(DataSource<E> dataSource, E item) {
       Optional<E> itemOptional = Optional.of(item);
-      when(dataSource.getItem(eq(itemOptional.get().getUid())))
+      Mockito.when(dataSource.getItem(Matchers.eq(itemOptional.get().getUid())))
           .thenReturn(Flowable.just(itemOptional).concatWith(Flowable.never()));
       return this;
     }
 
     ArrangeBuilder withItemAdded(DataSource<E> dataSource, E item) {
-      when(dataSource.add(item)).thenReturn(Completable.complete());
+      Mockito.when(dataSource.add(item)).thenReturn(Completable.complete());
       return this;
     }
 
     ArrangeBuilder withItemAddedAny(DataSource<E> dataSource) {
-      when(dataSource.add(any())).thenReturn(Completable.complete());
+      Mockito.when(dataSource.add(Matchers.any())).thenReturn(Completable.complete());
       return this;
     }
 
     ArrangeBuilder withItemsAdded(DataSource<E> dataSource, List<E> items) {
-      when(dataSource.addAll(items)).thenReturn(Completable.complete());
+      Mockito.when(dataSource.addAll(items)).thenReturn(Completable.complete());
       return this;
     }
 
     ArrangeBuilder withItemsAddedAny(DataSource<E> dataSource) {
-      when(dataSource.addAll(anyList())).thenReturn(Completable.complete());
+      Mockito.when(dataSource.addAll(Matchers.anyList())).thenReturn(Completable.complete());
       return this;
     }
 
     ArrangeBuilder withItemUpdatedAny(DataSource<E> dataSource) {
-      when(dataSource.update(any())).thenReturn(Completable.complete());
+      Mockito.when(dataSource.update(Matchers.any())).thenReturn(Completable.complete());
       return this;
     }
 
     ArrangeBuilder withItemsRemovedAll(DataSource<E> dataSource) {
-      when(dataSource.removeAll()).thenReturn(Completable.complete());
+      Mockito.when(dataSource.removeAll()).thenReturn(Completable.complete());
       return this;
     }
 
     ArrangeBuilder withItemRemoved(DataSource<E> dataSource, String id){
-      when(dataSource.remove(id)).thenReturn(Completable.complete());
+      Mockito.when(dataSource.remove(id)).thenReturn(Completable.complete());
       return this;
     }
   }
