@@ -50,10 +50,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    flavorDimensions "mode"
+    flavorDimensions "mode","mock"
     productFlavors{
-        refactor {
-            applicationIdSuffix = ".refactor"
+        mock {
+            dimension "mock"
+            applicationIdSuffix = ".mock"
+            resValue "string","tmdb_api_key", keystoreProperties['TMDB_API_KEY']
         }
         dev{
             dimension "mode"
@@ -68,7 +70,7 @@ android {
     // Remove mockRelease as it's not needed.
     android.variantFilter { variant ->
         if (variant.buildType.name.equals('release')
-                && variant.getFlavors().get(0).name.equals('refactor')) {
+                && variant.getFlavors().get(0).name.equals('mock')) {
             variant.setIgnore(true)
         }
     }

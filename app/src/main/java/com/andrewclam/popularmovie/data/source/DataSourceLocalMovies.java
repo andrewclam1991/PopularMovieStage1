@@ -12,8 +12,6 @@ import com.andrewclam.popularmovie.data.model.Movie;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.ARG_FAVORITE_IS_FALSE;
-import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.ARG_FAVORITE_IS_TRUE;
 import static com.andrewclam.popularmovie.data.db.AppDbContract.MovieEntry.CONTENT_URI_MOVIES;
 
 /**
@@ -46,8 +44,6 @@ class DataSourceLocalMovies extends DataSourceLocal<Movie> {
     values.put(AppDbContract.MovieEntry.COLUMN_VOTE_COUNT, item.getVoteCount());
     values.put(AppDbContract.MovieEntry.COLUMN_POPULARITY, item.getPopularity());
     values.put(AppDbContract.MovieEntry.COLUMN_OVERVIEW, item.getOverview());
-    values.put(AppDbContract.MovieEntry.COLUMN_FAVORITE, item.isFavorite()?
-        ARG_FAVORITE_IS_TRUE : ARG_FAVORITE_IS_FALSE);
     values.put(AppDbContract.MovieEntry.COLUMN_NAME_DELETE_FLAG, item.isSetDelete() ? 1 : 0);
     return values;
   }
@@ -63,8 +59,6 @@ class DataSourceLocalMovies extends DataSourceLocal<Movie> {
     long voteCount = c.getInt(c.getColumnIndexOrThrow(AppDbContract.MovieEntry.COLUMN_VOTE_COUNT));
     double popularity = c.getDouble(c.getColumnIndexOrThrow(AppDbContract.MovieEntry.COLUMN_POPULARITY));
     String overview = c.getString(c.getColumnIndexOrThrow(AppDbContract.MovieEntry.COLUMN_OVERVIEW));
-    boolean isFavorite = c.getInt(c.getColumnIndexOrThrow(AppDbContract.MovieEntry.COLUMN_FAVORITE))
-        == ARG_FAVORITE_IS_TRUE;
     boolean setDelete = c.getInt(c.getColumnIndexOrThrow(AppDbContract.MovieEntry.COLUMN_NAME_DELETE_FLAG)) == 1;
 
     Movie item = new Movie();
@@ -75,7 +69,6 @@ class DataSourceLocalMovies extends DataSourceLocal<Movie> {
     item.setVoteCount(voteCount);
     item.setPopularity(popularity);
     item.setOverview(overview);
-    item.setFavorite(isFavorite);
     item.setDelete(setDelete);
     return item;
   }

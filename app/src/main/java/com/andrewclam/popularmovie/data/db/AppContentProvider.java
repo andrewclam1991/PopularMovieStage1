@@ -271,8 +271,9 @@ public class AppContentProvider extends ContentProvider {
       case CODE_MOVIE_FAVORITE:
         // Want to get the list of all movies that are marked favorite
         inTables = AppDbContract.MovieEntry.TABLE_NAME;
-        selection = AppDbContract.MovieEntry.COLUMN_FAVORITE.concat("=?");
-        selectionArgs = new String[]{String.valueOf(AppDbContract.MovieEntry.ARG_FAVORITE_IS_TRUE)};
+        // TODO move to favorites table
+//        selection = AppDbContract.MovieEntry.COLUMN_FAVORITE.concat("=?");
+//        selectionArgs = new String[]{String.valueOf(AppDbContract.MovieEntry.ARG_FAVORITE_IS_TRUE)};
         break;
 
       case CODE_MOVIE_WITH_SERVICE_ID:

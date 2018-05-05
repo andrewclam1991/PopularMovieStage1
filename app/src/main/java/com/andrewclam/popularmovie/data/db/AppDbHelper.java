@@ -75,7 +75,7 @@ public class AppDbHelper extends SQLiteOpenHelper {
     AppDbContract.MovieEntry.COLUMN_VOTE_COUNT + " INTEGER NOT NULL, " +
     AppDbContract.MovieEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
     AppDbContract.MovieEntry.COLUMN_POPULARITY + " REAL NOT NULL, " +
-    AppDbContract.MovieEntry.COLUMN_FAVORITE + " INTEGER DEFAULT 0, " +
+//    AppDbContract.MovieEntry.COLUMN_FAVORITE + " INTEGER DEFAULT 0, " +
     " UNIQUE (" + MovieEntry.COLUMN_MOVIE_TMDB_ID + ") ON CONFLICT REPLACE)";
 
 
