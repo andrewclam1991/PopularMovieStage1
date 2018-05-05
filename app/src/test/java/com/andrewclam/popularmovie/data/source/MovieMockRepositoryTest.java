@@ -11,8 +11,7 @@ public class MovieMockRepositoryTest extends BaseMockRepositoryTest<Movie> {
   @Override
   List<Movie> provideTestItemsList() {
     List<Movie> list = new ArrayList<>();
-
-    int count = 12345;
+    int count = 30;
     while (count > 0){
       Movie item = new Movie();
       item.setUid(UUID.randomUUID().toString());

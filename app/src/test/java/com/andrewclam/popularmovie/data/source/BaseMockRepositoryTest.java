@@ -49,7 +49,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   private DataSource<E> mLocalDataSource;
 
   @Before
-  public void setupRepository(){
+  public final void setupRepository(){
     // Mockito has a very convenient way to inject mocks by using the @Mock annotation. To
     // inject the mocks in the test the initMocks method needs to be called.
     MockitoAnnotations.initMocks(this);
@@ -65,7 +65,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   }
 
   @After
-  public void cleanup(){
+  public final void cleanup(){
     mRepository = null;
   }
 
@@ -76,16 +76,16 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   abstract List<E> provideTestItemsList();
 
   /**
-   * Requires test subclass to provide the test item's Class
+   * Requires test subclass to optionally provide the test item's Class
    * @return a test item 's Class
    */
   abstract Class<E> provideTestItemClass();
 
   /**
-   * Allow test subclass to provide a test item of type {@link E}
+   * Allow test subclass to optionally provide a test item of type {@link E}
    * @return supply a test item
    */
-  private E provideTestItem(){
+  E provideTestItem(){
     return ITEMS.get(0);
   }
 
@@ -93,7 +93,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
    * Allow test subclass to provide the item options
    * @return supply options
    */
-  private Map<String,String> provideTestGetItemsOptions(){
+  Map<String,String> provideTestGetItemsOptions(){
     Map<String,String> options = new HashMap<>();
     options.put("key","value");
     return options;
@@ -103,7 +103,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
    * Tests - Model Create
    */
   @Test
-  public void saveItems_savesItemsToRemoteDataSource() {
+  public final void saveItems_savesItemsToRemoteDataSource() {
     // Given when items are saved, they will save successfully in local and remote data sources
     new ArrangeBuilder()
         .withItemsAdded(mLocalDataSource, ITEMS)
@@ -121,7 +121,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     testObserver.assertNoErrors();
   }
   @Test
-  public void saveItem_savesItemToRemoteDataSource() {
+  public final void saveItem_savesItemToRemoteDataSource() {
     // Given when an item is saved, it will save successfully in local and remote data sources
     new ArrangeBuilder()
         .withItemAdded(mLocalDataSource, ITEM)
@@ -143,7 +143,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   }
 
   @Test
-  public void saveItems_savesItemsToLocalDataSource() {
+  public final void saveItems_savesItemsToLocalDataSource() {
     // Given when items are saved, they will save successfully in local and remote data sources
     new ArrangeBuilder()
         .withItemsAdded(mLocalDataSource, ITEMS)
@@ -162,7 +162,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   }
 
   @Test
-  public void saveItem_savesItemToLocalDataSource() {
+  public final void saveItem_savesItemToLocalDataSource() {
     // Given when an item is saved, it will save successfully in local and remote data sources
     new ArrangeBuilder()
         .withItemAdded(mLocalDataSource, ITEM)
@@ -184,7 +184,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
    * Tests - Model Retrieve
    */
   @Test
-  public void getItem_getItemFromRemoteDataSource_whenItemAvailableInRemoteDataSource(){
+  public final void getItem_getItemFromRemoteDataSource_whenItemAvailableInRemoteDataSource(){
     // Given a stub item is not available in the local data source
     // And that the stub item is available in the remote data source
     // And that when any item is added, it will complete successfully in local
@@ -203,7 +203,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   }
 
   @Test
-  public void getItem_getItemFromLocalDataSource_whenItemAvailableInLocalDataSource() {
+  public final void getItem_getItemFromLocalDataSource_whenItemAvailableInLocalDataSource() {
     // Given a stub item is available in the local datasource
     // and that the stub item is not available in the remote datasource
     new ArrangeBuilder()
@@ -220,7 +220,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   }
 
   @Test
-  public void getItem_getItemFromInMemoryCache_whenItemAvailableInCache(){
+  public final void getItem_getItemFromInMemoryCache_whenItemAvailableInCache(){
     // Given when any items are saved in local and remote, they completes successfully
     // And the local data source has no data available
     // And the remote data source has no data available
@@ -246,7 +246,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   }
 
   @Test
-  public void getItems_getItemsFromRemoteDataSource_whenItemsAvailableInRemoteDataSource() {
+  public final void getItems_getItemsFromRemoteDataSource_whenItemsAvailableInRemoteDataSource() {
     // Given that the remote data source has data available
     // And that the local data source has no data available
     // And when any item is added in local (caching remote), they complete successfully
@@ -265,7 +265,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   }
 
   @Test
-  public void getItems_getItemsFromLocalDataSource_whenItemsAvailableInLocalDataSource() {
+  public final void getItems_getItemsFromLocalDataSource_whenItemsAvailableInLocalDataSource() {
     // Given that the local data source has data available
     // and that the remote data source has no data available
     new ArrangeBuilder()
@@ -282,7 +282,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   }
 
   @Test
-  public void getItems_getItemsFromInMemoryCache_whenItemsAvailableInCache() {
+  public final void getItems_getItemsFromInMemoryCache_whenItemsAvailableInCache() {
     // Given when any items are saved in local and remote, they completes successfully
     new ArrangeBuilder()
         .withItemsAddedAny(mLocalDataSource)
@@ -303,7 +303,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   }
 
   @Test
-  public void getItems_getItemsFromRemoteDataSource_whenItemsNotAvailableLocalDataSource(){
+  public final void getItems_getItemsFromRemoteDataSource_whenItemsNotAvailableLocalDataSource(){
     // Given that the local data source has no data available
     // and tht the remote data source has data available
     // and when added item to local, operation completes successfully.
@@ -325,7 +325,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   }
 
   @Test
-  public void getItem_cachesItemToLocalDataSource_whenItemAvailableInRemoteDataSource() {
+  public final void getItem_cachesItemToLocalDataSource_whenItemAvailableInRemoteDataSource() {
     // Given when a specific item is saved in local, it completes successfully
     // And the local data source has no data available
     // And the remote data source has data available
@@ -349,7 +349,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   }
 
   @Test
-  public void getItems_cachesItemsToLocalDataSource_whenItemsAvailableInRemoteDataSource() {
+  public final void getItems_cachesItemsToLocalDataSource_whenItemsAvailableInRemoteDataSource() {
     // Given when any item is saved in local, it completes successfully
     // And the local data source has no data available
     // And the remote data source has data available
@@ -373,7 +373,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   }
 
   @Test
-  public void getItem_cachesAfterFirstSubscription_whenItemsAvailableInLocalDataSource() {
+  public final void getItem_cachesAfterFirstSubscription_whenItemsAvailableInLocalDataSource() {
     // Given that the local data source has data available
     // And the remote data source does not have any data available
     new ArrangeBuilder()
@@ -411,7 +411,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   }
 
   @Test
-  public void getItems_CachesAfterFirstSubscription_whenItemsAvailableInRemoteDataSource() {
+  public final void getItems_CachesAfterFirstSubscription_whenItemsAvailableInRemoteDataSource() {
     // Given that the remote data source has data available
     // And the local data source does not have any data available
     // And when any item is saved in the local, its completes successfully
@@ -436,7 +436,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   }
 
   @Test
-  public void getItem_failsWithEmptyOptional_whenItemNotAvailable(){
+  public final void getItem_failsWithEmptyOptional_whenItemNotAvailable(){
     // Given a stub item is not available in the remote
     // And the sub item is not available in the local
     // And when any item is saved in the local, it completes successfully
@@ -454,7 +454,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   }
 
   @Test
-  public void getItems_failsWithError_whenItemsNotAvailable(){
+  public final void getItems_failsWithError_whenItemsNotAvailable(){
     // Given that the local data source has no data available
     // and that the remote data source has no data available
     new ArrangeBuilder()
@@ -473,7 +473,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
 
 
   @Test
-  public void getItems_itemsAreRetrievedFromRemote_whenCacheIsDirty() {
+  public final void getItems_itemsAreRetrievedFromRemote_whenCacheIsDirty() {
     // Given that the remote data source has data available
     // and that when add item to local, operation completes successfully
     new ArrangeBuilder()
@@ -492,7 +492,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   }
 
   @Test
-  public void getItemsWithOptions_getItemsFromRemoteDataSource_whenItemsAvailableInRemoteDataSource(){
+  public final void getItemsWithOptions_getItemsFromRemoteDataSource_whenItemsAvailableInRemoteDataSource(){
     // Given that the remote data source has data available with options
     // And that the local data source has no data available
     // And when any item is added in local (caching remote), they complete successfully
@@ -511,7 +511,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   }
 
   @Test
-  public void getItemsWithOptions_getItemsFromLocalDataSource_whenItemsAvailableInLocalDataSource(){
+  public final void getItemsWithOptions_getItemsFromLocalDataSource_whenItemsAvailableInLocalDataSource(){
     // Given that the remote data source has no data available with options
     // And that the local data source has data available with options
     new ArrangeBuilder()
@@ -531,7 +531,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
    * Tests - Model Update
    */
   @Test
-  public void updateItem_updatesLocalDataSource_updatesRemoteDataSource() {
+  public final void updateItem_updatesLocalDataSource_updatesRemoteDataSource() {
     // Given when any item is updated in local or remote, it completes successfully
     // And the local data source has data available
     // And the remote data source has data available
@@ -551,7 +551,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   }
 
   @Test
-  public void updateItem_repoGetItemById_getsCorrectUpdatedItem() {
+  public final void updateItem_repoGetItemById_getsCorrectUpdatedItem() {
     // Given when any item is updated in local or remote, it completes successfully
     // And the local data source has data available
     // And the remote data source has data available
@@ -577,7 +577,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
    * Tests - Model Delete
    */
   @Test
-  public void deleteItem_addItemThenRemoveIt_itemRemovedFromAllDataSources(){
+  public final void deleteItem_addItemThenRemoveIt_itemRemovedFromAllDataSources(){
     // Given when add any item is called in local or remote, the process completes successfully
     // and when remove item is called in local or remote, the process completes successfully
     new ArrangeBuilder()
@@ -604,7 +604,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   }
 
   @Test
-  public void deleteItems_addItemsThenRemoveThem_itemsRemovedFromAllDataSources(){
+  public final void deleteItems_addItemsThenRemoveThem_itemsRemovedFromAllDataSources(){
     // Given when add all items is called, the process completes successfully
     // and when remove all is called, the process completes successfully
     new ArrangeBuilder()
@@ -630,7 +630,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
   }
 
 
-  class ArrangeBuilder {
+  private class ArrangeBuilder {
 
     ArrangeBuilder withItemsNotAvailable(DataSource<E> dataSource) {
       Mockito.when(dataSource.getItems()).thenReturn(Flowable.just(Collections.emptyList()));

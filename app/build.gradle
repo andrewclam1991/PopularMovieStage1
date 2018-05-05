@@ -50,20 +50,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    flavorDimensions "mode","mock"
-    productFlavors{
+    flavorDimensions "mode"
+    productFlavors {
         mock {
-            dimension "mock"
+            dimension "mode"
             applicationIdSuffix = ".mock"
-            resValue "string","tmdb_api_key", keystoreProperties['TMDB_API_KEY']
+            resValue "string", "tmdb_api_key", keystoreProperties['TMDB_API_KEY']
         }
-        dev{
+        dev {
             dimension "mode"
-            resValue "string","tmdb_api_key", keystoreProperties['TMDB_API_KEY']
+            resValue "string", "tmdb_api_key", keystoreProperties['TMDB_API_KEY']
         }
-        prod{
+        prod {
             dimension "mode"
-            resValue "string","tmdb_api_key", keystoreProperties['TMDB_API_KEY']
+            resValue "string", "tmdb_api_key", keystoreProperties['TMDB_API_KEY']
         }
     }
 
@@ -81,7 +81,6 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // Dependencies for Android framework support libraries
-    //noinspection GradleCompatible
     implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
     implementation "com.android.support:cardview-v7:$rootProject.supportLibraryVersion"
     implementation "com.android.support:design:$rootProject.supportLibraryVersion"
@@ -96,14 +95,14 @@ dependencies {
     implementation "com.google.dagger:dagger-android-support:$rootProject.daggerVersion"
     annotationProcessor "com.google.dagger:dagger-android-processor:$rootProject.daggerVersion"
 
-    // Dependencies for RxJava extensions
+    // Dependencies for RxJava
     implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxjavaVersion"
     implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxandroidVersion"
     implementation "com.squareup.sqlbrite3:sqlbrite:$rootProject.sqlbriteVersion"
 
-    // Dependencies 3rd party libs
+    // Dependencies other 3rd party libs
     implementation "com.google.guava:guava:$rootProject.guavaVersion"
-    implementation "com.squareup.picasso:picasso:$rootProject.picassoVersion"
+    //implementation "com.squareup.picasso:picasso:$rootProject.picassoVersion"
     implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$rootProject.retrofitVersion"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$rootProject.retrofitVersion"
