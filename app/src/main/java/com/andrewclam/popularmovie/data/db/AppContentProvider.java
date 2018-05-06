@@ -53,7 +53,7 @@ public class AppContentProvider extends ContentProvider {
    * ourselves, such as using regular expressions.
    */
   private static final int CODE_MOVIE = 100;
-  private static final int CODE_MOVIE_WITH_SERVICE_ID = 101;
+  private static final int CODE_MOVIE_WITH_ID = 101;
   private static final int CODE_MOVIE_FAVORITE = 103;
 
   /*
@@ -89,7 +89,7 @@ public class AppContentProvider extends ContentProvider {
      * must use this Uri.
      */
     matcher.addURI(authority, AppDbContract.PATH_MOVIES + "/" + AppDbContract.PATH_UID + "/#",
-        CODE_MOVIE_WITH_SERVICE_ID);
+        CODE_MOVIE_WITH_ID);
     
     /*
      * content://[AUTHORITY]/movies/favorite
@@ -270,13 +270,13 @@ public class AppContentProvider extends ContentProvider {
 
       case CODE_MOVIE_FAVORITE:
         // Want to get the list of all movies that are marked favorite
-        inTables = AppDbContract.MovieEntry.TABLE_NAME;
-        // TODO move to favorites table
-//        selection = AppDbContract.MovieEntry.COLUMN_FAVORITE.concat("=?");
-//        selectionArgs = new String[]{String.valueOf(AppDbContract.MovieEntry.ARG_FAVORITE_IS_TRUE)};
+        // TODO join both the MovieEntry table and MovieFavoriteEntry table to do query
+        inTables = AppDbContract.MovieFavoriteEntry.TABLE_NAME;
+        selection = AppDbContract.MovieFavoriteEntry.COLUMN_FAVORITE.concat("=?");
+        selectionArgs = new String[]{String.valueOf(AppDbContract.MovieFavoriteEntry.ARG_FAVORITE_IS_TRUE)};
         break;
 
-      case CODE_MOVIE_WITH_SERVICE_ID:
+      case CODE_MOVIE_WITH_ID:
         // Want to get the particular movie by its service id
         inTables = AppDbContract.MovieEntry.TABLE_NAME;
         selection = AppDbContract.MovieEntry.COLUMN_MOVIE_TMDB_ID.concat("=?");
@@ -284,7 +284,7 @@ public class AppContentProvider extends ContentProvider {
         break;
 
       default:
-        throw new UnsupportedOperationException("Unknown or Unsupported Uri for query()");
+        throw new UnsupportedOperationException("Unsupported Uri for query()");
     }
 
     // Get the readable database using the dbHelper
@@ -306,10 +306,9 @@ public class AppContentProvider extends ContentProvider {
   }
 
   /**
-   * Update() implementation to allow database to sync and update each movie, and allow user to
-   * favorite and un-favorite a movie
+   * Update() implementation to allow database to sync and update a database row.
    *
-   * @param uri           the {@link Uri} that points to some row within a databae
+   * @param uri           the {@link Uri} that points to some row within a database
    * @param contentValues the content values that contains columns of data to be updated
    * @param selection     selection for the column to be updated
    * @param selectionArgs the argument for column selection parameter
@@ -331,14 +330,14 @@ public class AppContentProvider extends ContentProvider {
     final String inTables;
 
     switch (match) {
-      case CODE_MOVIE_WITH_SERVICE_ID:
+      case CODE_MOVIE_WITH_ID:
         inTables = AppDbContract.MovieEntry.TABLE_NAME;
         selection = AppDbContract.MovieEntry.COLUMN_MOVIE_TMDB_ID + "=?";
         selectionArgs = new String[]{uri.getLastPathSegment()};
         break;
 
       default:
-        throw new UnsupportedOperationException("Unsupported or unknown Uri for update()");
+        throw new UnsupportedOperationException("Unsupported Uri for update()");
     }
 
     /*
@@ -362,7 +361,7 @@ public class AppContentProvider extends ContentProvider {
    */
   @Override
   public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-    throw new UnsupportedOperationException("delete() is not supported");
+    throw new UnsupportedOperationException("Unsupported Uri for delete()");
   }
 
   @Nullable
