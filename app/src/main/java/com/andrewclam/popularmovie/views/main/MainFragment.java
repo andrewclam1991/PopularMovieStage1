@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.andrewclam.popularmovie.R;
 import com.andrewclam.popularmovie.di.annotations.ActivityScoped;
 import com.andrewclam.popularmovie.util.LayoutManagerUtil;
+import com.andrewclam.popularmovie.views.detail.DetailActivity;
 
 import javax.inject.Inject;
 
@@ -145,9 +146,9 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
   }
 
   @Override
-  public void showDetailUi(@NonNull String id, @NonNull Class<? extends DaggerAppCompatActivity> clazz) {
+  public void showDetailUi(long id, @NonNull Class<? extends DaggerAppCompatActivity> clazz) {
     Intent intent = new Intent(getActivity(), clazz);
-//    intent.putExtra(DetailActivity.ARG_DETAIL_ACT_ITEM_ID, id);
+    intent.putExtra(DetailActivity.ARG_DETAIL_ACT_ITEM_ID, id);
     intent.setAction(Intent.ACTION_VIEW);
     startActivity(intent);
   }

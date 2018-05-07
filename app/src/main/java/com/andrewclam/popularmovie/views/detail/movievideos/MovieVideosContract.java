@@ -22,10 +22,10 @@ public interface MovieVideosContract {
   }
 
   /**
-   * Interface that defines the {@link MovieVideo}'s adapter View and Presenter
+   * Interface that defines the {@link MovieVideo}'s list adapter View and Presenter
    * class responsibilities
    */
-  interface RecyclerViewAdapter{
+  interface ListAdapter{
 
     interface ItemViewHolder{
 

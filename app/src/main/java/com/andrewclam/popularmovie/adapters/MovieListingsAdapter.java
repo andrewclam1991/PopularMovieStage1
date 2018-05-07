@@ -28,7 +28,7 @@ import java.util.ArrayList;
 /**
  * Created by Andrew Chi Heng Lam on 8/19/2017.
  * <p>
- * MovieEntryAdapter is an implementation of the RecyclerViewAdapter, used to back the recyclerView
+ * MovieEntryAdapter is an implementation of the ListAdapter, used to back the recyclerView
  * with the data, also contains an inner class that hold the cache of views.
  */
 

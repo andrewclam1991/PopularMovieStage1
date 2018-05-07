@@ -12,20 +12,20 @@ import dagger.android.ContributesAndroidInjector;
 
 /**
  * This is a Dagger module. We use this to pass in the View dependency to the
- * {@link MainPresenterMovie}.
+ * {@link MainPresenter}.
  */
 @Module
 public abstract class MainModule {
   @NonNull
   @ActivityScoped
   @Binds
-  abstract MainContract.Presenter providePresenter(@NonNull MainPresenterMovie presenter);
+  abstract MainContract.Presenter providePresenter(@NonNull MainPresenter presenter);
 
   @NonNull
   @ActivityScoped
   @Binds
   abstract MainContract.MovieItemPresenter<MainContract.ItemViewHolder> provideItemViewHolderPresenter
-      (@NonNull MainPresenterMovie presenter);
+      (@NonNull MainPresenter presenter);
 
   @NonNull
   @FragmentScoped

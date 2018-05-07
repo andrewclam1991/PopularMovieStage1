@@ -15,6 +15,7 @@ import javax.inject.Singleton;
 import io.reactivex.Flowable;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
 
@@ -33,12 +34,17 @@ class DataSourceRemoteMovies extends DataSourceRemote<Movie> {
   interface ApiServiceMovies{
     @NonNull
     @GET(PATH_DISCOVER + "/" + PATH_MOVIE)
-    Flowable<MovieResponse<Movie>> getItems(@Query(QUERY_API_KEY) @NonNull String apiKey,
-                                            @QueryMap @NonNull Map<String, String> options);
+    Flowable<MovieResponse<Movie>> getMovies(@Query(QUERY_API_KEY) @NonNull String apiKey,
+                                             @QueryMap @NonNull Map<String, String> options);
 
     @NonNull
     @GET(PATH_DISCOVER + "/" + PATH_MOVIE)
-    Flowable<MovieResponse<Movie>> getItems(@Query(QUERY_API_KEY) @NonNull String apiKey);
+    Flowable<MovieResponse<Movie>> getMovies(@Query(QUERY_API_KEY) @NonNull String apiKey);
+
+    @NonNull
+    @GET(PATH_MOVIE + "/{movie-id}")
+    Flowable<Movie> getMovie(@Path("movie-id") @NonNull String movieId,
+                             @Query(QUERY_API_KEY) @NonNull String apiKey);
   }
 
   @NonNull
@@ -52,14 +58,14 @@ class DataSourceRemoteMovies extends DataSourceRemote<Movie> {
   @NonNull
   @Override
   public Flowable<List<Movie>> getItems(@NonNull Map<String, String> options) {
-    return mApiService.getItems(super.mApiKey,options)
+    return mApiService.getMovies(super.mApiKey,options)
         .flatMap(movieResponse -> Flowable.just(movieResponse.getResults()));
   }
 
   @NonNull
   @Override
   public Flowable<List<Movie>> getItems() {
-    return mApiService.getItems(super.mApiKey)
+    return mApiService.getMovies(super.mApiKey)
         .flatMap(movieResponse -> Flowable.just(movieResponse.getResults()));
   }
 
@@ -67,6 +73,7 @@ class DataSourceRemoteMovies extends DataSourceRemote<Movie> {
   @NonNull
   @Override
   public Flowable<Optional<Movie>> getItem(@NonNull String entityId) {
-    return Flowable.empty();
+    return mApiService.getMovie(entityId,super.mApiKey).flatMap(movie ->
+        Flowable.just(Optional.of(movie)));
   }
 }

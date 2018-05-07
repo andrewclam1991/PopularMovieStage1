@@ -1,9 +1,12 @@
 package com.andrewclam.popularmovie.util;
 
+import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+
+import com.google.common.base.Strings;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -40,5 +43,20 @@ public final class ActivityUtils {
     transaction.commit();
   }
 
+  /**
+   * Method to check whether an activity has a intent action of not
+   * @param activity framework activity class
+   * @return the intent action the activity was started one, else
+   * throws exception
+   */
+  @NonNull
+  public static String getIntentAction(@NonNull Activity activity) {
+    final String action = activity.getIntent().getAction();
+    if (Strings.isNullOrEmpty(action)) {
+      throw new UnsupportedOperationException("Unable to handle intent without a set action");
+    } else {
+      return action;
+    }
+  }
 
 }

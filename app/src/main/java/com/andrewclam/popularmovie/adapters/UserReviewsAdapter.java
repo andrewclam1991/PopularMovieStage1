@@ -26,7 +26,7 @@ import java.util.ArrayList;
 /**
  * Created by Andrew Chi Heng Lam on 9/3/2017.
  * <p>
- * UserReviewsAdapter is an implementation of the RecyclerViewAdapter, used to back the recyclerView
+ * UserReviewsAdapter is an implementation of the ListAdapter, used to back the recyclerView
  * with the data, also contains an inner class that hold the cache of views.
  */
 

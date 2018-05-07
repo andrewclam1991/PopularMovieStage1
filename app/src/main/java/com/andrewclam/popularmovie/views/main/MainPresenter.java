@@ -27,7 +27,7 @@ import static com.andrewclam.popularmovie.data.modelapi.MovieImageContract.getIm
  * interfacing {@link MainContract.View} with the underlying Model layer
  */
 @Singleton
-class MainPresenterMovie implements MainContract.Presenter, MainContract.MovieItemPresenter {
+class MainPresenter implements MainContract.Presenter, MainContract.MovieItemPresenter {
 
   @NonNull
   private final DataSource<Movie> mMovieRepository;
@@ -45,8 +45,8 @@ class MainPresenterMovie implements MainContract.Presenter, MainContract.MovieIt
   private List<Movie> mMovies;
 
   @Inject
-  MainPresenterMovie(@NonNull @Repo DataSource<Movie> movieRepository,
-                     @NonNull BaseSchedulerProvider schedulerProvider) {
+  MainPresenter(@NonNull @Repo DataSource<Movie> movieRepository,
+                @NonNull BaseSchedulerProvider schedulerProvider) {
     mMovieRepository = movieRepository;
     mSchedulerProvider = schedulerProvider;
     mCompositeDisposable = new CompositeDisposable();
@@ -172,7 +172,7 @@ class MainPresenterMovie implements MainContract.Presenter, MainContract.MovieIt
       return; // invalid position
     }
     Movie movie = mMovies.get(position);
-    String id = movie.getUid();
+    long id = movie.getMovieId();
     mView.showDetailUi(id, DetailActivity.class);
   }
 

@@ -40,6 +40,7 @@ class DataSourceLocalMovies extends DataSourceLocal<Movie> {
     values.put(AppDbContract.MovieEntry.COLUMN_MOVIE_TMDB_ID, item.getMovieId());
     values.put(AppDbContract.MovieEntry.COLUMN_TITLE, item.getTitle());
     values.put(AppDbContract.MovieEntry.COLUMN_RELEASE_DATE, item.getReleaseDate());
+    values.put(AppDbContract.MovieEntry.COLUMN_POSTER_PATH, item.getPosterPath());
     values.put(AppDbContract.MovieEntry.COLUMN_VOTE_AVERAGE, item.getVoteAverage());
     values.put(AppDbContract.MovieEntry.COLUMN_VOTE_COUNT, item.getVoteCount());
     values.put(AppDbContract.MovieEntry.COLUMN_POPULARITY, item.getPopularity());
@@ -52,9 +53,10 @@ class DataSourceLocalMovies extends DataSourceLocal<Movie> {
   @NonNull
   @Override
   Movie mapToItem(@NonNull Cursor c) {
-    long id = c.getLong(c.getColumnIndexOrThrow(AppDbContract.MovieEntry.COLUMN_MOVIE_TMDB_ID));
+    Long id = c.getLong(c.getColumnIndexOrThrow(AppDbContract.MovieEntry.COLUMN_MOVIE_TMDB_ID));
     String title = c.getString(c.getColumnIndexOrThrow(AppDbContract.MovieEntry.COLUMN_TITLE));
     String releaseDate = c.getString(c.getColumnIndexOrThrow(AppDbContract.MovieEntry.COLUMN_RELEASE_DATE));
+    String posterPath = c.getString(c.getColumnIndexOrThrow(AppDbContract.MovieEntry.COLUMN_POSTER_PATH));
     double voteAverage = c.getDouble(c.getColumnIndexOrThrow(AppDbContract.MovieEntry.COLUMN_VOTE_AVERAGE));
     long voteCount = c.getInt(c.getColumnIndexOrThrow(AppDbContract.MovieEntry.COLUMN_VOTE_COUNT));
     double popularity = c.getDouble(c.getColumnIndexOrThrow(AppDbContract.MovieEntry.COLUMN_POPULARITY));
@@ -64,6 +66,7 @@ class DataSourceLocalMovies extends DataSourceLocal<Movie> {
     Movie item = new Movie();
     item.setMovieId(id);
     item.setTitle(title);
+    item.setPosterPath(posterPath);
     item.setReleaseDate(releaseDate);
     item.setVoteAverage(voteAverage);
     item.setVoteCount(voteCount);

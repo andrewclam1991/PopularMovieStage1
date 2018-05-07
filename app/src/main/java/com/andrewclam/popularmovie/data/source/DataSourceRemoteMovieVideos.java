@@ -47,12 +47,12 @@ class DataSourceRemoteMovieVideos extends DataSourceRemote<MovieVideo> {
   @NonNull
   @Override
   public Flowable<List<MovieVideo>> getItems() {
-    return Flowable.error(new UnsupportedOperationException("getItems() is not supported"));
+    return Flowable.error(new UnsupportedOperationException("getMovies() is not supported"));
   }
 
   @NonNull
   @Override
   public Flowable<Optional<MovieVideo>> getItem(@NonNull String entityId) {
-    return Flowable.error(new UnsupportedOperationException("getItem(String) is not supported"));
+    return Flowable.error(new UnsupportedOperationException("getMovie(String) is not supported"));
   }
 }

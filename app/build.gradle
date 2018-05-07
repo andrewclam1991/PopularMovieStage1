@@ -74,7 +74,6 @@ android {
             variant.setIgnore(true)
         }
     }
-
 }
 
 dependencies {
@@ -102,7 +101,7 @@ dependencies {
 
     // Dependencies other 3rd party libs
     implementation "com.google.guava:guava:$rootProject.guavaVersion"
-    //implementation "com.squareup.picasso:picasso:$rootProject.picassoVersion"
+    implementation "com.squareup.picasso:picasso:$rootProject.picassoVersion"
     implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$rootProject.retrofitVersion"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$rootProject.retrofitVersion"

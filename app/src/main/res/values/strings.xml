@@ -27,10 +27,15 @@
 
 
     <!-- messages -->
-    <string name="no_user_reviews">No User Reviews</string>
-    <string name="no_related_videos">No Related Videos</string>
+    <string name="no_user_reviews">No user reviews</string>
+    <string name="no_related_videos">No related videos</string>
     <string name="error_no_trailer_to_share">Sorry, this movie doesn\'t have a trailer</string>
     <string name="error_msg_unable_to_fetch">Unable to fetch movies at this time.\n
         Please try again later.</string>
+    <string name="no_title">No title</string>
+    <string name="no_release_date">No release date</string>
+    <string name="no_vote_average">No vote average</string>
+    <string name="no_votes">No votes</string>
+    <string name="no_overview">No overview</string>
 
 </resources>

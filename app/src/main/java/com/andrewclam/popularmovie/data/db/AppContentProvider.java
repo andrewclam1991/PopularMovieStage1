@@ -268,19 +268,19 @@ public class AppContentProvider extends ContentProvider {
         inTables = AppDbContract.MovieEntry.TABLE_NAME;
         break;
 
+      case CODE_MOVIE_WITH_ID:
+        // Want to get the particular movie by its service id
+        inTables = AppDbContract.MovieEntry.TABLE_NAME;
+        selection = AppDbContract.MovieEntry.COLUMN_MOVIE_TMDB_ID.concat("=?");
+        selectionArgs = new String[]{uri.getLastPathSegment()};
+        break;
+
       case CODE_MOVIE_FAVORITE:
         // Want to get the list of all movies that are marked favorite
         // TODO join both the MovieEntry table and MovieFavoriteEntry table to do query
         inTables = AppDbContract.MovieFavoriteEntry.TABLE_NAME;
         selection = AppDbContract.MovieFavoriteEntry.COLUMN_FAVORITE.concat("=?");
         selectionArgs = new String[]{String.valueOf(AppDbContract.MovieFavoriteEntry.ARG_FAVORITE_IS_TRUE)};
-        break;
-
-      case CODE_MOVIE_WITH_ID:
-        // Want to get the particular movie by its service id
-        inTables = AppDbContract.MovieEntry.TABLE_NAME;
-        selection = AppDbContract.MovieEntry.COLUMN_MOVIE_TMDB_ID.concat("=?");
-        selectionArgs = new String[]{uri.getLastPathSegment()};
         break;
 
       default:

@@ -51,32 +51,32 @@ public class AppDbHelper extends SQLiteOpenHelper {
 
   /**
    * SQL Statement to create a table for {@link MovieEntry} rows
-   *
+   * <p>
    * Note: "_ID" only locally unique identifies a {@link MovieEntry} row in the user's own
    * database, not to be confused with MOVIE_ID, which is the {@link Movie}'s unique
    * id at the service api.
-   *
+   * <p>
    * Note: To ensure that each {@link MovieEntry} is unique within this table, we will enforce
    * {@link MovieEntry#COLUMN_MOVIE_TMDB_ID} column to be unique with a "ON CONFLICT REPLACE"
    * clause.This clause commands SQLite that given there is an existing {@link MovieEntry},
    * if an attempt is made to insert a {@link MovieEntry} with same id, then SQLite
    * should just replace such row with the new data.
-   *
+   * <p>
    * TODO Add Constraint to MovieFavorite column, if movie is marked as favorite, should not delete local movie record
    */
-  private final String SQL_CREATE_MOVIES_TABLE =
-  "CREATE TABLE " + MovieEntry.TABLE_NAME + " (" +
-    AppDbContract.MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-    AppDbContract.MovieEntry.COLUMN_MOVIE_TMDB_ID + " INTEGER NOT NULL, " +
-    AppDbContract.MovieEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
-    AppDbContract.MovieEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, " +
-    AppDbContract.MovieEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL, " +
-    AppDbContract.MovieEntry.COLUMN_VOTE_AVERAGE + " REAL NOT NULL, " +
-    AppDbContract.MovieEntry.COLUMN_VOTE_COUNT + " INTEGER NOT NULL, " +
-    AppDbContract.MovieEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
-    AppDbContract.MovieEntry.COLUMN_POPULARITY + " REAL NOT NULL, " +
-//    AppDbContract.MovieEntry.COLUMN_FAVORITE + " INTEGER DEFAULT 0, " +
-    " UNIQUE (" + MovieEntry.COLUMN_MOVIE_TMDB_ID + ") ON CONFLICT REPLACE)";
+  private final static String SQL_CREATE_MOVIES_TABLE =
+      "CREATE TABLE " + MovieEntry.TABLE_NAME + " (" +
+          AppDbContract.MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+          AppDbContract.MovieEntry.COLUMN_MOVIE_TMDB_ID + " INTEGER NOT NULL, " +
+          AppDbContract.MovieEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
+          AppDbContract.MovieEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, " +
+          AppDbContract.MovieEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL, " +
+          AppDbContract.MovieEntry.COLUMN_VOTE_AVERAGE + " REAL NOT NULL, " +
+          AppDbContract.MovieEntry.COLUMN_VOTE_COUNT + " INTEGER NOT NULL, " +
+          AppDbContract.MovieEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
+          AppDbContract.MovieEntry.COLUMN_POPULARITY + " REAL NOT NULL, " +
+          AppDbContract.MovieEntry.COLUMN_NAME_DELETE_FLAG + " INTEGER NOT NULL, " +
+          " UNIQUE (" + MovieEntry.COLUMN_MOVIE_TMDB_ID + ") ON CONFLICT REPLACE)";
 
 
   /**
@@ -94,7 +94,7 @@ public class AppDbHelper extends SQLiteOpenHelper {
   @Override
   public void onCreate(SQLiteDatabase sqLiteDatabase) {
     sqLiteDatabase.execSQL(SQL_CREATE_MOVIES_TABLE);
-    sqLiteDatabase.execSQL(SQL_CREATE_MOVIE_FAVORITES_TABLE);
+//    sqLiteDatabase.execSQL(SQL_CREATE_MOVIE_FAVORITES_TABLE);
   }
 
   /**

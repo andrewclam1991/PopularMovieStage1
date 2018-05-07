@@ -30,10 +30,10 @@ public interface MovieReviewsContract{
    * Interface that defines the {@link MovieReview}'s adapter View and Presenter
    * class responsibilities
    */
-  interface RecyclerViewAdapter {
+  interface ListAdapter {
 
     interface ItemViewHolder {
-
+      // TODO define the view setters for each movie review
     }
 
     interface Presenter<I extends ItemViewHolder> {

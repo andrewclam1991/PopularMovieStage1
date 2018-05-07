@@ -1,20 +1,3 @@
-/*
- * Copyright <2017> <ANDREW LAM>
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
- * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
- * to whom the Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
- * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
- * OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
 package com.andrewclam.popularmovie.views.detail;
 
 import android.content.ContentResolver;
@@ -32,14 +15,11 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ShareCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
@@ -160,45 +140,6 @@ public class OldDetailActivity extends DaggerAppCompatActivity {
     } else {
       Log.e(TAG, "Intent doesn't have the required movie entry");
       finish();
-    }
-  }
-
-  @Override
-  public void onSaveInstanceState(Bundle savedInstanceState) {
-    // Always call the superclass so it can save the view hierarchy state
-    super.onSaveInstanceState(savedInstanceState);
-  }
-
-
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    // Inflate the menu; this adds items to the action bar if it is present.
-    getMenuInflater().inflate(R.menu.menu_detail, menu);
-    return true;
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    // Handle action bar item clicks here. The action bar will
-    // automatically handle clicks on the Home/Up button, so long
-    // as you specify a parent activity in AndroidManifest.xml.
-    int id = item.getItemId();
-
-    switch (id) {
-      case R.id.action_share_movie:
-        // Share the first video of type trailer in the Related Video
-        if (mShareTrailerUrl != null) {
-          // Call shareTrailer
-          String title = getString(R.string.action_share_this_movie_trailer);
-          shareTrailer(title, mShareTrailerUrl.toString());
-        } else {
-          // No trailer to share
-          Snackbar.make(rootScrollView, getString(R.string.error_no_trailer_to_share),
-              Snackbar.LENGTH_SHORT).show();
-        }
-        return true;
-      default:
-        return super.onOptionsItemSelected(item);
     }
   }
 
@@ -587,39 +528,5 @@ public class OldDetailActivity extends DaggerAppCompatActivity {
 
     // Exited for loop without any entry that matches the criteria
     return null;
-  }
-
-  /**
-   * This method shares the trailer and allows the user to select which app they would like to use to
-   * share the trailer. Using ShareCompat's IntentBuilder, we get some really cool functionality for
-   * free. The chooser that is started using the {@link ShareCompat.IntentBuilder#startChooser()} method will
-   * create a chooser when more than one app on the device can handle the Intent. This happens
-   * when the user has, for example, both a messenger app and an email app. If only one Activity
-   * on the phone can handle the Intent, it will automatically be launched.
-   *
-   * @param shareContent Text that will be shared
-   * @param shareTitle   The movie's title and the origin
-   */
-  private void shareTrailer(String shareTitle, String shareContent) {
-    // Create a String variable called mimeType and set it to "text/plain"
-    /*
-     * You can think of MIME types similarly to file extensions. They aren't the exact same,
-     * but MIME types help a computer determine which applications can open which content. For
-     * example, if you double click on a .pdf file, you will be presented with a list of
-     * programs that can open PDFs. Specifying the MIME type as text/plain has a similar affect
-     * on our implicit Intent. With text/plain specified, all apps that can handle text content
-     * in some way will be offered when we call startActivity on this particular Intent.
-     */
-    String mimeType = "text/plain";
-
-    // Use ShareCompat.IntentBuilder to build the Intent and start the chooser
-    /* ShareCompat.IntentBuilder provides a fluent API for creating Intents */
-    ShareCompat.IntentBuilder
-        /* The from method specifies the Context from which this share is coming from */
-        .from(this)
-        .setType(mimeType)
-        .setChooserTitle(shareTitle)
-        .setText(shareContent)
-        .startChooser();
   }
 }

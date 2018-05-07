@@ -12,7 +12,7 @@ import com.google.gson.annotations.SerializedName;
 public class Movie extends Entity{
 
   @SerializedName("id")
-  private long movieId;
+  private Long movieId;
 
   @SerializedName("poster_path")
   private String posterPath;
@@ -39,26 +39,24 @@ public class Movie extends Entity{
   private String backdropPath;
 
   @SerializedName("popularity")
-  private double popularity;
+  private Double popularity;
 
   @SerializedName("vote_count")
-  private long voteCount;
+  private Long voteCount;
 
   @SerializedName("video")
   private boolean video;
 
   @SerializedName("vote_average")
-  private double voteAverage;
+  private Double voteAverage;
 
-  private boolean isFavorite;
-
-  public long getMovieId() {
+  public Long getMovieId() {
     return movieId;
   }
 
-  public void setMovieId(long id) {
-    super.setUid(String.valueOf(id));
-    this.movieId = id;
+  public void setMovieId(Long movieId) {
+    super.setUid(String.valueOf(movieId));
+    this.movieId = movieId;
   }
 
   public String getPosterPath() {
@@ -137,19 +135,19 @@ public class Movie extends Entity{
     this.backdropPath = backdropPath;
   }
 
-  public double getPopularity() {
+  public Double getPopularity() {
     return popularity;
   }
 
-  public void setPopularity(double popularity) {
+  public void setPopularity(Double popularity) {
     this.popularity = popularity;
   }
 
-  public long getVoteCount() {
+  public Long getVoteCount() {
     return voteCount;
   }
 
-  public void setVoteCount(long voteCount) {
+  public void setVoteCount(Long voteCount) {
     this.voteCount = voteCount;
   }
 
@@ -161,20 +159,15 @@ public class Movie extends Entity{
     this.video = video;
   }
 
-  public double getVoteAverage() {
+  public Double getVoteAverage() {
     return voteAverage;
   }
 
-  public void setVoteAverage(double voteAverage) {
+  public void setVoteAverage(Double voteAverage) {
     this.voteAverage = voteAverage;
   }
 
-  public boolean isFavorite() {
-    return isFavorite;
-  }
 
-  public void setFavorite(boolean favorite) {
-    isFavorite = favorite;
-  }
+
 }
 

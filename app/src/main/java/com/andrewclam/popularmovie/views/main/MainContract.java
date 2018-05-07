@@ -34,7 +34,7 @@ interface MainContract {
      * Allow the View to handle launching item detail ui screen(s)
      * @param id unique id that identifies the item
      */
-    void showDetailUi(@NonNull String id, @NonNull Class<? extends DaggerAppCompatActivity> clazz);
+    void showDetailUi(long id, @NonNull Class<? extends DaggerAppCompatActivity> clazz);
   }
 
   /**

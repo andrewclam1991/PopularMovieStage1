@@ -238,7 +238,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     TestSubscriber<Optional<E>> testSubscriber = new TestSubscriber<>();
     mRepository.getItem(ITEM.getUid()).subscribe(testSubscriber);
 
-    // Verify that neither the local nor remote's getItem() is called
+    // Verify that neither the local nor remote's getMovie() is called
     Mockito.verify(mRemoteDataSource, Mockito.never()).getItem(ITEM.getUid());
     Mockito.verify(mLocalDataSource, Mockito.never()).getItem(ITEM.getUid());
     // Then the item is loaded from the cache
@@ -295,7 +295,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     TestSubscriber<List<E>> testSubscriber1 = new TestSubscriber<>();
     mRepository.getItems().subscribe(testSubscriber1);
 
-    // Verify neither the local nor remote data sources' getItems() was called
+    // Verify neither the local nor remote data sources' getMovies() was called
     Mockito.verify(mLocalDataSource, Mockito.never()).getItems();
     Mockito.verify(mRemoteDataSource, Mockito.never()).getItems();
     // And that the subscriber has received the items
@@ -316,7 +316,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     TestSubscriber<List<E>> testSubscriber = new TestSubscriber<>();
     mRepository.getItems().subscribe(testSubscriber);
 
-    // Verify the remote getItems() was called
+    // Verify the remote getMovies() was called
     Mockito.verify(mRemoteDataSource).getItems();
     // And that the local add() was called to save each item from remote
     Mockito.verify(mLocalDataSource, Mockito.times(ITEMS.size())).add(any(ITEM_CLASS));
@@ -387,12 +387,12 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
     mRepository.getItems().subscribe(testSubscriber2);
 
     /*
-     * TODO Question: why would remote getItems() be ever called?
+     * TODO Question: why would remote getMovies() be ever called?
      * 0. First subscription
      * 1. Repo start with mCacheIsDirty = false
      * 2. Repo start with emptyCache
      * 3. Repo falls to Flowable.concat(localItems,remoteItems)
-     * 4. mLocalDataSource.getItems() called
+     * 4. mLocalDataSource.getMovies() called
      * 5. for each localItem -> cacheItems.put(id,localItem);
      * 6. return ITEMS
      *
@@ -461,7 +461,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
         .withItemsNotAvailable(mLocalDataSource)
         .withItemsNotAvailable(mRemoteDataSource);
 
-    // When calling getItems in the repository
+    // When calling getMovies in the repository
     TestSubscriber<List<E>> testSubscriber = new TestSubscriber<>();
     mRepository.getItems().subscribe(testSubscriber);
 
@@ -480,7 +480,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
         .withItemsAvailable(mRemoteDataSource,ITEMS)
         .withItemAddedAny(mLocalDataSource);
 
-    // When calling getItems() in the repository with dirty cache
+    // When calling getMovies() in the repository with dirty cache
     mRepository.refresh();
     TestSubscriber<List<E>> testSubscriber = new TestSubscriber<>();
     mRepository.getItems().subscribe(testSubscriber);
@@ -501,7 +501,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
         .withItemsNotAvailableWithOptions(mLocalDataSource, OPTIONS)
         .withItemAddedAny(mLocalDataSource);
 
-    // When getItems(Options) are requested from the repository
+    // When getMovies(Options) are requested from the repository
     TestSubscriber<List<E>> testSubscriber = new TestSubscriber<>();
     mRepository.getItems(OPTIONS).subscribe(testSubscriber);
 
@@ -518,7 +518,7 @@ public abstract class BaseMockRepositoryTest<E extends Entity> {
         .withItemsAvailableWithOptions(mLocalDataSource, ITEMS, OPTIONS)
         .withItemsNotAvailableWithOptions(mRemoteDataSource, OPTIONS);
 
-    // When getItems(Options) are requested from the repository
+    // When getMovies(Options) are requested from the repository
     TestSubscriber<List<E>> testSubscriber = new TestSubscriber<>();
     mRepository.getItems(OPTIONS).subscribe(testSubscriber);
 
