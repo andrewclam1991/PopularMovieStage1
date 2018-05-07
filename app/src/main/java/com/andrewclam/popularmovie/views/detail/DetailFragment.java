@@ -1,6 +1,7 @@
 package com.andrewclam.popularmovie.views.detail;
 
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,6 +28,8 @@ import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * A simple {@link Fragment} and a {@link DetailContract.View} implementation responsible for
  * handling lifecycle callbacks and delegating user interaction logic to its
@@ -42,6 +45,10 @@ public class DetailFragment extends DaggerFragment implements DetailContract.Vie
   @Inject
   DetailContract.Presenter mPresenter;
 
+  // Host Activity listener
+  @Nullable
+  private Callback mCallback;
+
   // Views
   private ProgressBar mLoadingIndicator;
   private ImageView mPosterBannerIv;
@@ -52,6 +59,22 @@ public class DetailFragment extends DaggerFragment implements DetailContract.Vie
   private TextView mVoteCountTv;
   private TextView mOverViewTv;
   private FloatingActionButton mFavBtn;
+
+  @Override
+  public void onAttach(Context context) {
+    super.onAttach(context);
+    if (context instanceof DetailFragment.Callback){
+      mCallback = (DetailFragment.Callback)context;
+    }else{
+      throw new RuntimeException("Host activity of DetailFragment must implement Callback");
+    }
+  }
+
+  @Override
+  public void onDetach() {
+    super.onDetach();
+    mCallback = null;
+  }
 
   @Override
   public void onPause() {
@@ -66,6 +89,7 @@ public class DetailFragment extends DaggerFragment implements DetailContract.Vie
     mPresenter.loadMovie();
     mPresenter.loadMovieFavoriteStatus();
   }
+
 
   @Inject
   public DetailFragment() {
@@ -163,7 +187,7 @@ public class DetailFragment extends DaggerFragment implements DetailContract.Vie
 
   @Override
   public void showPosterBanner(@NonNull String url) {
-    Picasso.get().load(url).into(mPosterBannerIv);
+    checkNotNull(mCallback).showPosterBanner(url);
   }
 
   @Override
@@ -179,11 +203,13 @@ public class DetailFragment extends DaggerFragment implements DetailContract.Vie
 
   @Override
   public void showTitle(@NonNull String title) {
+    checkNotNull(mCallback).showTitle(title);
     mTitleTv.setText(title);
   }
 
   @Override
   public void hideTitle() {
+    checkNotNull(mCallback).showTitle(getString(R.string.no_title));
     mTitleTv.setText(getString(R.string.no_title));
   }
 
@@ -267,5 +293,11 @@ public class DetailFragment extends DaggerFragment implements DetailContract.Vie
           .setText(content)
           .startChooser();
     }
+  }
+
+  interface Callback {
+    void showPosterBanner(@NonNull String url);
+
+    void showTitle(@NonNull String title);
   }
 }
