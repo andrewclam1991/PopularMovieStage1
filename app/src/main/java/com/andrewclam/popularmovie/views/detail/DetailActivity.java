@@ -39,6 +39,7 @@ public class DetailActivity extends DaggerAppCompatActivity implements DetailFra
     Toolbar toolbar = findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    setTitle("");
 
     mPosterBannerIv = findViewById(R.id.iv_poster_banner);
 
@@ -60,6 +61,6 @@ public class DetailActivity extends DaggerAppCompatActivity implements DetailFra
 
   @Override
   public void showTitle(@NonNull String title) {
-    setTitle(title);
+    setTitle("");
   }
 }
